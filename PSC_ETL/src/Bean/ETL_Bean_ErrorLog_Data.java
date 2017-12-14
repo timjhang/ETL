@@ -1,21 +1,37 @@
 package Bean;
 
-public class ETL_P_ErrorLog_Data {
+import Tool.ETL_Tool_ParseFileName;
+
+public class ETL_Bean_ErrorLog_Data {
 	// ETL Error Log Data
 	
 	private String CENTRAL_NO; // 報送單位
 	private java.util.Date RECORD_DATE; // 檔案日期
 	private String FILE_TYPE; // 檔名業務別
-	private String FILE_NAME; // 檔案名稱
+	private String FILE_NAME; // 處理類型檔案名稱
 	private String UPLOAD_NO; // 上傳批號
 	private String STEP_TYPE; // 步驟
 	private String ROW_COUNT; // 行數
 	private String FIELD_NAME; // 欄位中文名稱
 	private String ERROR_DESCRIPTION; // 錯誤描述
-	private String SRC_FILE; // 來源檔案
+	private String SRC_FILE; // 來源檔案(檔案全名)
 	
-	// ETL_P_ErrorLog_Data's Constructor
-	public ETL_P_ErrorLog_Data(String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE, String FILE_NAME, String UPLOAD_NO,
+	
+	/**
+	 * 
+	 * @param CENTRAL_NO 報送單位
+	 * @param RECORD_DATE 檔案日期
+	 * @param FILE_TYPE 檔名業務別
+	 * @param FILE_NAME 處理類型檔案名稱
+	 * @param UPLOAD_NO 上傳批號
+	 * @param STEP_TYPE 步驟
+	 * @param ROW_COUNT 行數
+	 * @param FIELD_NAME 欄位中文名稱
+	 * @param ERROR_DESCRIPTION 錯誤描述
+	 * @param SRC_FILE 來源檔案(檔案全名)
+	 */
+	// ETL_P_ErrorLog_Data's Constructor 第一版, 直接輸入參數
+	public ETL_Bean_ErrorLog_Data(String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE, String FILE_NAME, String UPLOAD_NO,
 			String STEP_TYPE, String ROW_COUNT, String FIELD_NAME, String ERROR_DESCRIPTION, String SRC_FILE) {
 		
 		this.CENTRAL_NO = CENTRAL_NO;
@@ -28,6 +44,29 @@ public class ETL_P_ErrorLog_Data {
 		this.FIELD_NAME = FIELD_NAME;
 		this.ERROR_DESCRIPTION = ERROR_DESCRIPTION;
 		this.SRC_FILE = SRC_FILE;
+	}
+	
+	/**
+	 *
+	 * @param pfn 報送單位, 檔案日期, 檔名業務別, 處理類型檔案名稱, 來源檔案(檔案全名)
+	 * @param UPLOAD_NO 上傳批號
+	 * @param STEP_TYPE 步驟
+	 * @param ROW_COUNT 行數
+	 * @param FIELD_NAME 欄位中文名稱
+	 * @param ERROR_DESCRIPTION 錯誤描述
+	 */
+	// ETL_P_ErrorLog_Data's Constructor 第二版, 加入解析檔名物件
+	public ETL_Bean_ErrorLog_Data(ETL_Tool_ParseFileName pfn, String UPLOAD_NO, String STEP_TYPE, String ROW_COUNT, String FIELD_NAME, String ERROR_DESCRIPTION) {
+		this.CENTRAL_NO = pfn.getCentral_No();
+		this.RECORD_DATE = pfn.getRecord_Date();
+		this.FILE_TYPE = pfn.getFile_Type();
+		this.FILE_NAME = pfn.getFile_Name();
+		this.UPLOAD_NO = UPLOAD_NO;
+		this.STEP_TYPE = STEP_TYPE;
+		this.ROW_COUNT = ROW_COUNT;
+		this.FIELD_NAME = FIELD_NAME;
+		this.ERROR_DESCRIPTION = ERROR_DESCRIPTION;
+		this.SRC_FILE = pfn.getFileName();
 	}
 	
 	public String getCENTRAL_NO() {

@@ -7,15 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Bean.ETL_Bean_CodeName_Data;
+
 public class ETL_Q_ColumnCheckCodes {
 	
 	// 母確認Map(取得單一Extract程式下, 所有欄位檢核用Map)
 	private Map<String, Map<String, String>> checkMaps = new HashMap<String, Map<String, String>>();
 	
 	// 取得檢核用代碼List
-	public static List<CodeData> getCheckList(String columnName) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public static List<ETL_Bean_CodeName_Data> getCheckList(String columnName) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		List<CodeData> resultList = new ArrayList<CodeData>();
+		List<ETL_Bean_CodeName_Data> resultList = new ArrayList<ETL_Bean_CodeName_Data>();
 		
 		Connection con = ConnectionHelper.getDB2Connection();
 		
@@ -24,7 +26,7 @@ public class ETL_Q_ColumnCheckCodes {
         java.sql.ResultSet rs = stmt.executeQuery(query);
         
         while (rs.next()) {
-        	CodeData data = new CodeData();
+        	ETL_Bean_CodeName_Data data = new ETL_Bean_CodeName_Data();
         	data.setCode(rs.getString(1));
         	data.setName(rs.getString(2));
         	

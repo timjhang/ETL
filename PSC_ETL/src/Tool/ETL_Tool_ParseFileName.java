@@ -1,6 +1,5 @@
 package Tool;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -9,59 +8,70 @@ public class ETL_Tool_ParseFileName {
 
 	// 檔案名
 	private String FileName;
+	// 處理檔名
+	private String File_Name;
 	// 報送單位
 	private String Central_No;
 	// 業務名稱
 	private String File_Type;
-	// 日期
+	// 檔案日期
 	private Date Record_Date;
+	// 檔案日期文字
+	private String Record_Date_String;
 	
 	// ETL_Tool_ParseFileName's Constructor
 	public ETL_Tool_ParseFileName(String fileName) throws Exception {
+		// 檔名格式  AAA_BB_(CCC)_yyyyMMdd.txt   test  temp (格式未定)
+		// AAA:報送單位, BB:業務別, CCC:處理檔名
+		
+		// 檔名非空檢核
 		if (fileName == null || "".equals(fileName)) {
-			throw new Exception("ETL_Tool_ParseFileName 建立檔名有誤!!");
+			throw new Exception("ETL_Tool_ParseFileName 建立檔名有誤!!\n無檔名");
 		}
 		
-		this.FileName = fileName;
+		// 檔名"_"比較檢核
+		if (fileName.split("\\_").length < 4) {
+			throw new Exception("ETL_Tool_ParseFileName 建立檔名有誤!!\n檔名無\"_\"");
+		}
+		// 副檔名必要檢核  test temp (格式未定)
+		if (fileName.split("\\.").length < 2) {
+			throw new Exception("ETL_Tool_ParseFileName 建立檔名有誤!!\n檔名無副檔名");
+		}
+		
+		this.FileName = fileName; // 輸入全檔名
 		
 		String[] ary = FileName.split("\\_");
-		this.Central_No = ary[0];
-		this.File_Type = ary[1];
-		String source = fileName.split("\\.")[0];
-		source = source.substring(source.length() - 8, source.length());
-		this.Record_Date = new SimpleDateFormat("yyyyMMdd").parse(source);
+		this.Central_No = "0000000".substring(0, 7 - ary[0].length()) + ary[0]; // 寫入報送單位
+		this.File_Type = ary[1];  // 寫入業務別
+		String mainName = fileName.split("\\.")[0];
+		this.File_Name = mainName.substring(ary[0].length() + ary[1].length() + 2, mainName.length() - 9); // 寫入處裡檔名
+		String source = mainName.substring(mainName.length() - 8, mainName.length());
+		this.Record_Date_String = source; // 寫入檔案日期文字(yyyyMMdd)
+		this.Record_Date = new SimpleDateFormat("yyyyMMdd").parse(source); // 寫入檔案日期
 	}
 	
 	public String getFileName() {
 		return FileName;
 	}
 	
-//	public void setFileName(String fileName) {
-//		FileName = fileName;
-//	}
-	
 	public String getCentral_No() {
 		return Central_No;
 	}
-	
-//	public void setCentral_No(String central_No) {
-//		Central_No = central_No;
-//	}
 	
 	public String getFile_Type() {
 		return File_Type;
 	}
 	
-//	public void setFile_Type(String file_Type) {
-//		File_Type = file_Type;
-//	}
-	
 	public Date getRecord_Date() {
 		return Record_Date;
 	}
 	
-//	public void setRecord_Date(Date record_Date) {
-//		Record_Date = record_Date;
-//	}
+	public String getFile_Name() {
+		return File_Name;
+	}
+
+	public String getRecord_Date_String() {
+		return Record_Date_String;
+	}
 	
 }

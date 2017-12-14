@@ -14,12 +14,19 @@ public class ETL_Profile {
 	
 	// Driver, Url, User, Password
 	public final static String db2Driver = "com.ibm.db2.jcc.DB2Driver";
-	public final static String db2Url = "jdbc:db2://172.18.6.131:50000/sample";
+	private final static String db2SPschema = "ADMINISTRATOR";
+	public final static String db2Url = 
+			"jdbc:db2://172.18.6.131:50000/sample:" +
+			"currentschema=" + db2SPschema + ";" +
+			"currentFunctionPath=" + db2SPschema + ";";
 	public final static String db2User = "Administrator";
 	public final static String db2Password = "9ol.)P:?";
 	
 	// Error Log寫入域值
 	public final static int ErrorLog_Stage = 10000;
+	
+	// Data 寫入域值
+	public final static int Data_Stage = 10000;
 	
 	// 新北市農會附設北區農會電腦共用中心  951  相關參數
 	

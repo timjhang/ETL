@@ -6,8 +6,8 @@ public class ETL_Tool_StringQueue {
 	// 截字輔助工具截byte(預設轉BIG5)
 	
 	// 轉換編碼格式
-//	private static final String format = "BIG5";
-	private final String format = "UTF-8";
+	private static final String format = "BIG5";
+//	private final String format = "UTF-8";
 	
 	// 字串總長度
 	private int totalLength = 0;

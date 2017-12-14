@@ -1,6 +1,6 @@
-package DB;
+package Bean;
 
-public class CodeData {
+public class ETL_Bean_CodeName_Data {
 	// 代碼用DataBean
 	
 	private String code; // 代碼
