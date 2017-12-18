@@ -32,9 +32,9 @@ public class ETL_E_PARTY_PHONE {
 	// TODO
 	private String[][] checkMapArray =
 		{
-			{"c-2", "TimTest"}, 
-			{"c-4", "TimTest"},
-			{"c-5", "TimTest"}
+			{"c-2", ""}, 
+			{"c-4", "PARTY_PHONE_CHANGE_CODE"},
+			{"c-5", "PARTY_PHONE_PHONE_TYPE"}
 		};
 	
 	// 欄位檢核用母Map
@@ -53,31 +53,8 @@ public class ETL_E_PARTY_PHONE {
 	// class生成時, 取得所有檢核用子map, 置入母map內
 	{
 		try {
-			//TODO 測試用
-			//checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-		
-			checkMaps = new HashMap<String, Map<String, String>>();
-			Map<String, String> c_2 = new HashMap<String, String>();
-			Map<String, String> c_4 = new HashMap<String, String>();
-			Map<String, String> c_5 = new HashMap<String, String>();
 			
-			c_2.put("5420010", "5420010");
-			c_4.put("N", "N");
-			c_4.put("U", "U");
-			c_4.put("D", "D");
-			c_5.put("P01", "P01");
-			c_5.put("P02", "P02");
-			c_5.put("P03", "P03");
-			c_5.put("P04", "P04");
-			c_5.put("P05", "P05");
-			c_5.put("P06", "P06");
-			c_5.put("P07", "P07");
-			
-			checkMaps.put("c-2", c_2);
-			checkMaps.put("c-4", c_4);
-			checkMaps.put("c-5", c_5);
-	
-			
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
 			
 		} catch (Exception ex) {
 			checkMaps = null;
@@ -204,7 +181,7 @@ public class ETL_E_PARTY_PHONE {
 					strQueue.setTargetString(lineStr); // queue裝入新String
 					
 					// 生成一個Data
-					ETL_Bean_PARTY_PHONE_Data data = new ETL_Bean_PARTY_PHONE_Data(pfn, null, null, null, null, null, null);
+					ETL_Bean_PARTY_PHONE_Data data = new ETL_Bean_PARTY_PHONE_Data(pfn, null, null, null, null, null);
 					
 					// 區別碼(1)
 					String typeCode = strQueue.popBytesString(1);
@@ -341,25 +318,24 @@ public class ETL_E_PARTY_PHONE {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, "001", "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
-					} else if (totalCount.equals(String.valueOf(rowCount))) {//TODO 這邊沒效果 rowCount:代表的是所有資料(含首錄,尾錄) totalCount代表的是明細的總比數? 數字未補0
+					} else if (Integer.valueOf(totalCount) == (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(
-								new ETL_Bean_ErrorLog_Data(pfn, "001", "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
+								new ETL_Bean_ErrorLog_Data(pfn, "001", "E", String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
 					}
 					
 					// 保留欄檢核(17)
 					String keepColumn = strQueue.popBytesString(17);
 					
-					//TODO 修正尾錄正確沒successCount++
-					if(!"".equals(fileFmtErrMsg)){
+					if (!"".equals(fileFmtErrMsg)) {
 						failureCount++;
-					}else{
+					} else {
 						successCount++;
 					}
 					
 				}
 				
-				// 程式統計檢核 //TODO 
+				// 程式統計檢核 
 				if (rowCount != (successCount + failureCount)) {
 					fileFmtErrMsg = "總筆數 <> 成功比數 + 失敗筆數";
 					errWriter.addErrLog(
@@ -415,7 +391,6 @@ public class ETL_E_PARTY_PHONE {
 		}
 		
 		InsertAdapter insertAdapter = new InsertAdapter(); 
-		//TODO 更改SP名稱SP_INSERT_PARTY_PHONE->
 		insertAdapter.setSql("{call SP_INSERT_PARTY_PHONE_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
 		insertAdapter.setCreateArrayTypesName("T_PARTY_PHONE"); // DB2 type - PARTY_PHONE
 		insertAdapter.setCreateStructTypeName("A_PARTY_PHONE"); // DB2 array type - PARTY_PHONE

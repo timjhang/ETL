@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import Bean.ETL_Bean_CodeName_Data;
+import Profile.ETL_Profile;
 
 public class ETL_Q_ColumnCheckCodes {
 	
@@ -22,7 +23,8 @@ public class ETL_Q_ColumnCheckCodes {
 		Connection con = ConnectionHelper.getDB2Connection();
 		
 		java.sql.Statement stmt = con.createStatement();
-		String query = "SELECT \"Code\", \"Name\" FROM \"" + columnName + "\"";
+		String query = "SELECT CODE, NAME FROM " + ETL_Profile.db2TableSchema + ".CODEPOOL "
+				+ "WHERE TABLESPACENAME = \'" + columnName + "\'";
         java.sql.ResultSet rs = stmt.executeQuery(query);
         
         while (rs.next()) {
@@ -48,7 +50,8 @@ public class ETL_Q_ColumnCheckCodes {
 		Connection con = ConnectionHelper.getDB2Connection();
 		
 		java.sql.Statement stmt = con.createStatement();
-		String query = "SELECT \"Code\", \"Name\" FROM \"" + columnName + "\"";
+		String query = "SELECT CODE, NAME FROM " + ETL_Profile.db2TableSchema + ".CODEPOOL "
+				+ "WHERE TABLESPACENAME = \'" + columnName + "\'";
         java.sql.ResultSet rs = stmt.executeQuery(query);
         
         while (rs.next()) {

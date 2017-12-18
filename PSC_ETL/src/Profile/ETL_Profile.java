@@ -14,11 +14,12 @@ public class ETL_Profile {
 	
 	// Driver, Url, User, Password
 	public final static String db2Driver = "com.ibm.db2.jcc.DB2Driver";
-	private final static String db2SPschema = "ADMINISTRATOR";
+	private final static String db2SPSchema = "ADMINISTRATOR";
+	public final static String db2TableSchema = "ADMINISTRATOR";
 	public final static String db2Url = 
 			"jdbc:db2://172.18.6.131:50000/sample:" +
-			"currentschema=" + db2SPschema + ";" +
-			"currentFunctionPath=" + db2SPschema + ";";
+			"currentschema=" + db2SPSchema + ";" +
+			"currentFunctionPath=" + db2SPSchema + ";";
 	public final static String db2User = "Administrator";
 	public final static String db2Password = "9ol.)P:?";
 	

@@ -22,16 +22,15 @@ public class ETL_Bean_PARTY_PHONE_Data {
 	private String phone_type;
 	// 電話號碼
 	private String phone_number;
-	// 錯誤註記 //TODO "N"=>"" 改成空自串
-	private String error_mark = "";//  2017/12/15    // 預設無錯誤
+	// 錯誤註記
+	private String error_mark = "";// 預設無錯誤
 	
 	// Constructor
-	public ETL_Bean_PARTY_PHONE_Data(ETL_Tool_ParseFileName pfn, String file_type, String domain_id,
+	public ETL_Bean_PARTY_PHONE_Data(ETL_Tool_ParseFileName pfn, String domain_id,
 			String party_number, String change_code, String phone_type, String phone_number) {
 		
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
-		//TODO 更改 file_type 不然全NULL 待確認
 		this.file_type = pfn.getFile_Type();
 		this.domain_id = domain_id;
 		this.party_number = party_number;

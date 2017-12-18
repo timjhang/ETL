@@ -42,8 +42,7 @@ public class ETL_Tool_ParseFileName {
 		
 		String[] ary = FileName.split("\\_");
 		
-		//TODO 更改資料
-		this.Central_No = ary[0]+"       ".substring(0, 7 - ary[0].length()); // 寫入報送單位
+		this.Central_No = ary[0] + "       ".substring(0, 7 - ary[0].length()); // 寫入報送單位
 		this.File_Type = ary[1];  // 寫入業務別
 		String mainName = fileName.split("\\.")[0];
 		this.File_Name = mainName.substring(ary[0].length() + ary[1].length() + 2, mainName.length() - 9); // 寫入處裡檔名

@@ -15,7 +15,8 @@ public class Test {
 //			test1();
 //			test2();
 //			test3();
-			test4();
+//			test4();
+			test5();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -80,6 +81,13 @@ public class Test {
 	
 	private static void test4() {
 		System.out.println(ETL_Tool_FormatCheck.checkNum("0000123"));
+	}
+	
+	private static void test5() {
+		
+		String temp = "00000123";
+		System.out.println(Integer.valueOf(temp));
+		
 	}
 	
 }
