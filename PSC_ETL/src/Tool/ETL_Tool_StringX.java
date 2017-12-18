@@ -77,9 +77,10 @@ public class ETL_Tool_StringX {
 			throw new Exception("BigDecimal不可為NULL");
 		}
 		
-		DecimalFormat df = new DecimalFormat("#.#");
+		DecimalFormat df = new DecimalFormat("#.00");
 		return df.format(bigDecimal);
 	}
+	
 
 	/**
 	 * 字串格式轉換為:文字左靠右補空白
@@ -111,11 +112,13 @@ public class ETL_Tool_StringX {
 		return formStr;
 	}
 
-	public static void main(String[] argv) throws ParseException {
+	public static void main(String[] argv) throws Exception {
 		
-//		BigDecimal BigDecimal = new BigDecimal("10.0001");
-//		System.out.println(bigDecimalToStr(BigDecimal));
-		
+//		BigDecimal BigDecimal = new BigDecimal("123.0001");
+//		//System.out.println(bigDecimalToStr(BigDecimal));
+//		
+//		String aaa=bigDecimalToStr(BigDecimal,"#.000");
+//		System.out.println("aaa:"+aaa);
 	}
 
 }
