@@ -12,11 +12,15 @@ public class ETL_Tool_StringX {
 	/**
 	 * 字串轉換為Util Date，格式預設為yyyyMMdd
 	 * @param dateStr 轉換字串
-	 * @return Util Date
+	 * @return Util Date，有錯誤則回傳null
 	 * @throws Exception
 	 */
 	public static Date toUtilDate(String dateStr)throws Exception{
-		return new SimpleDateFormat("yyyyMMdd").parse(dateStr);
+		try {
+			return new SimpleDateFormat("yyyyMMdd").parse(dateStr);
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 	
 	/**

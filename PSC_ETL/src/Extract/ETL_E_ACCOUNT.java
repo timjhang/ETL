@@ -30,7 +30,8 @@ public class ETL_E_ACCOUNT {
 
 	// 欄位檢核用陣列
 	// TODO
-	private String[][] checkMapArray = { { "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
+	private String[][] checkMapArray = { 
+			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "ACCOUNT_CHANGE_CODE" }, // 異動代號
 			{ "account_type_code", "ACCOUNT_ACCOUNT_TYPE_CODE" }, // 帳戶類別
 			{ "property_code", "ACCOUNT_PROPERTY_CODE" }, // 連結服務
@@ -198,10 +199,12 @@ public class ETL_E_ACCOUNT {
 							break;
 						}
 
-						// 整行bytes數檢核(1 + 7 + 11 + 1 + 30 + 7 + 2 + 1 + 3 + 1 +
-						// 1 + 8 + 8 + 1 + 12 + 1 + 12 + 2 = 109)
+						/*
+						 * 整行bytes數檢核(1 + 7 + 11 + 1 + 30 + 7 + 2 + 1 + 3 + 1 +
+						 * 1 + 8 + 8 + 1 + 14 + 1 + 14 + 2 = 113)
+						 */
 						// TODO
-						if (strQueue.getTotalByteLength() != 111) {
+						if (strQueue.getTotalByteLength() != 115) {
 							data.setError_mark("Y");
 							fileFmtErrMsg = "非預期111";
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -210,15 +213,6 @@ public class ETL_E_ACCOUNT {
 							// 資料bytes不正確, 為格式嚴重錯誤, 跳出迴圈不繼續執行
 							break;
 						}
-
-						/*
-						 * 區別碼 R X(01) * 本會代號 R X(07) * 客戶統編 R X(11) * 異動代號 R
-						 * X(01) * 帳號 R X(30) * 帳戶行 R X(07) * 帳戶類別 R X(02) *
-						 * 連結服務 R X(01) * 幣別 R X(03) * 帳戶狀態 R X(01) * 開戶管道 R
-						 * X(01) * 開戶日期 R X(08) * 結清(銷戶)日期 O X(08) * 帳戶餘額正負號 R
-						 * X(01) * 帳戶餘額 R 9(12)V99 * 過去一個月平均餘額正負號 R X(01)
-						 * 過去一個月平均餘額 R 9(12)V99 警示註記 O X(02)
-						 */
 
 						// 區別碼檢核 R X(01)*
 						if (ETL_Tool_FormatCheck.isEmpty(typeCode)) {
@@ -234,6 +228,7 @@ public class ETL_E_ACCOUNT {
 						// 本會代號檢核 R X(07)*
 						String domain_id = strQueue.popBytesString(7);
 						data.setDomain_id(domain_id);
+
 						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -247,6 +242,7 @@ public class ETL_E_ACCOUNT {
 						// 客戶統編檢核 R X(11)*
 						String party_number = strQueue.popBytesString(11);
 						data.setParty_number(party_number);
+
 						if (ETL_Tool_FormatCheck.isEmpty(party_number)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -256,6 +252,7 @@ public class ETL_E_ACCOUNT {
 						// 異動代號檢核 R X(01)*
 						String change_code = strQueue.popBytesString(1);
 						data.setChange_code(change_code);
+
 						if (ETL_Tool_FormatCheck.isEmpty(change_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -269,6 +266,7 @@ public class ETL_E_ACCOUNT {
 						// 帳號 R X(30)*
 						String account_id = strQueue.popBytesString(30);
 						data.setAccount_id(account_id);
+
 						if (ETL_Tool_FormatCheck.isEmpty(account_id)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -278,6 +276,7 @@ public class ETL_E_ACCOUNT {
 						// 帳戶行 R X(07)*
 						String branch_code = strQueue.popBytesString(7);
 						data.setBranch_code(branch_code);
+
 						if (ETL_Tool_FormatCheck.isEmpty(branch_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -287,6 +286,7 @@ public class ETL_E_ACCOUNT {
 						// 帳戶類別 R X(02)*
 						String account_type_code = strQueue.popBytesString(2);
 						data.setAccount_type_code(account_type_code);
+
 						if (ETL_Tool_FormatCheck.isEmpty(account_type_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -300,6 +300,7 @@ public class ETL_E_ACCOUNT {
 						// 連結服務 R X(01)*
 						String property_code = strQueue.popBytesString(1);
 						data.setProperty_code(property_code);
+
 						if (ETL_Tool_FormatCheck.isEmpty(property_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -313,6 +314,7 @@ public class ETL_E_ACCOUNT {
 						// 幣別 R X(03)*
 						String currency_code = strQueue.popBytesString(3);
 						data.setCurrency_code(currency_code);
+
 						if (ETL_Tool_FormatCheck.isEmpty(currency_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -326,6 +328,7 @@ public class ETL_E_ACCOUNT {
 						// 帳戶狀態 R X(01)*
 						String status_code = strQueue.popBytesString(1);
 						data.setStatus_code(status_code);
+
 						if (ETL_Tool_FormatCheck.isEmpty(status_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -339,6 +342,7 @@ public class ETL_E_ACCOUNT {
 						// 開戶管道 R X(01)*
 						String account_opening_channel = strQueue.popBytesString(1);
 						data.setAccount_opening_channel(account_opening_channel);
+
 						if (ETL_Tool_FormatCheck.isEmpty(account_opening_channel)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -363,6 +367,85 @@ public class ETL_E_ACCOUNT {
 							data.setAccount_open_date(ETL_Tool_StringX.toUtilDate(account_open_date));
 						}
 
+						// 結清(銷戶)日期 O X(08)
+						String account_close_date = strQueue.popBytesString(8);
+						if (!ETL_Tool_FormatCheck.isEmpty(account_close_date)) {
+							if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+										String.valueOf(rowCount), "結清(銷戶)日期", "格式錯誤"));
+							} else {
+								data.setAccount_close_date(ETL_Tool_StringX.toUtilDate(account_close_date));
+							}
+						}
+
+						// 帳戶餘額正負號 R X(01)*
+						String balance_acct_currency_sign = strQueue.popBytesString(1);
+						data.setBalance_acct_currency_sign(balance_acct_currency_sign);
+
+						if (ETL_Tool_FormatCheck.isEmpty(balance_acct_currency_sign)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "帳戶餘額正負號", "空值"));
+						} else if (!checkMaps.get("balance_acct_currency_sign")
+								.containsKey(balance_acct_currency_sign)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "帳戶餘額正負號", "非預期"));
+						}
+
+						// 帳戶餘額 R 9(12)V99*
+						String balance_acct_currency_value = strQueue.popBytesString(14);
+
+						if (ETL_Tool_FormatCheck.isEmpty(balance_acct_currency_value)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "帳戶餘額", "空值"));
+						} else if (!ETL_Tool_FormatCheck.checkNum(balance_acct_currency_value)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "帳戶餘額", "格式錯誤"));
+						} else {
+							data.setBalance_acct_currency_value(
+									ETL_Tool_StringX.strToBigDecimal(balance_acct_currency_value, 2));
+						}
+
+						// 過去一個月平均餘額正負號 R X(01)
+						String balance_last_month_avg_sign = strQueue.popBytesString(1);
+						data.setBalance_last_month_avg_sign(balance_last_month_avg_sign);
+
+						if (!ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_sign) && !checkMaps
+								.get("balance_last_month_avg_sign").containsKey(balance_last_month_avg_sign)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "過去一個月平均餘額正負號", "非預期"));
+						}
+
+						// 過去一個月平均餘額 R 9(12)V99
+						String balance_last_month_avg_value = strQueue.popBytesString(14);
+
+						if (!ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
+							if (!ETL_Tool_FormatCheck.checkNum(balance_last_month_avg_value)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+										String.valueOf(rowCount), "過去一個月平均餘額", "格式錯誤"));
+							} else {
+								data.setBalance_acct_currency_value(
+										ETL_Tool_StringX.strToBigDecimal(balance_last_month_avg_value, 2));
+							}
+						}
+
+						// 警示註記 O X(02)
+						String caution_note = strQueue.popBytesString(1);
+						data.setCaution_note(caution_note);
+
+						if (!ETL_Tool_FormatCheck.isEmpty(caution_note)
+								&& !checkMaps.get("caution_note").containsKey(caution_note)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "警示註記", "非預期"));
+						}
+
 						// data list 加入一個檔案
 						addData(data);
 
@@ -380,20 +463,20 @@ public class ETL_E_ACCOUNT {
 				// 尾錄檢查
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
-					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 114 = 137)
-					if (strQueue.getTotalByteLength() != 137) { // TODO
-						fileFmtErrMsg = "尾錄位元數非預期134";
+					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 90 = 113)
+					if (strQueue.getTotalByteLength() != 115) { // TODO
+						fileFmtErrMsg = "尾錄位元數非預期115";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
 
 					// 區別碼檢核(1) 經"逐行讀取檔案"區塊, 若無嚴重錯誤應為3, 此處無檢核
 
-					// 報送單位檢核(7)
+					/*
+					 * 報送單位檢核(7) 報送單位一致性檢查,嚴重錯誤,不進行迴圈並記錄錯誤訊息
+					 */
 					String central_no = strQueue.popBytesString(7);
-					if (!central_no.equals(pfn.getCentral_No())) { // 報送單位一致性檢查,
-																	// 嚴重錯誤,
-																	// 不進行迴圈並記錄錯誤訊息
+					if (!central_no.equals(pfn.getCentral_No())) {
 						fileFmtErrMsg = "尾錄報送單位代碼與檔名不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"報送單位", fileFmtErrMsg));
@@ -427,14 +510,8 @@ public class ETL_E_ACCOUNT {
 								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
 					}
 
-					// 保留欄檢核(111)
-					String reserve_field = strQueue.popBytesString(111);
-					// if (ETL_Tool_FormatCheck.isEmpty(reserve_field)) {
-					// fileFmtErrMsg = "尾錄保留欄空值";
-					// errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn,
-					// upload_no, "E", String.valueOf(rowCount),
-					// "保留欄", fileFmtErrMsg));
-					// }
+					// 保留欄檢核(90)
+					String reserve_field = strQueue.popBytesString(90);
 
 					if (!"".equals(fileFmtErrMsg)) {
 						failureCount++;

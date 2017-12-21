@@ -133,11 +133,11 @@ public class ETL_E_PARTY_ADDRESS {
 								"區別碼", fileFmtErrMsg));
 					}
 
-					// 報送單位檢核(7)
-					String central_no = strQueue.popBytesString(7);
 					/*
+					 * 報送單位檢核(7)
 					 * 報送單位一致性檢查,嚴重錯誤,不進行迴圈並記錄錯誤訊息
 					 */
+					String central_no = strQueue.popBytesString(7);
 					if (!central_no.equals(pfn.getCentral_No())) {
 						fileFmtErrMsg = "首錄報送單位代碼與檔名不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
@@ -201,18 +201,7 @@ public class ETL_E_PARTY_ADDRESS {
 							break;
 						}
 
-						/*
-						 * 區別碼 R X(01) 
-						 * 本會代號 R X(07) 
-						 * 客戶統編 R X(11) 
-						 * 異動代號 R X(01)
-						 * 地址類別 R X(03) 
-						 * 地址國別 O X(02) 
-						 * 郵遞區號 O X(12) 
-						 * 地址 R X(100)
-						 */
-
-						// 區別碼檢核 R X(01)
+						// 區別碼檢核 R X(01)*
 						if (ETL_Tool_FormatCheck.isEmpty(typeCode)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -224,7 +213,7 @@ public class ETL_E_PARTY_ADDRESS {
 									String.valueOf(rowCount), "區別碼", "非預期"));
 						}
 
-						// 本會代號檢核 R X(07)
+						// 本會代號檢核 R X(07)*
 						String domain_id = strQueue.popBytesString(7);
 						data.setDomain_id(domain_id);
 
@@ -238,7 +227,7 @@ public class ETL_E_PARTY_ADDRESS {
 									String.valueOf(rowCount), "本會代號", "非預期"));
 						}
 
-						// 客戶統編檢核 R X(11)
+						// 客戶統編檢核 R X(11)*
 						String party_number = strQueue.popBytesString(11);
 						data.setParty_number(party_number);
 
@@ -248,7 +237,7 @@ public class ETL_E_PARTY_ADDRESS {
 									String.valueOf(rowCount), "客戶統編", "空值"));
 						}
 
-						// 異動代號檢核 R X(01)
+						// 異動代號檢核 R X(01)*
 						String change_code = strQueue.popBytesString(1);
 						data.setChange_code(change_code);
 
@@ -262,7 +251,7 @@ public class ETL_E_PARTY_ADDRESS {
 									String.valueOf(rowCount), "異動代號", "非預期"));
 						}
 
-						// 地址類別檢核 R X(03)
+						// 地址類別檢核 R X(03)*
 						String address_type = strQueue.popBytesString(3);
 						data.setAddress_type(address_type);
 
@@ -289,7 +278,7 @@ public class ETL_E_PARTY_ADDRESS {
 						String po_box = strQueue.popBytesString(12);
 						data.setPo_box(po_box);
 
-						// 地址檢核 R X(100)
+						// 地址檢核 R X(100)*
 						String address_line_1 = strQueue.popBytesString(100);
 						data.setAddress_line_1(address_line_1);
 
