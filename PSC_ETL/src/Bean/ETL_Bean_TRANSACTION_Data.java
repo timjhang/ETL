@@ -12,25 +12,27 @@ public class ETL_Bean_TRANSACTION_Data {
 	private Date record_date;// 檔案日期
 	private String file_type;// 檔名業務別
 	private String account_id;// 帳號
-	private String transaction_id;//主機交易序號
-	private Date transaction_date;//作帳日
-	private Timestamp TRANSACTION_TIME;//實際交易時間
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private String transaction_id;// 主機交易序號
+	private Date transaction_date;// 作帳日
+	private Timestamp TRANSACTION_TIME;// 實際交易時間
+	private String CURRENCY_CODE;// 交易幣別
+	private String AMT_SIGN;// 交易金額正負號
+	private BigDecimal AMOUNT;// 交易金額
+	private String DIRECTION;// 存提區分
+	private String TRANSACTION_TYPE;// 交易類別
+	private String CHANNEL_TYPE;// 交易管道
+	private String TRANSACTION_PURPOSE;// 交易代號
+	private String TRANSACTION_REFERENCE_NUMBER;// 原交易代號
+	private String TRANSACTION_SUMMARY;// 交易摘要
+	private String TRANSACTION_DESCRIPTION;// 備註
+//	private String 
+
 	private String error_mark = "";// 錯誤註記
 
-	public ETL_Bean_TRANSACTION_Data(ETL_Tool_ParseFileName pfn, String domain_id, String party_number, String change_code,
-			String account_id, String branch_code, String account_type_code, String property_code, String currency_code,
-			String status_code, String account_opening_channel, Date account_open_date, Date account_close_date,
-			String balance_acct_currency_sign, BigDecimal balance_acct_currency_value,
+	public ETL_Bean_TRANSACTION_Data(ETL_Tool_ParseFileName pfn, String domain_id, String party_number,
+			String change_code, String account_id, String branch_code, String account_type_code, String property_code,
+			String currency_code, String status_code, String account_opening_channel, Date account_open_date,
+			Date account_close_date, String balance_acct_currency_sign, BigDecimal balance_acct_currency_value,
 			String balance_last_month_avg_sign, BigDecimal balance_last_month_avg_value, String caution_note) {
 
 		this.central_no = pfn.getCentral_No();// 報送單位
