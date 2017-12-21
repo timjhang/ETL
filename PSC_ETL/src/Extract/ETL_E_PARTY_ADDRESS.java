@@ -28,7 +28,8 @@ public class ETL_E_PARTY_ADDRESS {
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
 	// 欄位檢核用陣列
-	private String[][] checkMapArray = { { "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
+	private String[][] checkMapArray = { 
+			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "PARTY_ADDRESS_CHANGE_CODE" }, // 異動代號
 			{ "address_type", "PARTY_ADDRESS_ADDRESS_TYPE" }, // 地址類別
 			{ "country", "COMM_NATIONALITY_CODE" }// 地址國別
@@ -268,6 +269,7 @@ public class ETL_E_PARTY_ADDRESS {
 						// 地址國別檢核 O X(02)
 						String country = strQueue.popBytesString(2);
 						data.setCountry(country);
+						
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(country) && !checkMaps.get("country").containsKey(country)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",

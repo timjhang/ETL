@@ -354,6 +354,8 @@ public class ETL_E_ACCOUNT {
 
 						// 開戶日期 R X(08)*
 						String account_open_date = strQueue.popBytesString(8);
+						data.setAccount_open_date(ETL_Tool_StringX.toUtilDate(account_open_date));
+						
 						if (ETL_Tool_FormatCheck.isEmpty(account_open_date)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -368,6 +370,8 @@ public class ETL_E_ACCOUNT {
 
 						// 結清(銷戶)日期 O X(08)
 						String account_close_date = strQueue.popBytesString(8);
+						data.setAccount_close_date(ETL_Tool_StringX.toUtilDate(account_close_date));
+						
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(account_close_date)) {
 							if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
 								data.setError_mark("Y");
@@ -422,15 +426,14 @@ public class ETL_E_ACCOUNT {
 
 						// 過去一個月平均餘額 R 9(12)V99
 						String balance_last_month_avg_value = strQueue.popBytesString(14);
-
-						if (!ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
+						data.setBalance_acct_currency_value(
+								ETL_Tool_StringX.strToBigDecimal(balance_last_month_avg_value, 2));
+						
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
 							if (!ETL_Tool_FormatCheck.checkNum(balance_last_month_avg_value)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "過去一個月平均餘額", "格式錯誤"));
-							} else {
-								data.setBalance_acct_currency_value(
-										ETL_Tool_StringX.strToBigDecimal(balance_last_month_avg_value, 2));
 							}
 						}
 
