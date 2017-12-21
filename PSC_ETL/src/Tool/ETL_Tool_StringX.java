@@ -1,6 +1,7 @@
 package Tool;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -9,6 +10,41 @@ import java.util.Date;
 
 public class ETL_Tool_StringX {
 
+	/**
+	 * 轉換字串為Timestamp型態
+	 * @param dateStr 要轉換的字串
+	 * @return 轉換後的Timestamp物件，如轉換失敗，則回傳null
+	 */
+	public static Timestamp toTimestamp(String dateStr) {
+		Timestamp timestamp = null;
+		Date parsedDate;
+		
+		if( ETL_Tool_FormatCheck.checkDate(dateStr) ){
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+			try {
+				parsedDate = dateFormat.parse(dateStr);
+				timestamp = new Timestamp(parsedDate.getTime());
+			} catch (ParseException e) {
+				return timestamp;
+			}
+		}
+
+		return timestamp;
+	}
+	
+	/**
+	 * 字串轉為數字
+	 * @param str:字串
+	 * @return 為正確數字則回傳int型態, 否則回傳0
+	 */
+	public static int toInt(String str) {
+		if (ETL_Tool_FormatCheck.checkNum(str)) {
+			return Integer.valueOf(str);
+		} else {
+			return 0;
+		}
+	}
+	
 	/**
 	 * 字串轉換為Util Date，格式預設為yyyyMMdd
 	 * @param dateStr 轉換字串
@@ -140,8 +176,6 @@ public class ETL_Tool_StringX {
 	}
 
 	public static void main(String[] argv) throws Exception {
-
-		System.out.println(strToBigDecimal("5000", 2));
 		// BigDecimal BigDecimal = new BigDecimal("123.0001");
 		// //System.out.println(bigDecimalToStr(BigDecimal));
 		//

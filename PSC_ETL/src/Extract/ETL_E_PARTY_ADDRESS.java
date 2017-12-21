@@ -268,7 +268,7 @@ public class ETL_E_PARTY_ADDRESS {
 						// 地址國別檢核 O X(02)
 						String country = strQueue.popBytesString(2);
 						data.setCountry(country);
-						if (!ETL_Tool_FormatCheck.isEmpty(country) && !checkMaps.get("country").containsKey(country)) {
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(country) && !checkMaps.get("country").containsKey(country)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "地址國別", "非預期"));

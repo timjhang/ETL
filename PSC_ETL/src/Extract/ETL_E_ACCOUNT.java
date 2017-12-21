@@ -30,8 +30,7 @@ public class ETL_E_ACCOUNT {
 
 	// 欄位檢核用陣列
 	// TODO
-	private String[][] checkMapArray = { 
-			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
+	private String[][] checkMapArray = { { "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "ACCOUNT_CHANGE_CODE" }, // 異動代號
 			{ "account_type_code", "ACCOUNT_ACCOUNT_TYPE_CODE" }, // 帳戶類別
 			{ "property_code", "ACCOUNT_PROPERTY_CODE" }, // 連結服務
@@ -369,7 +368,7 @@ public class ETL_E_ACCOUNT {
 
 						// 結清(銷戶)日期 O X(08)
 						String account_close_date = strQueue.popBytesString(8);
-						if (!ETL_Tool_FormatCheck.isEmpty(account_close_date) && advancedCheck) {
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(account_close_date)) {
 							if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -414,7 +413,7 @@ public class ETL_E_ACCOUNT {
 						String balance_last_month_avg_sign = strQueue.popBytesString(1);
 						data.setBalance_last_month_avg_sign(balance_last_month_avg_sign);
 
-						if (!ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_sign) && !checkMaps
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_sign) && !checkMaps
 								.get("balance_last_month_avg_sign").containsKey(balance_last_month_avg_sign)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -439,7 +438,7 @@ public class ETL_E_ACCOUNT {
 						String caution_note = strQueue.popBytesString(1);
 						data.setCaution_note(caution_note);
 
-						if (!ETL_Tool_FormatCheck.isEmpty(caution_note)
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(caution_note)
 								&& !checkMaps.get("caution_note").containsKey(caution_note)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
