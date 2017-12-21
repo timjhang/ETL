@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -261,7 +262,7 @@ public class ETL_E_PARTY_PARTY_TEL {
 					}
 					
 					// data list 加入一個檔案
-//					addData(data); // test temp
+					addData(data);
 					
 					if ("Y".equals(data.getError_mark())) {
 						failureCount++;
@@ -272,7 +273,7 @@ public class ETL_E_PARTY_PARTY_TEL {
 				}
 				
 				// Party_Phone_Data寫入DB   //TO DO 當發生 Exception errWriter 沒寫到 0.0
-//				insert_Party_Phone_Datas(); // test temp
+				insert_Party_Phone_Datas();
 				
 				// 尾錄檢查
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
