@@ -41,7 +41,7 @@ public class ETL_Tool_FormatCheck {
 		}
 		
 		try {
-			int realInt = Integer.parseInt(numStr);
+			long realNum = Long.parseLong(numStr);
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 			return false;
