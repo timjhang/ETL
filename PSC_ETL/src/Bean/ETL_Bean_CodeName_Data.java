@@ -1,7 +1,7 @@
 package Bean;
 
+// 代碼用DataBean
 public class ETL_Bean_CodeName_Data {
-	// 代碼用DataBean
 	
 	private String code; // 代碼
 	private String name; // 代碼名稱
