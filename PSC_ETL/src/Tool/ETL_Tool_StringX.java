@@ -33,19 +33,6 @@ public class ETL_Tool_StringX {
 	}
 	
 	/**
-	 * 字串轉為數字
-	 * @param str:字串
-	 * @return 為正確數字則回傳int型態, 否則回傳0
-	 */
-	public static int toInt(String str) {
-		if (ETL_Tool_FormatCheck.checkNum(str)) {
-			return Integer.valueOf(str);
-		} else {
-			return 0;
-		}
-	}
-	
-	/**
 	 * 字串轉換為Util Date，格式預設為yyyyMMdd
 	 * @param dateStr 轉換字串
 	 * @return Util Date，有錯誤則回傳null
@@ -105,12 +92,18 @@ public class ETL_Tool_StringX {
 	 * @throws ParseException
 	 */
 	public static BigDecimal strToBigDecimal(String strDecimal, int newScale) throws ParseException {
+		if (ETL_Tool_FormatCheck.isEmpty(strDecimal)) {
+			return strToBigDecimal("0");
+		}
 		
-		strDecimal = strDecimal.substring(0, strDecimal.length() - newScale) + "."
-				+ strDecimal.substring(strDecimal.length() - newScale, strDecimal.length());
-
-		return strToBigDecimal(strDecimal);
-
+		try {
+			strDecimal = strDecimal.substring(0, strDecimal.length() - newScale) + "."
+					+ strDecimal.substring(strDecimal.length() - newScale, strDecimal.length());
+	
+			return strToBigDecimal(strDecimal);
+		} catch (Exception ex) {
+			return strToBigDecimal("0");
+		}
 	}
 
 	/**
@@ -175,6 +168,32 @@ public class ETL_Tool_StringX {
 		return formStr;
 	}
 
+	/**
+	 * 字串轉為數字
+	 * @param str:字串
+	 * @return 為正確數字則回傳int型態, 否則回傳0
+	 */
+	public static int toInt(String str) {
+		if (ETL_Tool_FormatCheck.checkNum(str)) {
+			return Integer.valueOf(str);
+		} else {
+			return 0;
+		}
+	}
+	
+	/**
+	 * 字串轉為數字
+	 * @param str:字串
+	 * @return 為正確數字則回傳int型態, 否則回傳0
+	 */
+	public static long toLong(String str) {
+		if (ETL_Tool_FormatCheck.checkNum(str)) {
+			return Long.parseLong(str);
+		} else {
+			return 0;
+		}
+	}
+	
 	public static void main(String[] argv) throws Exception {
 		// BigDecimal BigDecimal = new BigDecimal("123.0001");
 		// //System.out.println(bigDecimalToStr(BigDecimal));

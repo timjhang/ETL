@@ -42,7 +42,7 @@ public class ETL_Q_ColumnCheckCodes {
 	}
 	
 	// 取得檢核用代碼Map
-	public static Map<String, String> getCheckMap(String columnName) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public static Map<String, String> getCheckMap(String columnName) throws Exception {
 		
 		// Code & Name
 		Map<String, String> resultMap = new HashMap<String, String>();
@@ -67,11 +67,17 @@ public class ETL_Q_ColumnCheckCodes {
         }
         
         System.out.println("Map Size = " + resultMap.size()); // test
+        
+        // 若Size為0則發出錯誤警告
+        if (resultMap.size() == 0) {
+//        	System.out.println("Map " + columnName + " 不存在!!");
+        	throw new Exception("Map " + columnName + " 不存在!!");
+        }
 		
 		return resultMap;
 	}
 	
-	public Map<String, Map<String, String>> getCheckMaps(String[][] checkColumnArray) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public Map<String, Map<String, String>> getCheckMaps(String[][] checkColumnArray) throws Exception {
 		
 		for (int i = 0 ; i < checkColumnArray.length; i++) {
 			checkMaps.put(checkColumnArray[i][0], getCheckMap(checkColumnArray[i][1]));

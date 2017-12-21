@@ -29,6 +29,9 @@ public class ETL_Profile {
 	// Data 寫入域值
 	public final static int Data_Stage = 10000;
 	
+	// 業務別
+	public final static String Foreign_Currency = "FR"; // 外幣 
+	
 	// 新北市農會附設北區農會電腦共用中心  951  相關參數
 	
 	// 財團法人農漁會南區資訊中心  952  相關參數
