@@ -11,7 +11,7 @@ import java.util.Date;
 public class ETL_Tool_StringX {
 
 	/**
-	 * 轉換字串為Timestamp型態
+	 * 轉換字串為Timestamp型態，格式預設為yyyyMMddhhmmss
 	 * @param dateStr 要轉換的字串
 	 * @return 轉換後的Timestamp物件，如轉換失敗，則回傳null
 	 */
