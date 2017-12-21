@@ -16,11 +16,8 @@ public class ETL_Tool_StringX {
 	 * @throws Exception
 	 */
 	public static Date toUtilDate(String dateStr)throws Exception{
-		try {
-			return new SimpleDateFormat("yyyyMMdd").parse(dateStr);
-		} catch (Exception ex) {
-			return null;
-		}
+		
+		return ETL_Tool_FormatCheck.checkDate(dateStr) ? new SimpleDateFormat("yyyyMMdd").parse(dateStr) : null;
 	}
 	
 	/**

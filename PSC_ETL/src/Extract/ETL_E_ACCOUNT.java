@@ -369,7 +369,7 @@ public class ETL_E_ACCOUNT {
 
 						// 結清(銷戶)日期 O X(08)
 						String account_close_date = strQueue.popBytesString(8);
-						if (!ETL_Tool_FormatCheck.isEmpty(account_close_date)) {
+						if (!ETL_Tool_FormatCheck.isEmpty(account_close_date) && advancedCheck) {
 							if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
