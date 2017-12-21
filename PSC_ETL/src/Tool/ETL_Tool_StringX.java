@@ -4,9 +4,21 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ETL_Tool_StringX {
 
+	/**
+	 * 字串轉換為Util Date，格式預設為yyyyMMdd
+	 * @param dateStr 轉換字串
+	 * @return Util Date
+	 * @throws Exception
+	 */
+	public static Date toUtilDate(String dateStr)throws Exception{
+		return new SimpleDateFormat("yyyyMMdd").parse(dateStr);
+	}
+	
 	/**
 	 * 字串格式轉換為 :數字右靠左補0
 	 * 
