@@ -18,19 +18,11 @@ public class ETL_Bean_PARTY_ADDRESS_Data {
 	private String address_line_1;// 地址
 	private String error_mark = "";// 錯誤註記
 
-	public ETL_Bean_PARTY_ADDRESS_Data(ETL_Tool_ParseFileName pfn, String domain_id, String party_number,
-			String change_code, String address_type, String country, String po_box, String address_line_1) {
+	public ETL_Bean_PARTY_ADDRESS_Data(ETL_Tool_ParseFileName pfn) {
 
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
-		this.domain_id = domain_id;
-		this.party_number = party_number;
-		this.change_code = change_code;
-		this.address_type = address_type;
-		this.country = country;
-		this.po_box = po_box;
-		this.address_line_1 = address_line_1;
 	}
 
 	public String getCentral_no() {

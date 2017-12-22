@@ -195,6 +195,7 @@ public class ETL_Tool_StringX {
 	}
 	
 	public static void main(String[] argv) throws Exception {
+		System.out.println(ETL_Tool_FormatCheck.checkTimestamp("20171203110012"));
 		// BigDecimal BigDecimal = new BigDecimal("123.0001");
 		// //System.out.println(bigDecimalToStr(BigDecimal));
 		//

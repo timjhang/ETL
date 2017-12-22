@@ -29,32 +29,11 @@ public class ETL_Bean_ACCOUNT_Data {
 	private String caution_note;// 警示註記
 	private String error_mark = "";// 錯誤註記
 
-	public ETL_Bean_ACCOUNT_Data(ETL_Tool_ParseFileName pfn, String domain_id, String party_number, String change_code,
-			String account_id, String branch_code, String account_type_code, String property_code, String currency_code,
-			String status_code, String account_opening_channel, Date account_open_date, Date account_close_date,
-			String balance_acct_currency_sign, BigDecimal balance_acct_currency_value,
-			String balance_last_month_avg_sign, BigDecimal balance_last_month_avg_value, String caution_note) {
+	public ETL_Bean_ACCOUNT_Data(ETL_Tool_ParseFileName pfn) {
 
-		this.central_no = pfn.getCentral_No();// 報送單位
-		this.record_date = pfn.getRecord_Date();// 檔案日期
-		this.file_type = pfn.getFile_Type();// 檔名業務別
-		this.domain_id = domain_id;// 本會代號
-		this.party_number = party_number;// 客戶統編
-		this.change_code = change_code;// 異動代號
-		this.account_id = account_id;// 帳號
-		this.branch_code = branch_code;// 帳戶行
-		this.account_type_code = account_type_code;// 帳戶類別
-		this.property_code = property_code;// 連結服務
-		this.currency_code = currency_code;// 幣別
-		this.status_code = status_code;// 帳戶狀態
-		this.account_opening_channel = account_opening_channel;// 開戶管道
-		this.account_open_date = account_open_date;// 開戶日期
-		this.account_close_date = account_close_date;// 結清(銷戶)日期
-		this.balance_acct_currency_sign = balance_acct_currency_sign;// 帳戶餘額正負號
-		this.balance_acct_currency_value = balance_acct_currency_value;// 帳戶餘額
-		this.balance_last_month_avg_sign = balance_last_month_avg_sign;// 過去一個月平均餘額正負號
-		this.balance_last_month_avg_value = balance_last_month_avg_value;// 過去一個月平均餘額
-		this.caution_note = caution_note;// 警示註記
+		this.central_no = pfn.getCentral_No();
+		this.record_date = pfn.getRecord_Date();
+		this.file_type = pfn.getFile_Type();
 	}
 
 	public String getCentral_no() {

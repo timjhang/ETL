@@ -15,6 +15,32 @@ public class ETL_Tool_FormatCheck {
 		return false;
 	}
 	
+	/**
+	 * 檢測字串是否符合Timestamp格式 yyyyMMddhhmmss
+	 * @param dateStr 檢測字串
+	 * @return true 成功 / false 失敗
+	 */
+	public static boolean checkTimestamp(String dateStr) {
+		boolean isVaild = false;
+		
+		if (isEmpty(dateStr)) {
+			return isVaild;
+		}
+		
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+			sdf.setLenient(false); // 過濾不合理日期
+			sdf.parse(dateStr);
+			isVaild = true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.out.println(ex.getMessage());
+			return isVaild;
+		}
+		
+		return isVaild;
+	}
+	
 	// 日期格式檢核工具  (通過檢核:true\檢核失敗:false)
 	public static boolean checkDate(String dateStr) {
 		

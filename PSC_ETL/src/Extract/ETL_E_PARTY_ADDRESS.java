@@ -181,8 +181,7 @@ public class ETL_E_PARTY_ADDRESS {
 						strQueue.setTargetString(lineStr); // queue裝入新String
 
 						// 生成一個Data
-						ETL_Bean_PARTY_ADDRESS_Data data = new ETL_Bean_PARTY_ADDRESS_Data(pfn, null, null, null, null,
-								null, null, null);
+						ETL_Bean_PARTY_ADDRESS_Data data = new ETL_Bean_PARTY_ADDRESS_Data(pfn);
 
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
