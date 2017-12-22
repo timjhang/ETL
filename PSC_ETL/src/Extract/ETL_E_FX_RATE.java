@@ -22,6 +22,7 @@ import Tool.ETF_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
+import Tool.ETL_Tool_StringX;
 
 public class ETL_E_FX_RATE {
 
@@ -185,11 +186,7 @@ public class ETL_E_FX_RATE {
 								if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
 									break;
 								}
-								
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-								//檢核
-								// data list 加入一個檔案
-								
+											
 								//FX_RATE
 
 								// 整行bytes數檢核(1 + 8 + 3 + 3 + 9= 24) 
@@ -204,21 +201,60 @@ public class ETL_E_FX_RATE {
 								}
 
 
-				//區別碼			X(01) *			String typecode 		= strQueue.popBytesString(1);
-				//匯率日期		X(08) *			String value_date		= strQueue.popBytesString(8);
-				//外幣代號1		X(3)  *			String currency_code_1  = strQueue.popBytesString(3);
-				//外幣代號2		X(3)  *			String currency_code_2  = strQueue.popBytesString(3);
-				//匯率			9(09)V(06) *	String exchange_rate    = strQueue.popBytesString(9);								
+								// 區別碼檢核
+								if (!"2".equals(typeCode)) {
+									data.setError_mark("Y");
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", "非預期"));
+								}
 								
+								//匯率日期		X(08) *			
+								String value_date = strQueue.popBytesString(8);
+								if(ETL_Tool_FormatCheck.isEmpty(value_date)) {
+									data.setError_mark("Y");
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯率日期", "空值"));
+								}else if(ETL_Tool_FormatCheck.checkDate(value_date)) {
+									data.setValue_date(ETL_Tool_StringX.toUtilDate(value_date));
+								}else {
+									data.setError_mark("Y");
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯率日期", "日期格式錯誤"));
+								}
 								
+								//外幣代號1		X(3)  *			
+								String currency_code_1  = strQueue.popBytesString(3);
+								data.setCurrency_code_1(currency_code_1);
+								if(ETL_Tool_FormatCheck.isEmpty(currency_code_1)) {
+									data.setError_mark("Y");
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "外幣代號1", "空值"));
+								}
 								
+								//外幣代號2		X(3)  *			
+								String currency_code_2  = strQueue.popBytesString(3);
+								data.setCurrency_code_1(currency_code_2);
+								if(ETL_Tool_FormatCheck.isEmpty(currency_code_2)) {
+									data.setError_mark("Y");
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "外幣代號2", "空值"));
+								}
 								
+匯率疑問 到底是9為整數6位小數 還是3為整數6位小數//			9(09)V(06) *	
+								String exchange_rate    = strQueue.popBytesString(9);	
+								if(ETL_Tool_FormatCheck.isEmpty(exchange_rate)) {
+									data.setError_mark("Y");
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯率", "空值"));
 								
+								}else if(ETL_Tool_FormatCheck.checkNum(exchange_rate)) {
+									data.setError_mark("Y");
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯率", "非數字"));
+								}else {
+									data.setExchange_rate(ETL_Tool_StringX.strToBigDecimal(exchange_rate, 6));
+								}
 								
-								
-								
-								
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////						
 								addData(data);
 								
 								if ("Y".equals(data.getError_mark())) {

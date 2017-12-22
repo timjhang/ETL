@@ -21,6 +21,7 @@ import Tool.ETF_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
+import Tool.ETL_Tool_StringX;
 
 public class ETL_E_CALENDAR {
 
@@ -193,30 +194,34 @@ public class ETL_E_CALENDAR {
 							break;
 						}
 
-						// 區別碼檢核 c-1*
+						// 區別碼檢核 *
 						if (!"2".equals(typeCode)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",String.valueOf(rowCount), "區別碼", "非預期"));
 						}
-
-						String calendar_day = strQueue.popBytesString(8);
-
+						
 						// 日期檢核
-						if (!ETL_Tool_FormatCheck.checkDate(calendar_day)) {
-							data.setError_mark("Y");
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",String.valueOf(rowCount), "日期", "明細資料日期格式錯誤"));
+						String calendar_day = strQueue.popBytesString(8);
+						if(!ETL_Tool_FormatCheck.isEmpty(calendar_day)) {
+							if(ETL_Tool_FormatCheck.checkDate(calendar_day)) {
+								data.setCalendar_day(ETL_Tool_StringX.toUtilDate(calendar_day));
+							}else if(advancedCheck) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",String.valueOf(rowCount), "日期", "明細資料日期格式錯誤"));
+							
+							}
+							
 						}
 
 						String is_business_day = strQueue.popBytesString(i);
+						data.setIs_business_day(is_business_day);
 						// 是否為營業日檢核
-						if (ETL_Tool_FormatCheck.isEmpty(is_business_day)) {
-							data.setError_mark("Y");
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",String.valueOf(rowCount), "是否為營業日", "空值"));
-							
-						} else if (advancedCheck && !checkMaps.get("T_5").containsKey(is_business_day)) {
-							data.setError_mark("Y");
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",String.valueOf(rowCount), "是否為營業日", "非預期"));	
-						}
+						if (!ETL_Tool_FormatCheck.isEmpty(is_business_day)) {
+							if (advancedCheck && !checkMaps.get("T_5").containsKey(is_business_day)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",String.valueOf(rowCount), "是否為營業日", "非預期"));	
+							}
+						} 
 
 						// data list 加入一個檔案
 						addData(data);

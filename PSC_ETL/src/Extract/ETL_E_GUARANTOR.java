@@ -22,6 +22,7 @@ import Tool.ETF_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
+import Tool.ETL_Tool_StringX;
 
 public class ETL_E_GUARANTOR {
 	// 進階檢核參數
@@ -121,8 +122,8 @@ public class ETL_E_GUARANTOR {
 					strQueue.setTargetString(lineStr);
 					
 					// 檢查整行bytes數(1 + 7 + 8 + 108 = 124)
-					if (strQueue.getTotalByteLength() != 124) {// TODO
-						fileFmtErrMsg = "首錄位元數非預期124";// TODO
+					if (strQueue.getTotalByteLength() != 124) {
+						fileFmtErrMsg = "首錄位元數非預期124";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 					}
@@ -188,11 +189,6 @@ public class ETL_E_GUARANTOR {
 						}
 						
 						
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						//檢核
-						// data list 加入一個檔案
-					//  GUARANTOR
-
 						// 整行bytes數檢核(1+7+20+1+20+1+40+11+8+2+2+11= 124) 
 						if (strQueue.getTotalByteLength() != 124) {
 							data.setError_mark("Y");
@@ -204,17 +200,16 @@ public class ETL_E_GUARANTOR {
 							break;
 						}
 
-						//		區別碼	 					X(01) *			
-						String typecode = strQueue.popBytesString(1);
-						// 區別碼檢核 c-1*
+						// 區別碼檢核
 						if (!"2".equals(typeCode)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", "非預期"));
 						}
 						
-						//		本會代號	 	X(07) * T_4		String domain_id = strQueue.popBytesString(7);
+						//		本會代號	 	X(07) * T_4	
 						String domain_id = strQueue.popBytesString(7);
+						data.setDomain_id(domain_id);
 						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
@@ -223,22 +218,20 @@ public class ETL_E_GUARANTOR {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "非預期"));
-						}else {
-							data.setDomain_id(domain_id);
 						}
 						
 						//		批覆書編號/申請書編號	 	X(20) * 
 						String loan_master_number	= strQueue.popBytesString(20);
+						data.setLoan_master_number(loan_master_number);
 						if (ETL_Tool_FormatCheck.isEmpty(loan_master_number)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "批覆書編號/申請書編號", "空值"));
-						}else {
-							data.setLoan_master_number(loan_master_number);
 						}
 						
 						//		異動代號	 				X(01) * T_6		
 						String change_code	= strQueue.popBytesString(1);
+						data.setChange_code(change_code);
 						if (ETL_Tool_FormatCheck.isEmpty(change_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
@@ -247,40 +240,103 @@ public class ETL_E_GUARANTOR {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "異動代號", "非預期"));
-						}else {
-							data.setChange_code(change_code);
 						}
 						
 						
 						//		額度編號	 				X(20) * 		
 						String loan_detail_number = strQueue.popBytesString(20);
+						data.setLoan_master_number(loan_master_number);
 						if (ETL_Tool_FormatCheck.isEmpty(loan_detail_number)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "額度編號", "空值"));
-						}else {
-							data.setLoan_master_number(loan_master_number);
 						}
-			
-//		保證人類別	 				X(01) * T_8		String guaranty_type = strQueue.popBytesString(1);
-//		保證人姓名	 				X(40) * 		String last_name_1	= strQueue.popBytesString(40);
-//		保證人統編	 				X(11) * 		String guarantor_id	= strQueue.popBytesString(11);
-//		保證人出生年月日			X(08)   		String date_of_birth = strQueue.popBytesString(8);
-//		保證人國籍	 				X(02) * T_12 	String address_country	= strQueue.popBytesString(2);
-//		與主債務人關係	 			X(02) * T_13	String relation_type_code = strQueue.popBytesString(2);
-//		客戶(主債務人)統編	 		X(11) *			String party_number	= strQueue.popBytesString(11);						
+						
+						
+						//		保證人類別	 				X(01) * T_8	
+						String guaranty_type = strQueue.popBytesString(1);
+						data.setGuaranty_type(guaranty_type);
+						if (ETL_Tool_FormatCheck.isEmpty(guaranty_type)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "保證人類別", "空值"));
+						} else if (!checkMaps.get("T_8").containsKey(guaranty_type)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "保證人類別", "非預期"));
+						}
+						
+						//		保證人姓名	 				X(40) * 		
+						String last_name_1	= strQueue.popBytesString(40);
+						data.setLast_name_1(last_name_1);
+						if(ETL_Tool_FormatCheck.isEmpty(last_name_1)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "保證人姓名", "空值"));
+						}
+						
+						//		保證人統編	 				X(11) * 		
+						String guarantor_id	= strQueue.popBytesString(11);
+						data.setGuarantor_id(guarantor_id);
+						if(ETL_Tool_FormatCheck.isEmpty(guarantor_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "保證人統編", "空值"));
+						}
+						
+						//		保證人出生年月日			X(08)   		
+						String date_of_birth = strQueue.popBytesString(8);
+						if(!ETL_Tool_FormatCheck.isEmpty(date_of_birth)) {
+							if(advancedCheck && !ETL_Tool_FormatCheck.checkDate(date_of_birth)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(
+										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "保證人出生年月日", "非日期格式"));
+							} else {
+									data.setDate_of_birth(ETL_Tool_StringX.toUtilDate(date_of_birth));
+							}
+						}
 						
 						
 						
 						
 						
+						//		保證人國籍	 				X(02) * T_12 	
+						String address_country	= strQueue.popBytesString(2);
+						data.setAddress_country(address_country);
+						if (ETL_Tool_FormatCheck.isEmpty(address_country)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "保證人國籍", "空值"));
+						} else if (!checkMaps.get("T_12").containsKey(address_country)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "保證人國籍", "非預期"));
+						}
+						
+						//		與主債務人關係	 			X(02) * T_13	
+						String relation_type_code = strQueue.popBytesString(2);
+						data.setRelation_type_code(relation_type_code);
+						if (ETL_Tool_FormatCheck.isEmpty(relation_type_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "與主債務人關係", "空值"));
+						} else if (!checkMaps.get("T_12").containsKey(relation_type_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "與主債務人關係", "非預期"));
+						}
 						
 						
-						
-						
-						
-						
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////						
+						//		客戶(主債務人)統編	 		X(11) *			
+						String party_number	= strQueue.popBytesString(11);						
+						data.setParty_number(party_number);
+						if(ETL_Tool_FormatCheck.isEmpty(party_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "客戶(主債務人)統編", "空值"));
+						}
+
+						// data list 加入一個檔案
 						addData(data);
 						
 						if ("Y".equals(data.getError_mark())) {

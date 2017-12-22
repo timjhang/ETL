@@ -21,6 +21,7 @@ import Tool.ETF_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
+import Tool.ETL_Tool_StringX;
 
 public class ETL_E_TRANSFER {
 
@@ -29,7 +30,8 @@ public class ETL_E_TRANSFER {
 
 	// 欄位檢核用陣列
 	// TODO
-	private String[][] checkMapArray = { { "T_3", "COMM_FILE_TYPE" }, // 檔名業務別
+	private String[][] checkMapArray = { 
+			{ "T_3", "COMM_FILE_TYPE" }, // 檔名業務別
 			{ "T_4", "COMM_DOMAIN_ID" }, // 金融機構代號
 			{ "T_9", "TRANSFER_DIRECTION" }, // 顧客境外交易資料_匯入或匯出
 			{ "T_10", "COMM_CURRENCY_CODE" }// 幣別
@@ -200,32 +202,209 @@ public class ETL_E_TRANSFER {
 						}
 						
 						
-						 //區別碼					X(01)		*	String typecode 							= strQueue.popBytesString(1);
-						 //本會代號					X(07) T_4   *	String domain_id 							= strQueue.popBytesString(7);
-						 //客戶統編					X(11)       *	String party_number 						= strQueue.popBytesString(11);
-						 //匯款編號(交易編號)			X(50)       *	String transfer_id 							= strQueue.popBytesString(50);
-						 //匯款日期					X(08)       *	String transfer_date 						= strQueue.popBytesString(8);
-						 //實際匯款時間				X(14)       *	String transfer_time 						= strQueue.popBytesString(14);
-						 //匯入或匯出					X(01)  T_9  *	String direction 							= strQueue.popBytesString(1);
-						 //交易幣別					X(03)  T_10 *	String instructed_currency_code 			= strQueue.popBytesString(3);
-						 //交易金額					9(12)V99    *	String instructed_amount 					= strQueue.popBytesString(12);
-						 //匯款人銀行帳戶編號			X(50)       *	String ordering_customer_account_number 	= strQueue.popBytesString(50);
-						 //匯款人顧客編號				X(50)       	String ordering_customer_party_id			= strQueue.popBytesString(50);
-						 //匯款人顧客姓名				X(80)       *	String rdering_customer_party_name 			= strQueue.popBytesString(80);
-						 //匯款人顧客地址				X(100)      	String ordering_customer_address_line		= strQueue.popBytesString(100);
-						 //匯款銀行BIC 編碼			X(20)       *	String ordering_bank_bic 					= strQueue.popBytesString(20);
-						 //受款人銀行帳戶編號			X(50)       *	String beneficiary_customer_account_number  = strQueue.popBytesString(50);
-						 //受款人姓名					X(80)       *	String beneficiary_customer_party_name 		= strQueue.popBytesString(80);
-						 //受款銀行顧客編號			X(50)       	String beneficiary_customer_party_id 		= strQueue.popBytesString(50);
-						 //受款銀行BIC 編碼			X(20)       *	String beneficiary_bank_bic 				= strQueue.popBytesString(20);
-						 //交易類別					X(04)       *	String transaction_type						= strQueue.popBytesString(4);
-						 //匯款系統					X(10)			String transaction_system 					= strQueue.popBytesString(10);
-						 //匯款管道類別				X(10)			String channel_type							= strQueue.popBytesString(10);
-						 //匯款管道編號				X(20)			String channel_id							= strQueue.popBytesString(20);
-						 //匯款執行分行				X(20)			String execution_branch_code				= strQueue.popBytesString(20);
-						 //匯款執行者代號				X(50)			String executer_id 							= strQueue.popBytesString(50);
+						 //區別碼					X(01)		*	
+						if (!"2".equals(typeCode)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", "非預期"));
+						}
+						 //本會代號					X(07) T_4   *	
+						String domain_id = strQueue.popBytesString(7);
+						data.setDomain_id(domain_id);
+						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "空值"));
+						} else if (!checkMaps.get("T_4").containsKey(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "非預期"));
+						}
+						
+						 //客戶統編	X(11)       *	
+						String party_number = strQueue.popBytesString(11);
+						data.setParty_number(party_number);
+						if (ETL_Tool_FormatCheck.isEmpty(party_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "客戶統編", "空值"));
+						}
 
-						////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+						 //匯款編號(交易編號)			X(50)       *	
+						String transfer_id = strQueue.popBytesString(50);
+						if (ETL_Tool_FormatCheck.isEmpty(transfer_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯款編號", "空值"));
+						}
+						
+						 //匯款日期					X(08)       *	
+						String transfer_date = strQueue.popBytesString(8);
+						if(ETL_Tool_FormatCheck.isEmpty(transfer_date)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯率日期", "空值"));
+						}else if(ETL_Tool_FormatCheck.checkDate(transfer_date)) {
+							data.setTransfer_date(ETL_Tool_StringX.toUtilDate(transfer_date));
+						}else {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯率日期", "日期格式錯誤"));
+						}
+
+						 //實際匯款時間				X(14)       *	
+						String transfer_time 						= strQueue.popBytesString(14);
+						if(ETL_Tool_FormatCheck.isEmpty(transfer_time)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "實際匯款時間", "空值"));
+						
+						}else if(ETL_Tool_FormatCheck.checkTimestamp(transfer_time)) {
+							data.setTransfer_time(ETL_Tool_StringX.toTimestamp(transfer_time));
+						}else {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "實際匯款時間", "時間格式錯誤"));
+						}
+
+						
+						 //匯入或匯出					X(01)  T_9  *	
+						String direction = strQueue.popBytesString(1);
+						data.setDirection(direction);
+						if (ETL_Tool_FormatCheck.isEmpty(direction)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯入或匯出", "空值"));
+						} else if (!checkMaps.get("T_9").containsKey(direction)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯入或匯出", "非預期"));
+						}
+						
+						 //交易幣別					X(03)  T_10 *	
+						String instructed_currency_code = strQueue.popBytesString(3);
+						if (ETL_Tool_FormatCheck.isEmpty(instructed_currency_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易幣別", "空值"));
+						} else if (!checkMaps.get("T_10").containsKey(instructed_currency_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易幣別", "非預期"));
+						}
+						
+						 //交易金額					9(12)V99    *	
+						String instructed_amount = strQueue.popBytesString(12);
+						if (ETL_Tool_FormatCheck.isEmpty(instructed_amount)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易金額", "空值"));
+						}else if(!ETL_Tool_FormatCheck.checkNum(instructed_amount)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易金額", "非數字"));
+						}else {
+							data.setInstructed_amount(ETL_Tool_StringX.strToBigDecimal(instructed_amount, 2));
+						}
+						
+						 //匯款人銀行帳戶編號			X(50)       *	
+						String ordering_customer_account_number = strQueue.popBytesString(50);
+						data.setOrdering_customer_account_number(ordering_customer_account_number);
+						if(ETL_Tool_FormatCheck.isEmpty(ordering_customer_account_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯款人銀行帳戶編號", "空值"));
+						}
+
+						 //匯款人顧客編號				X(50)       	
+						String ordering_customer_party_id = strQueue.popBytesString(50);
+						data.setOrdering_customer_party_id(ordering_customer_party_id);
+
+						 //匯款人顧客姓名				X(80)       *	
+						String rdering_customer_party_name = strQueue.popBytesString(80);
+						data.setRdering_customer_party_name(rdering_customer_party_name);
+						if(ETL_Tool_FormatCheck.isEmpty(rdering_customer_party_name)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯款人顧客姓名", "空值"));
+						}
+					
+						 //匯款人顧客地址				X(100)      	
+						String ordering_customer_address_line = strQueue.popBytesString(100);
+						data.setOrdering_customer_address_line(ordering_customer_address_line);
+						
+						
+						 //匯款銀行BIC 編碼			X(20)       *	
+						String ordering_bank_bic = strQueue.popBytesString(20);
+						data.setOrdering_bank_bic(ordering_bank_bic);
+						if(ETL_Tool_FormatCheck.isEmpty(ordering_bank_bic)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯款銀行BIC 編碼", "空值"));
+						}
+						
+						 //受款人銀行帳戶編號			X(50)       *	
+						String beneficiary_customer_account_number  = strQueue.popBytesString(50);
+						data.setBeneficiary_customer_account_number(beneficiary_customer_account_number);
+						if(ETL_Tool_FormatCheck.isEmpty(beneficiary_customer_account_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "受款人銀行帳戶編號", "空值"));
+						}
+												
+						 //受款人姓名					X(80)       *	
+						String beneficiary_customer_party_name = strQueue.popBytesString(80);
+						data.setBeneficiary_customer_party_name(beneficiary_customer_party_name);
+						if(ETL_Tool_FormatCheck.isEmpty(beneficiary_customer_party_name)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "受款人姓名", "空值"));
+						}
+
+						 //受款銀行顧客編號			X(50)       	
+						String beneficiary_customer_party_id = strQueue.popBytesString(50);
+						data.setBeneficiary_customer_party_id(beneficiary_customer_party_id);
+						
+						
+						
+						 //受款銀行BIC 編碼			X(20)       *	
+						String beneficiary_bank_bic = strQueue.popBytesString(20);
+						data.setBeneficiary_bank_bic(beneficiary_bank_bic);
+						if(ETL_Tool_FormatCheck.isEmpty(beneficiary_bank_bic)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "受款銀行BIC 編碼", "空值"));
+						}
+						
+						 //交易類別					X(04)       *	
+						String transaction_type = strQueue.popBytesString(4);
+						data.setTransaction_type(transaction_type);
+						if(ETL_Tool_FormatCheck.isEmpty(transaction_type)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易類別", "空值"));
+						}
+						
+						 //匯款系統					X(10)			
+						String transaction_system = strQueue.popBytesString(10);
+						data.setTransaction_system(transaction_system);
+						
+						 //匯款管道類別				X(10)			
+						String channel_type	= strQueue.popBytesString(10);
+						data.setChannel_type(channel_type);
+
+						 //匯款管道編號				X(20)			
+						String channel_id = strQueue.popBytesString(20);
+						data.setChannel_id(channel_id);
+						
+						 //匯款執行分行				X(20)			
+						String execution_branch_code = strQueue.popBytesString(20);
+						data.setExecution_branch_code(execution_branch_code);
+						
+						 //匯款執行者代號 X(50)			
+						String executer_id = strQueue.popBytesString(50);
+						data.setExecuter_id(executer_id);
+						
 						// data list 加入一個檔案
 						addData(data);
 

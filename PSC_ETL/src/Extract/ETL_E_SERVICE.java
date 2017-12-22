@@ -21,6 +21,7 @@ import Tool.ETF_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
+import Tool.ETL_Tool_StringX;
 
 public class ETL_E_SERVICE {
 
@@ -86,6 +87,7 @@ public class ETL_E_SERVICE {
 
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
+		
 
 				FileInputStream fis = new FileInputStream(parseFile);
 				BufferedReader br = new BufferedReader(new InputStreamReader(fis, "BIG5"));
@@ -179,10 +181,7 @@ public class ETL_E_SERVICE {
 						if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
 							break;
 						}
-
-						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						// 檢核
-						
+					
 						// 整行bytes數檢核(1 + 7 + 11 + 16 + 8 + 6+10+10+20+75+400+400+400+20+50 = 1434) 
 						if (strQueue.getTotalByteLength() != 1434) {
 							data.setError_mark("Y");
@@ -194,26 +193,118 @@ public class ETL_E_SERVICE {
 							break;
 						}
 
-			//	區別碼					X(01)	*	String typecode 				= strQueue.popBytesString(1);
-			//	本會代號				X(07)	*	String domain_id				= strQueue.popBytesString(7);	
-			//	客戶統編				X(11)	*	String party_number 			= strQueue.popBytesString(11);
-			//	服務編號				X(16)	*	String service_id 				= strQueue.popBytesString(16);
-			//	服務日期				X(08)	*	String service_date 			= strQueue.popBytesString(8);
-			//	服務時間				X(06)	*	String service_time 			= strQueue.popBytesString(6);
-			//	服務類別				X(10)	*T9	String service_type 			= strQueue.popBytesString(10);
-			//	服務管道類別			X(10)		String channel_type				= strQueue.popBytesString(10);
-			//	服務管道編號			X(20)		String channel_id 				= strQueue.popBytesString(20);
-			//	服務參考編號			X(75)		String service_reference_number = strQueue.popBytesString(75);
-			//	資料變更前詳細內容		X(400)		String previous_value 			= strQueue.popBytesString(400);
-			//	資料變更後詳細內容		X(400)		String new_value 				= strQueue.popBytesString(400);
-			//	服務詳細內容			X(400)		String service_description 		= strQueue.popBytesString(400);
-			//	服務執行分行			X(20)		String execution_branch_code 	= strQueue.popBytesString(20);
-			//	執行行員代號			X(50)		String executer_id 				= strQueue.popBytesString(50);
+						// 區別碼檢核  *
+						if (!"2".equals(typeCode)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", "非預期"));
+						}
+
+						// 本會代號檢核(7) T_4*
+						String domain_id = strQueue.popBytesString(7);
+						data.setDomain_id(domain_id);
+						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "空值"));
+						} else if (!checkMaps.get("T_4").containsKey(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "非預期"));
+						}
+						
+						//	客戶統編					X(11)	*	
+						String party_number = strQueue.popBytesString(11);
+						data.setParty_number(party_number);
+						if(ETL_Tool_FormatCheck.isEmpty(party_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "客戶統編", "空值"));
+						}
+						
+						
+						//	服務編號					X(16)	*	
+						String service_id = strQueue.popBytesString(16);
+						data.setService_id(service_id);
+						if(ETL_Tool_FormatCheck.isEmpty(service_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務編號", "空值"));
+						}
+						
+????服務日期			//X(08)	* 格式yyyyMMdd。需等於首錄中檔案日期。	
+						String service_date = strQueue.popBytesString(8);
+						if(ETL_Tool_FormatCheck.isEmpty(service_date)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務日期", "空值"));
+						
+						}else if(ETL_Tool_FormatCheck.checkDate(service_date)) {
+							data.setService_date(ETL_Tool_StringX.toUtilDate(service_date));
+							if(!service_date.equals(pfn.getRecord_Date_String())) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(
+										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務日期", "不等於首錄中檔案日期"));
+							
+							}
+						}else {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務日期", "日期格式錯誤"));
+
+						}
+
+//	服務時間	待上傳				X(06)	*	
+待上傳						String service_time = strQueue.popBytesString(6);
+
 
 						
-	
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+						//	服務類別					X(10)	*T9	
+						String service_type = strQueue.popBytesString(10);
+						data.setService_type(service_type);
+						if (ETL_Tool_FormatCheck.isEmpty(service_type)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務類別", "空值"));
+						} else if (!checkMaps.get("T_9").containsKey(service_type)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務類別", "非預期"));
+						}
 						
+						//	服務管道類別				X(10)		
+						String channel_type	= strQueue.popBytesString(10);
+						data.setChannel_type(channel_type);
+						
+						//	服務管道編號				X(20)		
+						String channel_id = strQueue.popBytesString(20);
+						data.setChannel_id(channel_id);
+						
+						//	服務參考編號				X(75)		
+						String service_reference_number = strQueue.popBytesString(75);
+						data.setService_reference_number(service_reference_number);
+						
+						
+						//	資料變更前詳細內容		X(400)		
+						String previous_value= strQueue.popBytesString(400);
+						data.setPrevious_value(previous_value);
+						
+						//	資料變更後詳細內容		X(400)		
+						String new_value = strQueue.popBytesString(400);
+						data.setNew_value(new_value);
+						
+						//	服務詳細內容				X(400)		
+						String service_description 		= strQueue.popBytesString(400);
+						data.setService_description(service_description);
+						
+						//	服務執行分行				X(20)		
+						String execution_branch_code = strQueue.popBytesString(20);
+						data.setExecution_branch_code(execution_branch_code);
+
+						//	執行行員代號				X(50)		
+						String executer_id = strQueue.popBytesString(50);
+						data.setExecuter_id(executer_id);
+					
 						// data list 加入一個檔案
 						addData(data);
 
