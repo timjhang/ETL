@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +31,9 @@ public class ETL_E_PARTY_PHONE {
 	// TODO
 	private String[][] checkMapArray =
 		{
-			{"c-2", ""}, 
-			{"c-4", "PARTY_PHONE_CHANGE_CODE"},
-			{"c-5", "PARTY_PHONE_PHONE_TYPE"}
+			{"c-2", "COMM_DOMAIN_ID"}, // 本會代號
+			{"c-4", "PARTY_PHONE_CHANGE_CODE"}, // 異動代號
+			{"c-5", "PARTY_PHONE_PHONE_TYPE"} // 電話類別
 		};
 	
 	// 欄位檢核用母Map
@@ -122,9 +121,9 @@ public class ETL_E_PARTY_PHONE {
 					// 注入首錄字串
 					strQueue.setTargetString(lineStr);
 					
-					// 檢查整行bytes數(1 + 7 + 8 + 24 = 40)
-					if (strQueue.getTotalByteLength() != 40) {// TODO
-						fileFmtErrMsg = "首錄位元數非預期40";// TODO
+					// 檢查整行bytes數(1 + 7 + 8 + 27 = 43) +2 換行
+					if (strQueue.getTotalByteLength() != 43) {// TODO
+						fileFmtErrMsg = "首錄位元數非預期43";// TODO
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 					}
@@ -161,8 +160,8 @@ public class ETL_E_PARTY_PHONE {
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 					}
 					
-					// 保留欄位檢核(24)
-					String keepColumn = strQueue.popBytesString(24);
+					// 保留欄位檢核(27)
+					String keepColumn = strQueue.popBytesString(27);
 					
 					if (!"".equals(fileFmtErrMsg)) {
 						failureCount++; // 錯誤計數 + 1
@@ -181,7 +180,7 @@ public class ETL_E_PARTY_PHONE {
 					strQueue.setTargetString(lineStr); // queue裝入新String
 					
 					// 生成一個Data
-					ETL_Bean_PARTY_PHONE_Data data = new ETL_Bean_PARTY_PHONE_Data(pfn, null, null, null, null, null);
+					ETL_Bean_PARTY_PHONE_Data data = new ETL_Bean_PARTY_PHONE_Data(pfn);
 					
 					// 區別碼(1)
 					String typeCode = strQueue.popBytesString(1);
@@ -189,9 +188,7 @@ public class ETL_E_PARTY_PHONE {
 						break;
 					}
 
-
-
-					// 整行bytes數檢核(1 + 7 + 11 + 1 + 3 + 20 = 43) // TODO
+					// 整行bytes數檢核(1 + 7 + 11 + 1 + 3 + 20 = 43) +2 換行  // TODO
 					if (strQueue.getTotalByteLength() != 43) {
 						data.setError_mark("Y");
 						fileFmtErrMsg = "非預期43";
@@ -237,7 +234,7 @@ public class ETL_E_PARTY_PHONE {
 					if (ETL_Tool_FormatCheck.isEmpty(change_code)) {
 						data.setError_mark("Y");
 						errWriter.addErrLog(
-								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "異動代號", ""));
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "異動代號", "空值"));
 					} else if (advancedCheck && !checkMaps.get("c-4").containsKey(change_code)) {
 						data.setError_mark("Y");
 						errWriter.addErrLog(
@@ -247,7 +244,7 @@ public class ETL_E_PARTY_PHONE {
 					// 電話類別檢核(3) c-5
 					String phone_type = strQueue.popBytesString(3);
 					data.setPhone_type(phone_type);
-					if (advancedCheck && !checkMaps.get("c-5").containsKey(phone_type)) {
+					if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(phone_type) && !checkMaps.get("c-5").containsKey(phone_type)) {
 						data.setError_mark("Y");
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "電話類別", "非預期"));
@@ -259,7 +256,7 @@ public class ETL_E_PARTY_PHONE {
 					if (ETL_Tool_FormatCheck.isEmpty(phone_number)) {
 						data.setError_mark("Y");
 						errWriter.addErrLog(
-								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "電話號碼", ""));
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "電話號碼", "空值"));
 					}
 					
 					// data list 加入一個檔案
@@ -273,15 +270,15 @@ public class ETL_E_PARTY_PHONE {
 					rowCount++; // 處理行數 + 1
 				}
 				
-				// Party_Phone_Data寫入DB   //TO DO 當發生 Exception errWriter 沒寫到 0.0
+				// Party_Phone_Data寫入DB
 				insert_Party_Phone_Datas();
 				
 				// 尾錄檢查
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 					
-					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 17 = 40)
-					if (strQueue.getTotalByteLength() != 40) { // TODO
-						fileFmtErrMsg = "尾錄位元數非預期40";
+					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 20 = 43) +2 換行
+					if (strQueue.getTotalByteLength() != 43) { // TODO
+						fileFmtErrMsg = "尾錄位元數非預期43";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 					}
@@ -324,8 +321,8 @@ public class ETL_E_PARTY_PHONE {
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
 					}
 					
-					// 保留欄檢核(17)
-					String keepColumn = strQueue.popBytesString(17);
+					// 保留欄檢核(20)
+					String keepColumn = strQueue.popBytesString(20);
 					
 					if (!"".equals(fileFmtErrMsg)) {
 						failureCount++;
@@ -341,6 +338,7 @@ public class ETL_E_PARTY_PHONE {
 					errWriter.addErrLog(
 							new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "程式檢核", fileFmtErrMsg));
 				}
+				
 				// 多餘行數檢查
 				if (br.ready()) {
 					fileFmtErrMsg = "出現多餘行數";
@@ -394,7 +392,7 @@ public class ETL_E_PARTY_PHONE {
 		insertAdapter.setSql("{call SP_INSERT_PARTY_PHONE_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
 		insertAdapter.setCreateArrayTypesName("T_PARTY_PHONE"); // DB2 type - PARTY_PHONE
 		insertAdapter.setCreateStructTypeName("A_PARTY_PHONE"); // DB2 array type - PARTY_PHONE
-		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage);  // 設定上限寫入參數
+		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage);  // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
 		

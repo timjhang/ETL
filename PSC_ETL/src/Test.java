@@ -1,9 +1,20 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Date;
 
+import DB.ConnectionHelper;
+import Extract.ETL_E_PARTY_PHONE;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 
@@ -16,7 +27,12 @@ public class Test {
 //			test2();
 //			test3();
 //			test4();
-			test5();
+//			test5();
+//			test6();
+			connection();
+//			Date date = new Date().setTime(0);
+//			date.setTime(0);
+//			System.out.println(date);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -31,6 +47,12 @@ public class Test {
 		System.out.println(array[0].length);
 		System.out.println(array[0][1]);
 		System.out.println(array[1][0]);
+	}
+	
+	private static void connection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		Connection con = ConnectionHelper.getDB2Connection();
+		ETL_E_PARTY_PHONE one = new ETL_E_PARTY_PHONE();
+		one.read_Party_Phone_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY_PHONE", "003");
 	}
 	
 	private static void test1() throws Exception {
@@ -88,6 +110,20 @@ public class Test {
 		String temp = "00000123";
 		System.out.println(Integer.valueOf(temp));
 		
+	}
+	
+	private static void test6() throws IOException {
+		File file = new File("C:/Users/10404003/Desktop/農經/171221/file/600_CF_PARTY_20171206.TXT");
+		FileInputStream fis = new FileInputStream(file);
+		BufferedReader br = new BufferedReader(new InputStreamReader(fis,"BIG5"));
+		
+		String str = "";
+		int count = 0;
+		while (br.ready()) {
+			str = br.readLine();
+			count++;
+		}
+		System.out.println("count = " + count);
 	}
 	
 }

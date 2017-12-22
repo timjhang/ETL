@@ -9,7 +9,7 @@ public class ETL_Bean_PARTY_PHONE_Data {
 	// 報送單位
 	private String central_no;
 	// 檔案日期
-	private Date record_date;
+	private Date record_date = new Date(); // test  temp
 	// 檔名業務別
 	private String file_type;
 	// 本會代號
@@ -26,17 +26,11 @@ public class ETL_Bean_PARTY_PHONE_Data {
 	private String error_mark = "";// 預設無錯誤
 	
 	// Constructor
-	public ETL_Bean_PARTY_PHONE_Data(ETL_Tool_ParseFileName pfn, String domain_id,
-			String party_number, String change_code, String phone_type, String phone_number) {
+	public ETL_Bean_PARTY_PHONE_Data(ETL_Tool_ParseFileName pfn) {
 		
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
-		this.domain_id = domain_id;
-		this.party_number = party_number;
-		this.change_code = change_code;
-		this.phone_type = phone_type;
-		this.phone_number = phone_number;
 	}
 	
 	public String getCentral_no() {

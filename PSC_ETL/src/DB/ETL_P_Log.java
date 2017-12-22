@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import Profile.ETL_Profile;
+
 public class ETL_P_Log {
 
 	public static void main(String[] args) throws Exception {
@@ -53,7 +55,7 @@ public class ETL_P_Log {
 			int TOTAL_CNT, int SUCCESS_CNT, int FAILED_CNT, String SRC_FILE)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		String insert_query = " INSERT INTO ETL_LOG (" +
+		String insert_query = " INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_LOG (" +
 				"CENTRAL_NO," +
 				"RECORD_DATE," +
 				"FILE_TYPE," +
