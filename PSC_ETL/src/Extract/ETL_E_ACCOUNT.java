@@ -29,8 +29,7 @@ public class ETL_E_ACCOUNT {
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
 	// 欄位檢核用陣列
-	private String[][] checkMapArray = { 
-			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
+	private String[][] checkMapArray = { { "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "ACCOUNT_CHANGE_CODE" }, // 異動代號
 			{ "account_type_code", "ACCOUNT_ACCOUNT_TYPE_CODE" }, // 帳戶類別
 			{ "property_code", "ACCOUNT_PROPERTY_CODE" }, // 連結服務
@@ -142,11 +141,10 @@ public class ETL_E_ACCOUNT {
 					}
 
 					/*
-					 * 報送單位檢核(7)
-					 * 報送單位一致性檢查,嚴重錯誤,不進行迴圈並記錄錯誤訊息
+					 * 報送單位檢核(7) 報送單位一致性檢查,嚴重錯誤,不進行迴圈並記錄錯誤訊息
 					 */
 					String central_no = strQueue.popBytesString(7);
-					if (!central_no.equals(pfn.getCentral_No())) { 
+					if (!central_no.equals(pfn.getCentral_No())) {
 						fileFmtErrMsg = "首錄報送單位代碼與檔名不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"報送單位", fileFmtErrMsg));
@@ -352,7 +350,7 @@ public class ETL_E_ACCOUNT {
 						// 開戶日期 R X(08)*
 						String account_open_date = strQueue.popBytesString(8);
 						data.setAccount_open_date(ETL_Tool_StringX.toUtilDate(account_open_date));
-						
+
 						if (ETL_Tool_FormatCheck.isEmpty(account_open_date)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -366,7 +364,7 @@ public class ETL_E_ACCOUNT {
 						// 結清(銷戶)日期 O X(08)
 						String account_close_date = strQueue.popBytesString(8);
 						data.setAccount_close_date(ETL_Tool_StringX.toUtilDate(account_close_date));
-						
+
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(account_close_date)) {
 							if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
 								data.setError_mark("Y");
@@ -394,6 +392,8 @@ public class ETL_E_ACCOUNT {
 
 						// 帳戶餘額 R 9(12)V99*
 						String balance_acct_currency_value = strQueue.popBytesString(14);
+						data.setBalance_acct_currency_value(
+								ETL_Tool_StringX.strToBigDecimal(balance_acct_currency_value, 2));
 
 						if (ETL_Tool_FormatCheck.isEmpty(balance_acct_currency_value)) {
 							data.setError_mark("Y");
@@ -403,9 +403,6 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "帳戶餘額", "格式錯誤"));
-						} else {
-							data.setBalance_acct_currency_value(
-									ETL_Tool_StringX.strToBigDecimal(balance_acct_currency_value, 2));
 						}
 
 						// 過去一個月平均餘額正負號 R X(01)
@@ -423,7 +420,7 @@ public class ETL_E_ACCOUNT {
 						String balance_last_month_avg_value = strQueue.popBytesString(14);
 						data.setBalance_acct_currency_value(
 								ETL_Tool_StringX.strToBigDecimal(balance_last_month_avg_value, 2));
-						
+
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
 							if (!ETL_Tool_FormatCheck.checkNum(balance_last_month_avg_value)) {
 								data.setError_mark("Y");
