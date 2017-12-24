@@ -14,13 +14,21 @@ public class ETL_Bean_LOAN_Data {
 	private String domain_id;// 本會代號
 	private String party_number;// 客戶統編
 	private String change_code;// 異動代號
+	private String loan_number;// 放款帳號
+	private Date loan_date;// 初貸日
 	private String loan_master_number;// 批覆書編號
 	private String loan_detail_number;// 額度編號
-	private Date loan_application_date;// 批覆書申請日期
-	private Date loan_approval_date;// 批覆書核准日期
-	private Date approval_date;// 額度核准日
-	private BigDecimal approval_amount;// 批准限額
-	private BigDecimal remain_approval_amount;// 可動用限額
+	private String loan_category_code;// 放款種類
+	private String loan_type_code;// 利率類別
+	private String loan_currency_code;// 幣別
+	private BigDecimal loan_amount;// 貸放金額
+	private String loan_status_code;// 放款狀態
+	private BigDecimal outstanding_loan_balance;// 本金餘額
+	private BigDecimal total_repayments_value;// 已還本金
+	private int delinquency_days;// 違繳天數
+	private String execution_branch_code;// 帳戶行
+	private BigDecimal last_payment_value;// 到期一次還本金額
+	private String cls;// 收回原因
 	private String error_mark = "";// 錯誤註記
 
 	public ETL_Bean_LOAN_Data(ETL_Tool_ParseFileName pfn) {
@@ -86,6 +94,22 @@ public class ETL_Bean_LOAN_Data {
 		this.change_code = change_code;
 	}
 
+	public String getLoan_number() {
+		return loan_number;
+	}
+
+	public void setLoan_number(String loan_number) {
+		this.loan_number = loan_number;
+	}
+
+	public Date getLoan_date() {
+		return loan_date;
+	}
+
+	public void setLoan_date(Date loan_date) {
+		this.loan_date = loan_date;
+	}
+
 	public String getLoan_master_number() {
 		return loan_master_number;
 	}
@@ -102,44 +126,92 @@ public class ETL_Bean_LOAN_Data {
 		this.loan_detail_number = loan_detail_number;
 	}
 
-	public Date getLoan_application_date() {
-		return loan_application_date;
+	public String getLoan_category_code() {
+		return loan_category_code;
 	}
 
-	public void setLoan_application_date(Date loan_application_date) {
-		this.loan_application_date = loan_application_date;
+	public void setLoan_category_code(String loan_category_code) {
+		this.loan_category_code = loan_category_code;
 	}
 
-	public Date getLoan_approval_date() {
-		return loan_approval_date;
+	public String getLoan_type_code() {
+		return loan_type_code;
 	}
 
-	public void setLoan_approval_date(Date loan_approval_date) {
-		this.loan_approval_date = loan_approval_date;
+	public void setLoan_type_code(String loan_type_code) {
+		this.loan_type_code = loan_type_code;
 	}
 
-	public Date getApproval_date() {
-		return approval_date;
+	public String getLoan_currency_code() {
+		return loan_currency_code;
 	}
 
-	public void setApproval_date(Date approval_date) {
-		this.approval_date = approval_date;
+	public void setLoan_currency_code(String loan_currency_code) {
+		this.loan_currency_code = loan_currency_code;
 	}
 
-	public BigDecimal getApproval_amount() {
-		return approval_amount;
+	public BigDecimal getLoan_amount() {
+		return loan_amount;
 	}
 
-	public void setApproval_amount(BigDecimal approval_amount) {
-		this.approval_amount = approval_amount;
+	public void setLoan_amount(BigDecimal loan_amount) {
+		this.loan_amount = loan_amount;
 	}
 
-	public BigDecimal getRemain_approval_amount() {
-		return remain_approval_amount;
+	public String getLoan_status_code() {
+		return loan_status_code;
 	}
 
-	public void setRemain_approval_amount(BigDecimal remain_approval_amount) {
-		this.remain_approval_amount = remain_approval_amount;
+	public void setLoan_status_code(String loan_status_code) {
+		this.loan_status_code = loan_status_code;
+	}
+
+	public BigDecimal getOutstanding_loan_balance() {
+		return outstanding_loan_balance;
+	}
+
+	public void setOutstanding_loan_balance(BigDecimal outstanding_loan_balance) {
+		this.outstanding_loan_balance = outstanding_loan_balance;
+	}
+
+	public BigDecimal getTotal_repayments_value() {
+		return total_repayments_value;
+	}
+
+	public void setTotal_repayments_value(BigDecimal total_repayments_value) {
+		this.total_repayments_value = total_repayments_value;
+	}
+
+	public int getDelinquency_days() {
+		return delinquency_days;
+	}
+
+	public void setDelinquency_days(int delinquency_days) {
+		this.delinquency_days = delinquency_days;
+	}
+
+	public String getExecution_branch_code() {
+		return execution_branch_code;
+	}
+
+	public void setExecution_branch_code(String execution_branch_code) {
+		this.execution_branch_code = execution_branch_code;
+	}
+
+	public BigDecimal getLast_payment_value() {
+		return last_payment_value;
+	}
+
+	public void setLast_payment_value(BigDecimal last_payment_value) {
+		this.last_payment_value = last_payment_value;
+	}
+
+	public String getCls() {
+		return cls;
+	}
+
+	public void setCls(String cls) {
+		this.cls = cls;
 	}
 
 	public String getError_mark() {

@@ -29,7 +29,6 @@ public class ETL_E_LOAN_DETAIL {
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
 	// 欄位檢核用陣列
-	// TODO
 	private String[][] checkMapArray = { 
 			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "LOAN_DETAIL_CHANGE_CODE" }, // 異動代號
@@ -45,7 +44,6 @@ public class ETL_E_LOAN_DETAIL {
 	private int dataCount = 0;
 
 	// Data儲存List
-	// TODO
 	private List<ETL_Bean_LOAN_DETAIL_Data> dataList = new ArrayList<ETL_Bean_LOAN_DETAIL_Data>();
 
 	// class生成時, 取得所有檢核用子map, 置入母map內
@@ -56,7 +54,7 @@ public class ETL_E_LOAN_DETAIL {
 
 		} catch (Exception ex) {
 			checkMaps = null;
-			System.out.println("ETL_E_LOAN_DETAIL 抓取checkMaps資料有誤!"); // TODO
+			System.out.println("ETL_E_LOAN_DETAIL 抓取checkMaps資料有誤!");
 			ex.printStackTrace();
 		}
 	};
@@ -64,10 +62,9 @@ public class ETL_E_LOAN_DETAIL {
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
 	// 回傳boolean 成功(true)/失敗(false)
-	// TODO
 	public void read_Loan_Detail_File(String filePath, String fileTypeName, String upload_no) {
 
-		System.out.println("#######Extrace - ETL_E_LOAN_DETAIL - Start"); // TODO
+		System.out.println("#######Extrace - ETL_E_LOAN_DETAIL - Start");
 
 		try {
 			// 取得目標檔案File
@@ -122,8 +119,8 @@ public class ETL_E_LOAN_DETAIL {
 					strQueue.setTargetString(lineStr);
 
 					// 檢查整行bytes數(1 + 7 + 8 + 96 = 112)
-					if (strQueue.getTotalByteLength() != 114) {// TODO
-						fileFmtErrMsg = "首錄位元數非預期114";// TODO
+					if (strQueue.getTotalByteLength() != 114) {
+						fileFmtErrMsg = "首錄位元數非預期114";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -162,7 +159,7 @@ public class ETL_E_LOAN_DETAIL {
 								"檔案日期", fileFmtErrMsg));
 					}
 
-					// 保留欄檢核(468)
+					// 保留欄檢核(96)
 					String reserve_field = strQueue.popBytesString(96);
 
 					if (!"".equals(fileFmtErrMsg)) {
@@ -182,7 +179,7 @@ public class ETL_E_LOAN_DETAIL {
 						strQueue.setTargetString(lineStr); // queue裝入新String
 
 						// 生成一個Data
-						ETL_Bean_LOAN_DETAIL_Data data = new ETL_Bean_LOAN_DETAIL_Data(pfn);// TODO
+						ETL_Bean_LOAN_DETAIL_Data data = new ETL_Bean_LOAN_DETAIL_Data(pfn);
 
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
@@ -193,7 +190,6 @@ public class ETL_E_LOAN_DETAIL {
 						/*
 						 * 整行bytes數檢核(01+07+11+01+20+20+08+08+08+14+14 = 112)
 						 */
-						// TODO
 						if (strQueue.getTotalByteLength() != 114) {
 							data.setError_mark("Y");
 							fileFmtErrMsg = "非預期114";
@@ -271,6 +267,8 @@ public class ETL_E_LOAN_DETAIL {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "額度編號", "空值"));
+							// 系統若無額度設計，請放批覆書編號
+							data.setLoan_detail_number(loan_master_number);
 						} 
 						
 						//批覆書申請日期 R X(08)*
@@ -356,14 +354,14 @@ public class ETL_E_LOAN_DETAIL {
 					}
 
 				// Loan_Detail_Data寫入DB
-				insert_Loan_Detail_Datas();// TODO
+				insert_Loan_Detail_Datas();
 
 				// 尾錄檢查
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
-					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 461 = 484)
-					if (strQueue.getTotalByteLength() != 486) { // TODO
-						fileFmtErrMsg = "尾錄位元數非預期486";
+					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 89 = 112)
+					if (strQueue.getTotalByteLength() != 114) {
+						fileFmtErrMsg = "尾錄位元數非預期114";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -408,8 +406,8 @@ public class ETL_E_LOAN_DETAIL {
 								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
 					}
 
-					// 保留欄檢核(90)
-					String reserve_field = strQueue.popBytesString(90);
+					// 保留欄檢核(89)
+					String reserve_field = strQueue.popBytesString(89);
 
 					if (!"".equals(fileFmtErrMsg)) {
 						failureCount++;
@@ -451,11 +449,10 @@ public class ETL_E_LOAN_DETAIL {
 			ex.printStackTrace();
 		}
 
-		System.out.println("#######Extrace - ETL_E_LOAN_DETAIL - End"); // TODO
+		System.out.println("#######Extrace - ETL_E_LOAN_DETAIL - End");
 	}
 
 	// List增加一個data
-	// TODO
 	private void addData(ETL_Bean_LOAN_DETAIL_Data data) throws Exception {
 		this.dataList.add(data);
 		this.dataCount++;
@@ -468,7 +465,6 @@ public class ETL_E_LOAN_DETAIL {
 	}
 
 	// 將LOAN_DETAIL資料寫入資料庫
-	// TODO
 	private void insert_Loan_Detail_Datas() throws Exception {
 		if (this.dataList == null || this.dataList.size() == 0) {
 			System.out.println("ETL_E_LOAN_DETAIL - insert_Loan_Detail_Datas 無寫入任何資料");
