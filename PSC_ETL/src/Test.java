@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import DB.ConnectionHelper;
+import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_PHONE;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
@@ -53,6 +54,9 @@ public class Test {
 		Connection con = ConnectionHelper.getDB2Connection();
 		ETL_E_PARTY_PHONE one = new ETL_E_PARTY_PHONE();
 		one.read_Party_Phone_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY_PHONE", "003");
+		
+//		ETL_E_PARTY two = new ETL_E_PARTY();
+//		two.read_Party_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY", "003");
 	}
 	
 	private static void test1() throws Exception {

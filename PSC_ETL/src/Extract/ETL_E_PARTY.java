@@ -139,7 +139,7 @@ public class ETL_E_PARTY {
 					strQueue.setTargetString(lineStr);
 					
 					// 檢查整行bytes數(1 + 7 + 8 + 601 = 617)
-					if (strQueue.getTotalByteLength() != (617 + 2)) {
+					if (strQueue.getTotalByteLength() != 617) {
 						fileFmtErrMsg = "首錄位元數非預期619";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
@@ -207,7 +207,7 @@ public class ETL_E_PARTY {
 
 
 					// 整行bytes數檢核(617)
-					if (strQueue.getTotalByteLength() != (617 + 2)) {
+					if (strQueue.getTotalByteLength() != 617) {
 						data.setError_mark("Y");
 						fileFmtErrMsg = "非預期619";
 						errWriter.addErrLog(
@@ -783,7 +783,7 @@ public class ETL_E_PARTY {
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 					
 					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 594 = 617)
-					if (strQueue.getTotalByteLength() != (617 + 2)) {
+					if (strQueue.getTotalByteLength() != 617) {
 						fileFmtErrMsg = "尾錄位元數非預期619";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));

@@ -48,7 +48,7 @@ public class ETL_Bean_PARTY_Data {
 	// 性別
 	private String gender;
 	// 年收入(法人)
-	private long annual_income;
+	private Long annual_income;
 	// 職業/行業
 	private String occupation_code;
 	// 婚姻狀況
@@ -257,11 +257,11 @@ public class ETL_Bean_PARTY_Data {
 		this.gender = gender;
 	}
 
-	public long getAnnual_income() {
+	public Long getAnnual_income() {
 		return annual_income;
 	}
 
-	public void setAnnual_income(long annual_income) {
+	public void setAnnual_income(Long annual_income) {
 		this.annual_income = annual_income;
 	}
 
