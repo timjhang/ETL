@@ -392,8 +392,8 @@ public class ETL_E_PARTY_PHONE {
 		
 		InsertAdapter insertAdapter = new InsertAdapter(); 
 		insertAdapter.setSql("{call SP_INSERT_PARTY_PHONE_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-		insertAdapter.setCreateArrayTypesName("T_PARTY_PHONE"); // DB2 type - PARTY_PHONE
-		insertAdapter.setCreateStructTypeName("A_PARTY_PHONE"); // DB2 array type - PARTY_PHONE
+		insertAdapter.setCreateStructTypeName("T_PARTY_PHONE"); //  DB2 type - PARTY_PHONE
+		insertAdapter.setCreateArrayTypesName("A_PARTY_PHONE"); // DB2 array type - PARTY_PHONE
 		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage);  // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);

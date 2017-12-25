@@ -26,15 +26,27 @@ public class ETL_E_FCX {
 	// 進階檢核參數
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
-	// 欄位檢核用陣列
-	// TODO
-	private String[][] checkMapArray = { { "T_3", "COMM_FILE_TYPE" }, // 檔名業務別
-			{ "T_4", "COMM_DOMAIN_ID" }, // 金融機構代號
-			{ "T_8", "COMM_NATIONALITY_CODE" }, // 國籍
-			{ "T_12", "FCX_DIRECTION" }, // 外幣現鈔買賣資料_結構或結售
-			{ "T_13", "COMM_CURRENCY_CODE" }, // 幣別
-			{ "T_15", "COMM_NATIONALITY_CODE" }, // 外幣現鈔買賣資料_交易管道類別
-			{ "T_16", "FCX_CHANNEL_TYPE" } };
+//	// 欄位檢核用陣列
+//	// TODO
+//	private String[][] checkMapArray = { 
+//			{ "T_3", "COMM_FILE_TYPE" }, // 檔名業務別
+//			{ "T_4", "COMM_DOMAIN_ID" }, // 金融機構代號
+//			{ "T_8", "COMM_NATIONALITY_CODE" }, // 國籍
+//			{ "T_12", "FCX_DIRECTION" }, // 外幣現鈔買賣資料_結構或結售
+//			{ "T_13", "COMM_CURRENCY_CODE" }, // 幣別
+//			{ "T_15", "COMM_NATIONALITY_CODE" }, // 外幣現鈔買賣資料_交易管道類別
+//			{ "T_16", "FCX_CHANNEL_TYPE" } };
+	
+//	// 欄位檢核用陣列
+//	// TODO
+	private String[][] checkMapArray = { 
+			{ "COMM_FILE_TYPE", "COMM" }, // 檔名業務別
+			{ "COMM_DOMAIN_ID", "COMM" }, // 金融機構代號
+			{ "COMM_NATIONALITY_CODE", "COMM" }, // 國籍
+			{ "FCX_DIRECTION", "FCX" }, // 外幣現鈔買賣資料_結構或結售
+			{ "COMM_CURRENCY_CODE", "COMM" }, // 幣別
+			{ "COMM_NATIONALITY_CODE", "COMM" }, // 外幣現鈔買賣資料_交易管道類別
+			{ "FCX_CHANNEL_TYPE", "FCX" } };
 
 	// 欄位檢核用母Map
 	private Map<String, Map<String, String>> checkMaps;
@@ -65,7 +77,7 @@ public class ETL_E_FCX {
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
 	// 回傳boolean 成功(true)/失敗(false)
-	public void read_Party_Phone_File(String filePath, String fileTypeName, String upload_no) {
+	public void read_File(String filePath, String fileTypeName, String upload_no) {
 		System.out.println("#######Extrace - ETL_E_FCX - Start"); // TODO
 		try {
 			// 取得目標檔案File
@@ -216,14 +228,14 @@ public class ETL_E_FCX {
 						}
 
 					
-//						本會代號	 	X(07) * T_4	
+//						本會代號	 	X(07) * COMM_DOMAIN_ID	
 						String domain_id = strQueue.popBytesString(7);
 						data.setDomain_id(domain_id);
 						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "空值"));
-						} else if (!checkMaps.get("T_4").containsKey(domain_id)) {
+						} else if (!checkMaps.get("COMM_DOMAIN_ID").containsKey(domain_id)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "非預期"));
@@ -258,11 +270,11 @@ public class ETL_E_FCX {
 						}
 
 						
-						//顧客國籍				X(02)  T_8     	
+						//顧客國籍				X(02)  COMM_NATIONALITY_CODE     	
 						String nationality_code 	= strQueue.popBytesString(2);
 						data.setNationality_code(nationality_code);
 						if (ETL_Tool_FormatCheck.isEmpty(nationality_code)) {
-							if (advancedCheck && !checkMaps.get("T_8").containsKey(nationality_code)) {
+							if (advancedCheck && !checkMaps.get("COMM_NATIONALITY_CODE").containsKey(nationality_code)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(
 										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "顧客國籍", "非預期"));
@@ -307,27 +319,27 @@ public class ETL_E_FCX {
 						}
 						
 						
-						//結構或結售				X(01)  T_12 *	
+						//結構或結售				X(01)  FCX_DIRECTION *	
 						String direction = strQueue.popBytesString(1);
 						data.setDirection(direction);
 						if (ETL_Tool_FormatCheck.isEmpty(direction)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "結構或結售", "空值"));
-						} else if (!checkMaps.get("T_12").containsKey(direction)) {
+						} else if (!checkMaps.get("FCX_DIRECTION").containsKey(direction)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "結構或結售", "非預期"));
 						}
 						
 						
-						//交易幣別				X(03)  T_13 *	
+						//交易幣別				X(03)  COMM_CURRENCY_CODE *	
 						String currency_code = strQueue.popBytesString(3);
 						if (ETL_Tool_FormatCheck.isEmpty(currency_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易幣別", "空值"));
-						} else if (!checkMaps.get("T_13").containsKey(currency_code)) {
+						} else if (!checkMaps.get("COMM_CURRENCY_CODE").containsKey(currency_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易幣別", "非預期"));
@@ -349,23 +361,23 @@ public class ETL_E_FCX {
 						}
 
 						
-						//申報國別				X(02)  T_15 *	
+						//申報國別				X(02)  COMM_NATIONALITY_CODE *	
 						String ordering_customer_country = strQueue.popBytesString(2);
 						if (ETL_Tool_FormatCheck.isEmpty(ordering_customer_country)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "申報國別", "空值"));
-						} else if (!checkMaps.get("T_15").containsKey(ordering_customer_country)) {
+						} else if (!checkMaps.get("COMM_NATIONALITY_CODE").containsKey(ordering_customer_country)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "申報國別", "非預期"));
 						}
 						
-						//交易管道類別			X(10)  T_16     
+						//交易管道類別			X(10)  FCX_CHANNEL_TYPE     
 						String channel_type = strQueue.popBytesString(10);
 						data.setChannel_type(channel_type);
 						if (!ETL_Tool_FormatCheck.isEmpty(channel_type)) {
-							if (advancedCheck && !checkMaps.get("T_16").containsKey(channel_type)) {
+							if (advancedCheck && !checkMaps.get("FCX_CHANNEL_TYPE").containsKey(channel_type)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(
 										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易管道類別", "非預期"));
@@ -437,6 +449,6 @@ public class ETL_E_FCX {
 		ETL_E_FCX one = new ETL_E_FCX();
 		String filePath = "D:\\company\\pershing\\agribank\\test_data\\test";
 		String fileTypeName = "FCX";
-		one.read_Party_Phone_File(filePath, fileTypeName, "001");
+		one.read_File(filePath, fileTypeName, "001");
 	}
 }

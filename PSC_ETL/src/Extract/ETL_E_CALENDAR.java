@@ -64,7 +64,7 @@ public class ETL_E_CALENDAR {
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
 	// 回傳boolean 成功(true)/失敗(false)
-	public void read_Party_Phone_File(String filePath, String fileTypeName, String upload_no) {
+	public void read_File(String filePath, String fileTypeName, String upload_no) {
 
 		System.out.println("#######Extrace - ETL_E_CALENDAR - Start"); // TODO
 		
