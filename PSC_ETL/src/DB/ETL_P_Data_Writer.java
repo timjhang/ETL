@@ -49,6 +49,7 @@ public class ETL_P_Data_Writer {
 						insertArrs.clear();
 					}
 				} catch (SqlDataException e) {
+					e.printStackTrace();
 					isSucess = false;
 					insertArrs.clear();
 				}
@@ -71,6 +72,7 @@ public class ETL_P_Data_Writer {
 				}
 
 			} catch (SqlDataException e) {
+				e.printStackTrace();
 				isSucess = false;
 				insertArrs.clear();
 			}
