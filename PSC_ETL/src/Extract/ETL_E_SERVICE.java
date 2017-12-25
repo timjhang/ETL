@@ -117,8 +117,8 @@ public class ETL_E_SERVICE {
 					strQueue.setTargetString(lineStr);
 
 					// 檢查整行bytes數(1 + 7 + 8 + 1418 = 1434)
-					if (strQueue.getTotalByteLength() != 1434) {// TODO
-						fileFmtErrMsg = "首錄位元數非預期1434";// TODO
+					if (strQueue.getTotalByteLength() != 1434) {
+						fileFmtErrMsg = "首錄位元數非預期1434";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -175,6 +175,7 @@ public class ETL_E_SERVICE {
 
 						// 生成一個Data
 						ETL_Bean_SERVICE_TEMP_Data data = new ETL_Bean_SERVICE_TEMP_Data(pfn);
+						data.setRow_count(rowCount);
 
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
@@ -232,7 +233,7 @@ public class ETL_E_SERVICE {
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務編號", "空值"));
 						}
 						
-????服務日期			//X(08)	* 格式yyyyMMdd。需等於首錄中檔案日期。	
+						//X(08)	* 格式yyyyMMdd。需等於首錄中檔案日期。	
 						String service_date = strQueue.popBytesString(8);
 						if(ETL_Tool_FormatCheck.isEmpty(service_date)) {
 							data.setError_mark("Y");
@@ -245,7 +246,6 @@ public class ETL_E_SERVICE {
 								data.setError_mark("Y");
 								errWriter.addErrLog(
 										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務日期", "不等於首錄中檔案日期"));
-							
 							}
 						}else {
 							data.setError_mark("Y");
@@ -254,8 +254,19 @@ public class ETL_E_SERVICE {
 
 						}
 
-//	服務時間	待上傳				X(06)	*	
-待上傳						String service_time = strQueue.popBytesString(6);
+						//	服務時間	待上傳				X(06)	*	
+						String service_time = strQueue.popBytesString(6);
+						if(ETL_Tool_FormatCheck.isEmpty(service_time)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務時間", "空值"));
+						}else if(ETL_Tool_FormatCheck.checkDate(service_time, "HHmmss")) {
+							data.setService_time(ETL_Tool_StringX.toTimestamp(service_time,  "HHmmss"));
+						}else {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "服務時間", "時間格式錯誤"));
+						}
 
 
 						
@@ -437,9 +448,9 @@ public class ETL_E_SERVICE {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		insertAdapter.setSql("{call SP_INSERT_SERVICE_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-		insertAdapter.setCreateArrayTypesName("T_SERVICE_TEMP"); // DB2 type - PARTY_PHONE
-		insertAdapter.setCreateStructTypeName("A_SERVICE_TEMP"); // DB2 array type - PARTY_PHONE
-		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
+		insertAdapter.setCreateArrayTypesName("A_SERVICE_TEMP"); // DB2 array type 
+		insertAdapter.setCreateStructTypeName("T_SERVICE_TEMP"); // DB2 type 
+		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
 

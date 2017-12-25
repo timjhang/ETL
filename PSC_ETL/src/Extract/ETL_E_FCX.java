@@ -20,6 +20,7 @@ import Tool.ETF_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
+import Tool.ETL_Tool_StringX;
 
 public class ETL_E_FCX {
 	// 進階檢核參數
@@ -174,6 +175,7 @@ public class ETL_E_FCX {
 
 						// 生成一個Data
 						ETL_Bean_FCX_TEMP_Data data = new ETL_Bean_FCX_TEMP_Data(pfn);
+						data.setRow_count(rowCount);
 
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
@@ -181,10 +183,10 @@ public class ETL_E_FCX {
 							break;
 						}
 
-						// 整行bytes數檢核(1+7+11+80+8+2+20+8+14+1+3+12+2+10+20+50= 249) // TODO
-						if (strQueue.getTotalByteLength() != 249) {
+						// 整行bytes數檢核(1+7+11+80+8+2+20+8+14+1+3+14+2+10+20+50= 251) // TODO
+						if (strQueue.getTotalByteLength() != 251) {
 							data.setError_mark("Y");
-							fileFmtErrMsg = "非預期249";
+							fileFmtErrMsg = "非預期251";
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 
@@ -203,42 +205,180 @@ public class ETL_E_FCX {
 
 
 						// 整行bytes數檢核(1+7+11+80+8+2+20+8+14+1+3+12+2+10+20+50 = 249) 
-											if (strQueue.getTotalByteLength() != 249) {
-												data.setError_mark("Y");
-												fileFmtErrMsg = "非預期249";
-												errWriter.addErrLog(
-														new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
-												
-												// 資料bytes不正確, 為格式嚴重錯誤, 跳出迴圈不繼續執行
-												break;
-											}
+						if (strQueue.getTotalByteLength() != 249) {
+							data.setError_mark("Y");
+							fileFmtErrMsg = "非預期249";
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 
+							// 資料bytes不正確, 為格式嚴重錯誤, 跳出迴圈不繼續執行
+							break;
+						}
 
-							//區別碼					X(01)		*	String typecode 							= strQueue.popBytesString(1);
-							//本會代號				X(07)  T_4  *	String domain_id 							= strQueue.popBytesString(7);
-							//顧客統編				X(11)       *	String party_number							= strQueue.popBytesString(11);
-							//顧客姓名				X(80)       	String nationality_code						= strQueue.popBytesString(80);
-							//顧客生日				X(08)       	String date_of_birth 						= strQueue.popBytesString(8);
-							//顧客國籍				X(02)  T_8     	String nationality_code 					= strQueue.popBytesString(2);
-							//交易編號				X(20)       *	String transaction_id 						= strQueue.popBytesString(20);
-							//交易日期				X(08)       *	String transaction_date 					= strQueue.popBytesString(8);
-							//實際交易時間			X(14)       *	String transaction_time 					= strQueue.popBytesString(14);
-							//結構或結售				X(01)  T_12 *	String direction 							= strQueue.popBytesString(1);
-							//交易幣別				X(03)  T_13 *	String currency_code 						= strQueue.popBytesString(3);
-							//交易金額				9(12)  V99  *	String amount 								= strQueue.popBytesString(12);
-							//申報國別				X(02)  T_15 *	String ordering_customer_country 			= strQueue.popBytesString(2);
-							//交易管道類別			X(10)  T_16     String channel_type 						= strQueue.popBytesString(10);
-							//交易執行分行			X(20)       	String execution_branch_code 				= strQueue.popBytesString(20);
-							//交易執行者代號			X(50)       	String executer_id 							= strQueue.popBytesString(50);
+					
+//						本會代號	 	X(07) * T_4	
+						String domain_id = strQueue.popBytesString(7);
+						data.setDomain_id(domain_id);
+						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "空值"));
+						} else if (!checkMaps.get("T_4").containsKey(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "非預期"));
+						}
+						
+						//顧客統編				X(11)       *	
+						String party_number	= strQueue.popBytesString(11);
+						data.setParty_number(party_number);
+						if (ETL_Tool_FormatCheck.isEmpty(party_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "顧客統編", "空值"));
+						}
+						
+						//顧客姓名				X(80)       	
+						String party_last_name_1	= strQueue.popBytesString(80);
+						data.setParty_last_name_1(party_last_name_1);
+
+						
+						//顧客生日				X(08)       	
+						String date_of_birth = strQueue.popBytesString(8);
+						
+						if(!ETL_Tool_FormatCheck.isEmpty(date_of_birth)) {
+							if(ETL_Tool_FormatCheck.checkDate(date_of_birth)) {
+								data.setDate_of_birth(ETL_Tool_StringX.toUtilDate(date_of_birth));
+							}else if(advancedCheck) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(
+										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "顧客生日", "日期格式錯誤"));
+							}
+							
+						}
+
+						
+						//顧客國籍				X(02)  T_8     	
+						String nationality_code 	= strQueue.popBytesString(2);
+						data.setNationality_code(nationality_code);
+						if (ETL_Tool_FormatCheck.isEmpty(nationality_code)) {
+							if (advancedCheck && !checkMaps.get("T_8").containsKey(nationality_code)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(
+										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "顧客國籍", "非預期"));
+							}
+						}
+						
+						//交易編號				X(20)       *	
+						String transaction_id = strQueue.popBytesString(20);
+						if (ETL_Tool_FormatCheck.isEmpty(transaction_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易編號", "空值"));
+						}
+
+						//交易日期				X(08)       *	
+						String transaction_date  = strQueue.popBytesString(8);
+						if(ETL_Tool_FormatCheck.isEmpty(transaction_date)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易日期", "空值"));
+						}else if(ETL_Tool_FormatCheck.checkDate(transaction_date)) {
+							data.setTransaction_date((ETL_Tool_StringX.toUtilDate(transaction_date)));
+						}else {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易日期", "日期格式錯誤"));
+						}
+						
+						//實際交易時間			X(14)       *	
+						String transaction_time = strQueue.popBytesString(14);
+						if(ETL_Tool_FormatCheck.isEmpty(transaction_time)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "實際交易時間", "空值"));
+						
+						}else if(!ETL_Tool_FormatCheck.checkDate(transaction_time, "yyyyMMddHHmmss")) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "實際交易時間", "格式錯誤"));
+						}else {
+							data.setTransaction_time(ETL_Tool_StringX.toTimestamp(transaction_time, "yyyyMMddHHmmss"));
+						}
 						
 						
+						//結構或結售				X(01)  T_12 *	
+						String direction = strQueue.popBytesString(1);
+						data.setDirection(direction);
+						if (ETL_Tool_FormatCheck.isEmpty(direction)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "結構或結售", "空值"));
+						} else if (!checkMaps.get("T_12").containsKey(direction)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "結構或結售", "非預期"));
+						}
 						
 						
+						//交易幣別				X(03)  T_13 *	
+						String currency_code = strQueue.popBytesString(3);
+						if (ETL_Tool_FormatCheck.isEmpty(currency_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易幣別", "空值"));
+						} else if (!checkMaps.get("T_13").containsKey(currency_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易幣別", "非預期"));
+						}
 						
 						
+						//交易金額				9(12)  V99  *	
+						String amount = strQueue.popBytesString(14);
+						if(ETL_Tool_FormatCheck.isEmpty(currency_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易金額", "空值"));
+						}else if(ETL_Tool_FormatCheck.checkNum(amount)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易金額", "非數字"));
+						}else {
+							data.setAmount(ETL_Tool_StringX.strToBigDecimal(amount, 2));
+						}
+
 						
+						//申報國別				X(02)  T_15 *	
+						String ordering_customer_country = strQueue.popBytesString(2);
+						if (ETL_Tool_FormatCheck.isEmpty(ordering_customer_country)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "申報國別", "空值"));
+						} else if (!checkMaps.get("T_15").containsKey(ordering_customer_country)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "申報國別", "非預期"));
+						}
 						
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+						//交易管道類別			X(10)  T_16     
+						String channel_type = strQueue.popBytesString(10);
+						data.setChannel_type(channel_type);
+						if (!ETL_Tool_FormatCheck.isEmpty(channel_type)) {
+							if (advancedCheck && !checkMaps.get("T_16").containsKey(channel_type)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(
+										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "交易管道類別", "非預期"));
+							}	
+						}
+
+						//交易執行分行			X(20)       	
+						String execution_branch_code = strQueue.popBytesString(20);
+						data.setExecution_branch_code(execution_branch_code);
+						
+						//交易執行者代號			X(50)       	
+						String executer_id = strQueue.popBytesString(50);
+						data.setExecuter_id(executer_id);
 
 						addData(data);
 
@@ -280,9 +420,9 @@ public class ETL_E_FCX {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		insertAdapter.setSql("{call SP_INSERT_FCX_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-		insertAdapter.setCreateArrayTypesName("T_FCX_TEMP"); // DB2 type - PARTY_PHONE
-		insertAdapter.setCreateStructTypeName("A_FCX_TEMP"); // DB2 array type - PARTY_PHONE
-		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
+		insertAdapter.setCreateArrayTypesName("A_FCX_TEMP"); // DB2 type - PARTY_PHONE
+		insertAdapter.setCreateStructTypeName("T_FCX_TEMP"); // DB2 array type - PARTY_PHONE
+		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
 
@@ -293,4 +433,10 @@ public class ETL_E_FCX {
 		}
 	}
 
+	public static void main(String[] argv) {
+		ETL_E_FCX one = new ETL_E_FCX();
+		String filePath = "D:\\company\\pershing\\agribank\\test_data\\test";
+		String fileTypeName = "FCX";
+		one.read_Party_Phone_File(filePath, fileTypeName, "001");
+	}
 }

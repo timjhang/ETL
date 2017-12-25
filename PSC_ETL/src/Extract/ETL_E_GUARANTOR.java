@@ -181,6 +181,7 @@ public class ETL_E_GUARANTOR {
 						
 						// 生成一個Data
 						ETL_Bean_GUARANTOR_TEMP_Data data = new ETL_Bean_GUARANTOR_TEMP_Data(pfn);
+						data.setRow_count(rowCount);
 						
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
@@ -295,9 +296,6 @@ public class ETL_E_GUARANTOR {
 									data.setDate_of_birth(ETL_Tool_StringX.toUtilDate(date_of_birth));
 							}
 						}
-						
-						
-						
 						
 						
 						//		保證人國籍	 				X(02) * T_12 	
@@ -468,9 +466,9 @@ public class ETL_E_GUARANTOR {
 			
 			InsertAdapter insertAdapter = new InsertAdapter(); 
 			insertAdapter.setSql("{call SP_INSERT_GUARANTOR_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-			insertAdapter.setCreateArrayTypesName("T_GUARANTOR_TEMP"); // DB2 type - PARTY_PHONE
-			insertAdapter.setCreateStructTypeName("A_GUARANTOR_TEMP"); // DB2 array type - PARTY_PHONE
-			insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage);  // 設定上限寫入參數
+			insertAdapter.setCreateArrayTypesName("A_GUARANTOR_TEMP"); // DB2 type - PARTY_PHONE
+			insertAdapter.setCreateStructTypeName("T_GUARANTOR_TEMP"); // DB2 array type - PARTY_PHONE
+			insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage);  // 設定上限寫入參數
 
 			Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
 			

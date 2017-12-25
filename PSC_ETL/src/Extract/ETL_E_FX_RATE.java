@@ -159,7 +159,7 @@ public class ETL_E_FX_RATE {
 										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 							}
 							
-							// 保留欄位檢核(124)
+							// 保留欄位檢核(14)
 							String keepColumn = strQueue.popBytesString(14);
 							
 							if (!"".equals(fileFmtErrMsg)) {
@@ -180,6 +180,7 @@ public class ETL_E_FX_RATE {
 								
 								// 生成一個Data
 								ETL_Bean_FX_RATE_TEMP_Data data = new ETL_Bean_FX_RATE_TEMP_Data(pfn);
+								data.setRow_count(rowCount);
 								
 								// 區別碼(1)
 								String typeCode = strQueue.popBytesString(1);
@@ -189,10 +190,10 @@ public class ETL_E_FX_RATE {
 											
 								//FX_RATE
 
-								// 整行bytes數檢核(1 + 8 + 3 + 3 + 9= 24) 
-								if (strQueue.getTotalByteLength() != 24) {
+								// 整行bytes數檢核(1 + 8 + 3 + 3 + 15= 30) 
+								if (strQueue.getTotalByteLength() != 30) {
 									data.setError_mark("Y");
-									fileFmtErrMsg = "非預期24";
+									fileFmtErrMsg = "非預期30";
 									errWriter.addErrLog(
 											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 									
@@ -240,8 +241,8 @@ public class ETL_E_FX_RATE {
 											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "外幣代號2", "空值"));
 								}
 								
-匯率疑問 到底是9為整數6位小數 還是3為整數6位小數//			9(09)V(06) *	
-								String exchange_rate    = strQueue.popBytesString(9);	
+							//		9(09)V(06) *	
+								String exchange_rate    = strQueue.popBytesString(15);	
 								if(ETL_Tool_FormatCheck.isEmpty(exchange_rate)) {
 									data.setError_mark("Y");
 									errWriter.addErrLog(
@@ -314,7 +315,7 @@ public class ETL_E_FX_RATE {
 											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
 								}
 								
-								// 保留欄檢核(101)
+								// 保留欄檢核(7)
 								String keepColumn = strQueue.popBytesString(7);
 								
 								if (!"".equals(fileFmtErrMsg)) {
@@ -386,9 +387,9 @@ public class ETL_E_FX_RATE {
 			
 			InsertAdapter insertAdapter = new InsertAdapter(); 
 			insertAdapter.setSql("{call SP_INSERT_FX_RATE_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-			insertAdapter.setCreateArrayTypesName("T_FX_RATE_TEMP"); // DB2 type - PARTY_PHONE
-			insertAdapter.setCreateStructTypeName("A_FX_RATE_TEMP"); // DB2 array type - PARTY_PHONE
-			insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage);  // 設定上限寫入參數
+			insertAdapter.setCreateArrayTypesName("A_FX_RATE_TEMP"); // DB2 type - PARTY_PHONE
+			insertAdapter.setCreateStructTypeName("T_FX_RATE_TEMP"); // DB2 array type - PARTY_PHONE
+			insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage);  // 設定上限寫入參數
 
 			Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
 			

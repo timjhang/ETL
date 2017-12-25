@@ -32,6 +32,30 @@ public class ETL_Tool_StringX {
 		return timestamp;
 	}
 	
+	//TODO
+	/**
+	 * 轉換字串為Timestamp型態，格式預設為yyyyMMddhhmmss
+	 * @param dateStr 要轉換的字串
+	 * @param pattern 轉換前的格式 ex:yyyyMMddhhmmss
+	 * @return 轉換後的Timestamp物件，如轉換失敗，則回傳null
+	 */
+	public static Timestamp toTimestamp(String dateStr ,String pattern) {
+		Timestamp timestamp = null;
+		Date parsedDate;
+		
+		if( ETL_Tool_FormatCheck.checkDate(dateStr,pattern) ){
+			SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+			try {
+				parsedDate = dateFormat.parse(dateStr);
+				timestamp = new Timestamp(parsedDate.getTime());
+			} catch (ParseException e) {
+				return timestamp;
+			}
+		}
+
+		return timestamp;
+	}
+	
 	/**
 	 * 字串轉換為Util Date，格式預設為yyyyMMdd
 	 * @param dateStr 轉換字串
@@ -194,12 +218,19 @@ public class ETL_Tool_StringX {
 		}
 	}
 	
-	public static void main(String[] argv) throws Exception {
-		// BigDecimal BigDecimal = new BigDecimal("123.0001");
-		// //System.out.println(bigDecimalToStr(BigDecimal));
-		//
-		// String aaa=bigDecimalToStr(BigDecimal,"#.000");
-		// System.out.println("aaa:"+aaa);
-	}
+//	public static void main(String[] argv) throws Exception {
+//		Timestamp time =toTimestamp("163310","HHmmss");
+//		long aaa=time.getTime();
+//		
+//		Timestamp time1=new Timestamp(aaa);
+//		
+//	
+//		Date date = new Date();
+//		date.setTime(time1.getTime());
+//		String formattedDate = new SimpleDateFormat("HHmmss").format(date);
+//		
+//		System.out.println(formattedDate);
+//		
+//	}
 
 }

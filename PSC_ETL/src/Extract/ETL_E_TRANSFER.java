@@ -178,22 +178,18 @@ public class ETL_E_TRANSFER {
 
 						// 生成一個Data
 						ETL_Bean_TRANSFER_TEMP_Data data = new ETL_Bean_TRANSFER_TEMP_Data(pfn);
-
+						data.setRow_count(rowCount);
+						
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
 						if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
 							break;
 						}
 
-						//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						// 檢核
-						//TRANSFER
-
-
-						// 整行bytes數檢核(1 + 7 + 11 + 50 + 8 + 14+1+3+12+50+50+80+100+20+50+80+ 50+20+4+10+10+20+20+50= 721) 
-						if (strQueue.getTotalByteLength() != 721) {
+						// 整行bytes數檢核(1 + 7 + 11 + 50 + 8 + 14 + 1 + 3 + 14 + 50 + 50 + 80 + 100 + 20 + 50 + 80 + 50 + 20 + 4 + 10 + 10 + 20 + 20 + 50 = 723) 
+						if (strQueue.getTotalByteLength() != 723) {
 							data.setError_mark("Y");
-							fileFmtErrMsg = "非預期721";
+							fileFmtErrMsg = "非預期723";
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 							
@@ -252,14 +248,14 @@ public class ETL_E_TRANSFER {
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "匯率日期", "日期格式錯誤"));
 						}
 
-						 //實際匯款時間				X(14)       *	
-						String transfer_time 						= strQueue.popBytesString(14);
+						 //實際匯款時間	X(14)       *	
+						String transfer_time = strQueue.popBytesString(14);
 						if(ETL_Tool_FormatCheck.isEmpty(transfer_time)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "實際匯款時間", "空值"));
 						
-						}else if(ETL_Tool_FormatCheck.checkTimestamp(transfer_time)) {
+						}else if(ETL_Tool_FormatCheck.checkDate(transfer_time, "yyyyMMddHHmmss")) {
 							data.setTransfer_time(ETL_Tool_StringX.toTimestamp(transfer_time));
 						}else {
 							data.setError_mark("Y");
@@ -294,7 +290,7 @@ public class ETL_E_TRANSFER {
 						}
 						
 						 //交易金額					9(12)V99    *	
-						String instructed_amount = strQueue.popBytesString(12);
+						String instructed_amount = strQueue.popBytesString(14);
 						if (ETL_Tool_FormatCheck.isEmpty(instructed_amount)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
@@ -537,9 +533,9 @@ public class ETL_E_TRANSFER {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		insertAdapter.setSql("{call SP_INSERT_TRANSFER_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-		insertAdapter.setCreateArrayTypesName("T_TRANSFER_TEMP"); // DB2 type - PARTY_PHONE
-		insertAdapter.setCreateStructTypeName("A_TRANSFER_TEMP"); // DB2 array type - PARTY_PHONE
-		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
+		insertAdapter.setCreateArrayTypesName("A_TRANSFER_TEMP"); // DB2 array type
+		insertAdapter.setCreateStructTypeName("T_TRANSFER_TEMP"); // DB2 type 
+		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
 

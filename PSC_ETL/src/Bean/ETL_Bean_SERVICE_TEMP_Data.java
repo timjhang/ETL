@@ -11,45 +11,59 @@ public class ETL_Bean_SERVICE_TEMP_Data {
 	private String central_no;
 	//檔案日期	
 	private Date record_date;
-	 //檔名業務別	
+	//檔名業務別	
 	private String file_type;
-	 //本會代號	
+	//行數
+	private Integer row_count;
+	//本會代號	
 	private String domain_id;
-	 //客戶統編	
+	//客戶統編	
 	private String party_number;
-	 //服務編號	
+	//服務編號	
 	private String service_id;
-	 //服務日期	
+	//服務日期	
 	private Date service_date;
-	 //服務時間	
+	//服務時間	
 	private Timestamp service_time;
-	 //服務類別	
+	//服務類別	
 	private String service_type;
-	 //服務管道類別	
+	//服務管道類別	
 	private String channel_type;
-	 //服務管道編號	
+	//服務管道編號	
 	private String channel_id;
-	 //服務參考編號	
+	//服務參考編號	
 	private String service_reference_number;
-	 //資料變更前詳細內容	
+	//資料變更前詳細內容	
 	private String previous_value;
-	 //資料變更後詳細內容	
+	//資料變更後詳細內容	
 	private String new_value;
-	 //服務詳細內容	
+	//服務詳細內容	
 	private String service_description;
-	 //服務執行分行	
+	//服務執行分行	
 	private String execution_branch_code;
-	 //執行行員代號	
+	//執行行員代號	
 	private String executer_id;
-	 //錯誤註記	
+	//錯誤註記	
 	private String error_mark;
 	
 	public ETL_Bean_SERVICE_TEMP_Data(ETL_Tool_ParseFileName pfn) {
-		this.central_no = pfn.getCentral_No();
-		this.record_date = pfn.getRecord_Date();
-		this.file_type = pfn.getFile_Type();
+		if (pfn != null) {
+			this.central_no = pfn.getCentral_No();
+			this.record_date = pfn.getRecord_Date();
+			this.file_type = pfn.getFile_Type();
+		}
 	}
 	
+	
+	public Integer getRow_count() {
+		return row_count;
+	}
+
+	public void setRow_count(Integer row_count) {
+		this.row_count = row_count;
+	}
+
+
 	public String getCentral_no() {
 		return central_no;
 	}

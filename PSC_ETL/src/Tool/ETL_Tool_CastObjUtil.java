@@ -25,7 +25,9 @@ public class ETL_Tool_CastObjUtil {
 			if ("java.util.Date".equals(clazz.getName())) {
 				java.util.Date utilDate = (java.util.Date) clazz
 						.cast(PropertyUtils.getProperty(javaBean, field.getName()));
-				objs[i] = new java.sql.Date(utilDate.getTime());
+				if (utilDate != null) {
+					objs[i] = new java.sql.Date(utilDate.getTime());
+				}
 			} else {
 
 				objs[i] = clazz.cast(PropertyUtils.getProperty(javaBean, field.getName()));

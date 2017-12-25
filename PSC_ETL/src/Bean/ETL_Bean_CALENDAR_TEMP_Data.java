@@ -12,6 +12,8 @@ public class ETL_Bean_CALENDAR_TEMP_Data {
 	private Date record_date;
 	//檔名業務別			
 	private String file_type;
+	//行數
+	private Integer row_count;
 	//日期				
 	private Date calendar_day;
 	//是否為營業日		
@@ -20,13 +22,26 @@ public class ETL_Bean_CALENDAR_TEMP_Data {
 	private String error_mark = "";	
 	
 	public ETL_Bean_CALENDAR_TEMP_Data(ETL_Tool_ParseFileName pfn, Date calendar_day, String is_business_day, String error_mark) {
+		if(pfn!=null) {
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
+		}
 		this.calendar_day = calendar_day;
 		this.is_business_day = is_business_day;
 	}
 	
+	
+	public Integer getRow_count() {
+		return row_count;
+	}
+
+
+	public void setRow_count(Integer row_count) {
+		this.row_count = row_count;
+	}
+
+
 	public String getCentral_no() {
 		return central_no;
 	}

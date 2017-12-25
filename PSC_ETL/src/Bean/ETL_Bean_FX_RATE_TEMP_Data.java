@@ -13,6 +13,8 @@ public class ETL_Bean_FX_RATE_TEMP_Data {
 	private Date record_date;
 	// 檔名業務別
 	private String file_type;
+	//行數
+	private Integer row_count;
 	// 匯率日期
 	private Date value_date;
 	// 外幣代號1
@@ -25,12 +27,24 @@ public class ETL_Bean_FX_RATE_TEMP_Data {
 	private String error_mark;
 	
 	public ETL_Bean_FX_RATE_TEMP_Data(ETL_Tool_ParseFileName pfn) {
-		this.central_no = pfn.getCentral_No();
-		this.record_date = pfn.getRecord_Date();
-		this.file_type = pfn.getFile_Type();
+		if (pfn != null) {
+			this.central_no = pfn.getCentral_No();
+			this.record_date = pfn.getRecord_Date();
+			this.file_type = pfn.getFile_Type();
+		}
 	}
 	
 	
+	public Integer getRow_count() {
+		return row_count;
+	}
+
+
+	public void setRow_count(Integer row_count) {
+		this.row_count = row_count;
+	}
+
+
 	public String getCentral_no() {
 		return central_no;
 	}

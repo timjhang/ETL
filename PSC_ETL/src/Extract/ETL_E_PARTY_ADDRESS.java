@@ -424,7 +424,7 @@ public class ETL_E_PARTY_ADDRESS {
 		insertAdapter.setCreateArrayTypesName("T_PARTY_ADDRESS");
 		// DB2 array type - PARTY_ADDRESS
 		insertAdapter.setCreateStructTypeName("A_PARTY_ADDRESS");
-		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
+		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
 
