@@ -10,6 +10,7 @@ public class ETL_Bean_TRANSACTION_Data {
 
 	private String central_no;// 報送單位
 	private Date record_date;// 檔案日期
+	private int row_count;// 行數
 	private String domain_id;// 本會代號
 	private String party_number;// 客戶統編
 	private String file_type;// 檔名業務別
@@ -43,6 +44,14 @@ public class ETL_Bean_TRANSACTION_Data {
 		this.central_no = pfn.getCentral_No();// 報送單位
 		this.record_date = pfn.getRecord_Date();// 檔案日期
 		this.file_type = pfn.getFile_Type();// 檔名業務別
+	}
+
+	public int getRow_count() {
+		return row_count;
+	}
+
+	public void setRow_count(int row_count) {
+		this.row_count = row_count;
 	}
 
 	public String getCentral_no() {

@@ -9,6 +9,7 @@ public class ETL_Bean_PARTY_ADDRESS_Data {
 	private String central_no;// 報送單位
 	private Date record_date;// 檔案日期
 	private String file_type;// 檔名業務別
+	private int row_count;// 行數
 	private String domain_id;// 本會代號
 	private String party_number;// 客戶統編
 	private String change_code;// 異動代號
@@ -23,6 +24,14 @@ public class ETL_Bean_PARTY_ADDRESS_Data {
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
+	}
+
+	public int getRow_count() {
+		return row_count;
+	}
+
+	public void setRow_count(int row_count) {
+		this.row_count = row_count;
 	}
 
 	public String getCentral_no() {
