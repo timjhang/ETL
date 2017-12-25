@@ -180,6 +180,7 @@ public class ETL_E_LOAN_DETAIL {
 
 						// 生成一個Data
 						ETL_Bean_LOAN_DETAIL_Data data = new ETL_Bean_LOAN_DETAIL_Data(pfn);
+						data.setRow_count(rowCount);
 
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
@@ -400,7 +401,7 @@ public class ETL_E_LOAN_DETAIL {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"總筆數", fileFmtErrMsg));
-					} else if (Integer.valueOf(totalCount) == (rowCount - 2)) {
+					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
@@ -475,9 +476,9 @@ public class ETL_E_LOAN_DETAIL {
 		// 呼叫LOAN_DETAIL寫入DB2 - SP
 		insertAdapter.setSql("{call SP_INSERT_LOAN_DETAIL_TEMP(?)}");
 		// DB2 type - LOAN_DETAIL
-		insertAdapter.setCreateArrayTypesName("T_LOAN_DETAIL");
+		insertAdapter.setCreateStructTypeName("T_LOAN_DETAIL");
 		// DB2 array type - LOAN_DETAIL
-		insertAdapter.setCreateStructTypeName("A_LOAN_DETAIL");
+		insertAdapter.setCreateArrayTypesName("A_LOAN_DETAIL");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
@@ -487,22 +488,6 @@ public class ETL_E_LOAN_DETAIL {
 		} else {
 			throw new Exception("insert_Loan_Detail_Datas 發生錯誤");
 		}
-	}
-
-	/**
-	 * 檢測在特定欄位等於特定值時，會觸發另外一個欄位為必填時的規則
-	 * 
-	 * @param source
-	 *            特定欄位
-	 * @param now
-	 *            被觸發的欄位
-	 * @param compareVal
-	 *            特定值
-	 * @return true 符合規則 / false 不符合規則
-	 */
-	private static boolean specialRequired(String source, String now, String compareVal) {
-		return (!ETL_Tool_FormatCheck.isEmpty(source) && compareVal.equals(source.trim())
-				&& ETL_Tool_FormatCheck.isEmpty(now)) ? false : true;
 	}
 
 	public static void main(String[] argv) {

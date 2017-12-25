@@ -183,6 +183,7 @@ public class ETL_E_TRANSACTION {
 
 						// 生成一個Data
 						ETL_Bean_TRANSACTION_Data data = new ETL_Bean_TRANSACTION_Data(pfn);
+						data.setRow_count(rowCount);
 
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
@@ -526,7 +527,7 @@ public class ETL_E_TRANSACTION {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"總筆數", fileFmtErrMsg));
-					} else if (Integer.valueOf(totalCount) == (rowCount - 2)) {
+					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
@@ -601,9 +602,9 @@ public class ETL_E_TRANSACTION {
 		// 呼叫TRANSACTION寫入DB2 - SP
 		insertAdapter.setSql("{call SP_INSERT_TRANSACTION_TEMP(?)}");
 		// DB2 type - TRANSACTION
-		insertAdapter.setCreateArrayTypesName("T_TRANSACTION");
+		insertAdapter.setCreateStructTypeName("T_TRANSACTION");
 		// DB2 array type - TRANSACTION
-		insertAdapter.setCreateStructTypeName("A_TRANSACTION");
+		insertAdapter.setCreateArrayTypesName("A_TRANSACTION");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);

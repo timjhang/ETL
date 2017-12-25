@@ -181,6 +181,7 @@ public class ETL_E_COLLATERAL {
 
 						// 生成一個Data
 						ETL_Bean_COLLATERAL_Data data = new ETL_Bean_COLLATERAL_Data(pfn);
+						data.setRow_count(rowCount);
 
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
@@ -426,7 +427,7 @@ public class ETL_E_COLLATERAL {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"總筆數", fileFmtErrMsg));
-					} else if (Integer.valueOf(totalCount) == (rowCount - 2)) {
+					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
@@ -501,9 +502,9 @@ public class ETL_E_COLLATERAL {
 		// 呼叫COLLATERAL寫入DB2 - SP
 		insertAdapter.setSql("{call SP_INSERT_COLLATERAL_TEMP(?)}");
 		// DB2 type - COLLATERAL
-		insertAdapter.setCreateArrayTypesName("T_COLLATERAL");
+		insertAdapter.setCreateStructTypeName("T_COLLATERAL");
 		// DB2 array type - COLLATERAL
-		insertAdapter.setCreateStructTypeName("A_COLLATERAL");
+		insertAdapter.setCreateArrayTypesName("A_COLLATERAL");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);

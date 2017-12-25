@@ -187,7 +187,8 @@ public class ETL_E_ACCOUNT {
 
 						// 生成一個Data
 						ETL_Bean_ACCOUNT_Data data = new ETL_Bean_ACCOUNT_Data(pfn);
-
+						data.setRow_count(rowCount);
+						
 						// 區別碼(1)
 						String typeCode = strQueue.popBytesString(1);
 						if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
@@ -498,7 +499,7 @@ public class ETL_E_ACCOUNT {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"總筆數", fileFmtErrMsg));
-					} else if (Integer.valueOf(totalCount) == (rowCount - 2)) {
+					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
@@ -573,9 +574,9 @@ public class ETL_E_ACCOUNT {
 		// 呼叫ACCOUNT寫入DB2 - SP
 		insertAdapter.setSql("{call SP_INSERT_ACCOUNT_TEMP(?)}");
 		// DB2 type - ACCOUNT
-		insertAdapter.setCreateArrayTypesName("T_ACCOUNT");
+		insertAdapter.setCreateStructTypeName("T_ACCOUNT");
 		// DB2 array type - ACCOUNT
-		insertAdapter.setCreateStructTypeName("A_ACCOUNT");
+		insertAdapter.setCreateArrayTypesName("A_ACCOUNT");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
