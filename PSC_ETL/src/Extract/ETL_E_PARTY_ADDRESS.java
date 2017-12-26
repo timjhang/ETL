@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -289,7 +290,7 @@ public class ETL_E_PARTY_ADDRESS {
 						String address_line_1 = strQueue.popBytesString(100);
 						data.setAddress_line_1(address_line_1);
 
-						if (ETL_Tool_FormatCheck.isEmpty(country)) {
+						if (ETL_Tool_FormatCheck.isEmpty(address_line_1)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "地址", "空值"));
@@ -313,19 +314,20 @@ public class ETL_E_PARTY_ADDRESS {
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
 					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 114 = 137)
-					if (strQueue.getTotalByteLength() != 139) {
-						fileFmtErrMsg = "尾錄位元數非預期139";
+					if (strQueue.getTotalByteLength() != 137) {
+						fileFmtErrMsg = "尾錄位元數非預期137";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
 
 					// 區別碼檢核(1) 經"逐行讀取檔案"區塊, 若無嚴重錯誤應為3, 此處無檢核
 
-					// 報送單位檢核(7)
+					/*
+					 *  報送單位檢核(7)
+					 *  報送單位一致性檢查,嚴重錯誤,不進行迴圈並記錄錯誤訊息
+					 */
 					String central_no = strQueue.popBytesString(7);
-					if (!central_no.equals(pfn.getCentral_No())) { // 報送單位一致性檢查,
-																	// 嚴重錯誤,
-																	// 不進行迴圈並記錄錯誤訊息
+					if (!central_no.equals(pfn.getCentral_No())) {
 						fileFmtErrMsg = "尾錄報送單位代碼與檔名不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"報送單位", fileFmtErrMsg));
@@ -444,11 +446,19 @@ public class ETL_E_PARTY_ADDRESS {
 
 	public static void main(String[] argv) throws IOException {
 //		byte[] tmp =Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\PARTY_ADDRESS\\A.txt"));
-//		System.out.println(tmp.length);
+//		System.out.println("位元組長度: "+ tmp.length);
+//		System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+//		System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+//		System.out.println("客戶統編X(11): "+ new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+//		System.out.println("異動代號X(01): "+ new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+//		System.out.println("地址類別X(03): "+ new String(Arrays.copyOfRange(tmp, 20, 23), "Big5"));
+//		System.out.println("地址國別X(02): "+ new String(Arrays.copyOfRange(tmp, 23, 25), "Big5"));
+//		System.out.println("郵遞區號X(12): "+ new String(Arrays.copyOfRange(tmp, 25, 37), "Big5"));
+//		System.out.println("地址X(100): "+ new String(Arrays.copyOfRange(tmp, 37, 137), "Big5"));
+
 		ETL_E_PARTY_ADDRESS one = new ETL_E_PARTY_ADDRESS();
 		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\PARTY_ADDRESS";
 		String fileTypeName = "PARTY_ADDRESS";
 		one.read_Party_Address_File(filePath, fileTypeName, "001");
 	}
-
 }
