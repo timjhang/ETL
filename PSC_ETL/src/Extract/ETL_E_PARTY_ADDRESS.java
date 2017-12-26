@@ -445,7 +445,7 @@ public class ETL_E_PARTY_ADDRESS {
 	}
 
 	public static void main(String[] argv) throws IOException {
-//		byte[] tmp =Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\PARTY_ADDRESS\\A.txt"));
+//		byte[] tmp =Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\PARTY_ADDRESS.txt"));
 //		System.out.println("位元組長度: "+ tmp.length);
 //		System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
 //		System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
@@ -457,7 +457,7 @@ public class ETL_E_PARTY_ADDRESS {
 //		System.out.println("地址X(100): "+ new String(Arrays.copyOfRange(tmp, 37, 137), "Big5"));
 
 		ETL_E_PARTY_ADDRESS one = new ETL_E_PARTY_ADDRESS();
-		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\PARTY_ADDRESS";
+		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
 		String fileTypeName = "PARTY_ADDRESS";
 		one.read_Party_Address_File(filePath, fileTypeName, "001");
 	}
