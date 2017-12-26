@@ -3,7 +3,10 @@ package Extract;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -118,10 +121,12 @@ public class ETL_E_PARTY_ADDRESS {
 
 					// 注入首錄字串
 					strQueue.setTargetString(lineStr);
+					System.out.println(lineStr);
+					System.out.println(strQueue.getTotalByteLength());
 
 					// 檢查整行bytes數(1 + 7 + 8 + 121 = 137)
-					if (strQueue.getTotalByteLength() != 139) {
-						fileFmtErrMsg = "首錄位元數非預期139";
+					if (strQueue.getTotalByteLength() != 137) {
+						fileFmtErrMsg = "首錄位元數非預期137";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -191,10 +196,10 @@ public class ETL_E_PARTY_ADDRESS {
 						}
 
 						// 整行bytes數檢核(1 + 7 + 11 + 1 + 3 + 2 + 12 + 100 = 137)
-						if (strQueue.getTotalByteLength() != 139) {
+						if (strQueue.getTotalByteLength() != 137) {
 							data.setError_mark("Y");
 
-							fileFmtErrMsg = "非預期139";
+							fileFmtErrMsg = "明細錄位元數非預期137";
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 
@@ -437,9 +442,11 @@ public class ETL_E_PARTY_ADDRESS {
 		}
 	}
 
-	public static void main(String[] argv) {
+	public static void main(String[] argv) throws IOException {
+//		byte[] tmp =Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\PARTY_ADDRESS\\A.txt"));
+//		System.out.println(tmp.length);
 		ETL_E_PARTY_ADDRESS one = new ETL_E_PARTY_ADDRESS();
-		String filePath = "D:/aaa";
+		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\PARTY_ADDRESS";
 		String fileTypeName = "PARTY_ADDRESS";
 		one.read_Party_Address_File(filePath, fileTypeName, "001");
 	}

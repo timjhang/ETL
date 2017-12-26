@@ -53,7 +53,7 @@ public class ETF_Tool_FileReader {
 				if (forTest) { // test
 					System.out.println("ETF_Tool_FileReader 解析得" + pfn.getFileName() + " => " + pfn.getFile_Name());
 				}
-				
+
 				// 檔名分析後  符合檔名進入list
 				if (pfn.getFile_Name().equals(fileTypeName)) { 
 					
