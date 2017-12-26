@@ -60,6 +60,20 @@ public class ETL_Tool_FormatCheck {
 		return true;
 	}
 	
+
+	// 日期格式檢核工具  (通過檢核:true\檢核失敗:false)  String pattern 格式 ex: "yyyy-MM-dd HH:mm:ss.SSSSSS"
+	public static boolean checkDate(String inputString, String pattern)
+	{ 
+	    SimpleDateFormat format = new SimpleDateFormat(pattern);
+	    try{
+	       format.parse(inputString);
+	       return true;
+	    }catch(Exception e)
+	    {
+	        return false;
+	    }
+	}
+	
 	// 數字檢核工具  (通過檢核:true\檢核失敗:false)
 	public static boolean checkNum(String numStr) {
 		if (isEmpty(numStr)) {
