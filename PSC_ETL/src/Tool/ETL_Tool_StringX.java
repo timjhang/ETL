@@ -19,7 +19,7 @@ public class ETL_Tool_StringX {
 		Timestamp timestamp = null;
 		Date parsedDate;
 		
-		if( ETL_Tool_FormatCheck.checkDate(dateStr) ){
+		if( ETL_Tool_FormatCheck.checkTimestamp(dateStr)){
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			try {
 				parsedDate = dateFormat.parse(dateStr);
