@@ -11,7 +11,7 @@ import java.util.Date;
 public class ETL_Tool_StringX {
 
 	/**
-	 * 轉換字串為Timestamp型態，格式預設為yyyyMMddhhmmss
+	 * 轉換字串為Timestamp型態，格式預設為yyyyMMddHHmmss
 	 * @param dateStr 要轉換的字串
 	 * @return 轉換後的Timestamp物件，如轉換失敗，則回傳null
 	 */
@@ -20,7 +20,7 @@ public class ETL_Tool_StringX {
 		Date parsedDate;
 		
 		if( ETL_Tool_FormatCheck.checkDate(dateStr) ){
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			try {
 				parsedDate = dateFormat.parse(dateStr);
 				timestamp = new Timestamp(parsedDate.getTime());
