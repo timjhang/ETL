@@ -678,11 +678,11 @@ public class ETL_E_TRANSACTION {
 		}
 
 		//讀取測試資料，並運行程式
-		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
-		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-		String fileTypeName = "TRANSACTION";
-		one.read_Transaction_File(filePath, fileTypeName, "001");
-		System.out.println(ETL_Tool_FormatCheck.checkTimestamp("20171206140406"));
+//		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
+//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+//		String fileTypeName = "TRANSACTION";
+//		one.read_Transaction_File(filePath, fileTypeName, "001");
+		System.out.println(ETL_Tool_StringX.toTimestamp("20171206140406"));
 	}
 
 }
