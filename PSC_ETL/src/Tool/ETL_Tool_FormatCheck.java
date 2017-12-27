@@ -66,6 +66,7 @@ public class ETL_Tool_FormatCheck {
 	    SimpleDateFormat format = new SimpleDateFormat(pattern);
 	    try{
 	       format.parse(inputString);
+	       format.setLenient(false); // 過濾不合理日期
 	       return true;
 	    }catch(Exception e)
 	    {
