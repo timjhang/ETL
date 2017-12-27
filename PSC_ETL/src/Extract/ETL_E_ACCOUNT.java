@@ -3,8 +3,13 @@ package Extract;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -126,8 +131,8 @@ public class ETL_E_ACCOUNT {
 					strQueue.setTargetString(lineStr);
 
 					// 檢查整行bytes數(1 + 7 + 8 + 97 = 113)
-					if (strQueue.getTotalByteLength() != 115) {
-						fileFmtErrMsg = "首錄位元數非預期115";
+					if (strQueue.getTotalByteLength() != 113) {
+						fileFmtErrMsg = "首錄位元數非預期113";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -199,9 +204,9 @@ public class ETL_E_ACCOUNT {
 						 * 整行bytes數檢核(1 + 7 + 11 + 1 + 30 + 7 + 2 + 1 + 3 + 1 +
 						 * 1 + 8 + 8 + 1 + 14 + 1 + 14 + 2 = 113)
 						 */
-						if (strQueue.getTotalByteLength() != 115) {
+						if (strQueue.getTotalByteLength() != 113) {
 							data.setError_mark("Y");
-							fileFmtErrMsg = "非預期111";
+							fileFmtErrMsg = "非預期113";
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 
@@ -367,7 +372,7 @@ public class ETL_E_ACCOUNT {
 						data.setAccount_close_date(ETL_Tool_StringX.toUtilDate(account_close_date));
 
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(account_close_date)) {
-							if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
+							if (!ETL_Tool_FormatCheck.checkDate(account_close_date)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "結清(銷戶)日期", "格式錯誤"));
@@ -419,7 +424,7 @@ public class ETL_E_ACCOUNT {
 
 						// 過去一個月平均餘額 R 9(12)V99
 						String balance_last_month_avg_value = strQueue.popBytesString(14);
-						data.setBalance_acct_currency_value(
+						data.setBalance_last_month_avg_value(
 								ETL_Tool_StringX.strToBigDecimal(balance_last_month_avg_value, 2));
 
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
@@ -431,7 +436,7 @@ public class ETL_E_ACCOUNT {
 						}
 
 						// 警示註記 O X(02)
-						String caution_note = strQueue.popBytesString(1);
+						String caution_note = strQueue.popBytesString(2);
 						data.setCaution_note(caution_note);
 
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(caution_note)
@@ -459,8 +464,8 @@ public class ETL_E_ACCOUNT {
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
 					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 90 = 113)
-					if (strQueue.getTotalByteLength() != 115) {
-						fileFmtErrMsg = "尾錄位元數非預期115";
+					if (strQueue.getTotalByteLength() != 113) {
+						fileFmtErrMsg = "尾錄位元數非預期113";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -588,9 +593,40 @@ public class ETL_E_ACCOUNT {
 		}
 	}
 
-	public static void main(String[] argv) {
+	public static void main(String[] argv) throws IOException {
+		
+		//讀取測試資料，並列出明細錄欄位
+	    Charset charset = Charset.forName("Big5");
+		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\ACCOUNT.txt"), charset);
+		System.out.println("============================================================================================");
+		for (String line : lines) {
+			byte[] tmp = line.getBytes(charset);
+			System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
+			System.out.println("位元組長度: "+ tmp.length);
+			System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+			System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+			System.out.println("客戶統編X(11): "+ new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+			System.out.println("異動代號X(01): "+ new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+			System.out.println("帳號X(30): "+ new String(Arrays.copyOfRange(tmp, 20, 50), "Big5"));
+			System.out.println("帳戶行X(07): "+ new String(Arrays.copyOfRange(tmp, 50, 57), "Big5"));
+			System.out.println("帳戶類別X(02): "+ new String(Arrays.copyOfRange(tmp, 57, 59), "Big5"));
+			System.out.println("連結服務X(01): "+ new String(Arrays.copyOfRange(tmp, 59, 60), "Big5"));
+			System.out.println("幣別X(03): "+ new String(Arrays.copyOfRange(tmp, 60, 63), "Big5"));
+			System.out.println("帳戶狀態X(01): "+ new String(Arrays.copyOfRange(tmp, 63, 64), "Big5"));
+			System.out.println("開戶管道X(01): "+ new String(Arrays.copyOfRange(tmp, 64, 65), "Big5"));
+			System.out.println("開戶日期X(08): "+ new String(Arrays.copyOfRange(tmp, 65, 73), "Big5"));
+			System.out.println("結清(銷戶)日期X(08): "+ new String(Arrays.copyOfRange(tmp, 73, 81), "Big5"));
+			System.out.println("帳戶餘額正負號X(01): "+ new String(Arrays.copyOfRange(tmp, 81, 82), "Big5"));
+			System.out.println("帳戶餘額9(12)V99: "+ new String(Arrays.copyOfRange(tmp, 82, 96), "Big5"));
+			System.out.println("過去一個月平均餘額正負號X(01): "+ new String(Arrays.copyOfRange(tmp, 96, 97), "Big5"));
+			System.out.println("過去一個月平均餘額9(12)V99: "+ new String(Arrays.copyOfRange(tmp, 97, 111), "Big5"));
+			System.out.println("警示註記X(02): "+ new String(Arrays.copyOfRange(tmp, 111, 113), "Big5"));
+			System.out.println("============================================================================================");
+		}
+		
+		//讀取測試資料，並運行程式
 		ETL_E_ACCOUNT one = new ETL_E_ACCOUNT();
-		String filePath = "D:/aaa";
+		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
 		String fileTypeName = "ACCOUNT";
 		one.read_Account_File(filePath, fileTypeName, "001");
 	}
