@@ -28,12 +28,11 @@ public class ETL_Tool_FormatCheck {
 		}
 		
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 			sdf.setLenient(false); // 過濾不合理日期
 			sdf.parse(dateStr);
 			isVaild = true;
 		} catch (Exception ex) {
-			ex.printStackTrace();
 			System.out.println(ex.getMessage());
 			return isVaild;
 		}
