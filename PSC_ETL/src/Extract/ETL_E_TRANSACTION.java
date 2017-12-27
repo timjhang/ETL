@@ -281,20 +281,19 @@ public class ETL_E_TRANSACTION {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "作帳日", "格式錯誤"));
 						}
-
 						// 實際交易時間 R X(14)*
 						String transaction_time = strQueue.popBytesString(14);
 						data.setTransaction_time(ETL_Tool_StringX.toTimestamp(transaction_time));
 
-						if (ETL_Tool_FormatCheck.isEmpty(transaction_time)) {
-							data.setError_mark("Y");
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "實際交易時間", "空值"));
-						} else if (!ETL_Tool_FormatCheck.checkTimestamp(transaction_time)) {
-							data.setError_mark("Y");
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "實際交易時間", "格式錯誤"));
-						}
+//						if (ETL_Tool_FormatCheck.isEmpty(transaction_time)) {
+//							data.setError_mark("Y");
+//							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+//									String.valueOf(rowCount), "實際交易時間", "空值"));
+//						} else if (!ETL_Tool_FormatCheck.checkTimestamp(transaction_time)) {
+//							data.setError_mark("Y");
+//							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+//									String.valueOf(rowCount), "實際交易時間", "格式錯誤"));
+//						}
 
 						// 交易幣別 R X(03)*
 						String currency_code = strQueue.popBytesString(3);
@@ -642,48 +641,48 @@ public class ETL_E_TRANSACTION {
 	public static void main(String[] argv) throws IOException {
 
 		//讀取測試資料，並列出明細錄欄位
-//	    Charset charset = Charset.forName("Big5");
-//		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\TRANSACTION.txt"), charset);
-//		System.out.println("============================================================================================");
-//		for (String line : lines) {
-//			byte[] tmp = line.getBytes(charset);
-//			System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
-//			System.out.println("位元組長度: "+ tmp.length);
-//			System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
-//			System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
-//			System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
-//			System.out.println("帳號X(30): " + new String(Arrays.copyOfRange(tmp, 19, 49), "Big5"));
-//			System.out.println("主機交易序號X(20): " + new String(Arrays.copyOfRange(tmp, 49, 69), "Big5"));
-//			System.out.println("作帳日X(08): " + new String(Arrays.copyOfRange(tmp, 69, 77), "Big5"));
-//			System.out.println("實際交易時間X(14): " + new String(Arrays.copyOfRange(tmp, 77, 91), "Big5"));
-//			System.out.println("交易幣別X(03): " + new String(Arrays.copyOfRange(tmp, 91, 94), "Big5"));
-//			System.out.println("交易金額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 94, 95), "Big5"));
-//			System.out.println("交易金額9(12)V99 : " + new String(Arrays.copyOfRange(tmp, 95, 109), "Big5"));
-//			System.out.println("存提區分X(01): " + new String(Arrays.copyOfRange(tmp, 109, 110), "Big5"));
-//			System.out.println("交易類別X(04): " + new String(Arrays.copyOfRange(tmp, 110, 114), "Big5"));
-//			System.out.println("交易管道X(03): " + new String(Arrays.copyOfRange(tmp, 114, 117), "Big5"));
-//			System.out.println("交易代號X(10): " + new String(Arrays.copyOfRange(tmp, 117, 127), "Big5"));
-//			System.out.println("原交易代號X(10): " + new String(Arrays.copyOfRange(tmp, 127, 137), "Big5"));
-//			System.out.println("交易摘要X(05): " + new String(Arrays.copyOfRange(tmp, 137, 142), "Big5"));
-//			System.out.println("備註X(80): " + new String(Arrays.copyOfRange(tmp, 142, 222), "Big5"));
-//			System.out.println("操作行X(07): " + new String(Arrays.copyOfRange(tmp, 222, 229), "Big5"));
-//			System.out.println("操作櫃員代號或姓名X(20): " + new String(Arrays.copyOfRange(tmp, 229, 249), "Big5"));
-//			System.out.println("匯款人姓名X(80): " + new String(Arrays.copyOfRange(tmp, 249, 329), "Big5"));
-//			System.out.println("受款人姓名X(80): " + new String(Arrays.copyOfRange(tmp, 329, 409), "Big5"));
-//			System.out.println("受款人銀行X(08): " + new String(Arrays.copyOfRange(tmp, 409, 417), "Big5"));
-//			System.out.println("受款人帳號 X(50): " + new String(Arrays.copyOfRange(tmp, 417, 467), "Big5"));
-//			System.out.println("還款本金9(12)V99: " + new String(Arrays.copyOfRange(tmp, 467, 481), "Big5"));
-//			System.out.println("更正記號X(01): " + new String(Arrays.copyOfRange(tmp, 481, 482), "Big5"));
-//			System.out.println("申報國別X(02): " + new String(Arrays.copyOfRange(tmp, 482, 484), "Big5"));
-//			System.out.println("============================================================================================");
-//		}
+	    Charset charset = Charset.forName("Big5");
+		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\TRANSACTION.txt"), charset);
+		System.out.println("============================================================================================");
+		for (String line : lines) {
+			byte[] tmp = line.getBytes(charset);
+			System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
+			System.out.println("位元組長度: "+ tmp.length);
+			System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+			System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+			System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+			System.out.println("帳號X(30): " + new String(Arrays.copyOfRange(tmp, 19, 49), "Big5"));
+			System.out.println("主機交易序號X(20): " + new String(Arrays.copyOfRange(tmp, 49, 69), "Big5"));
+			System.out.println("作帳日X(08): " + new String(Arrays.copyOfRange(tmp, 69, 77), "Big5"));
+			System.out.println("實際交易時間X(14): " + new String(Arrays.copyOfRange(tmp, 77, 91), "Big5"));
+			System.out.println("交易幣別X(03): " + new String(Arrays.copyOfRange(tmp, 91, 94), "Big5"));
+			System.out.println("交易金額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 94, 95), "Big5"));
+			System.out.println("交易金額9(12)V99 : " + new String(Arrays.copyOfRange(tmp, 95, 109), "Big5"));
+			System.out.println("存提區分X(01): " + new String(Arrays.copyOfRange(tmp, 109, 110), "Big5"));
+			System.out.println("交易類別X(04): " + new String(Arrays.copyOfRange(tmp, 110, 114), "Big5"));
+			System.out.println("交易管道X(03): " + new String(Arrays.copyOfRange(tmp, 114, 117), "Big5"));
+			System.out.println("交易代號X(10): " + new String(Arrays.copyOfRange(tmp, 117, 127), "Big5"));
+			System.out.println("原交易代號X(10): " + new String(Arrays.copyOfRange(tmp, 127, 137), "Big5"));
+			System.out.println("交易摘要X(05): " + new String(Arrays.copyOfRange(tmp, 137, 142), "Big5"));
+			System.out.println("備註X(80): " + new String(Arrays.copyOfRange(tmp, 142, 222), "Big5"));
+			System.out.println("操作行X(07): " + new String(Arrays.copyOfRange(tmp, 222, 229), "Big5"));
+			System.out.println("操作櫃員代號或姓名X(20): " + new String(Arrays.copyOfRange(tmp, 229, 249), "Big5"));
+			System.out.println("匯款人姓名X(80): " + new String(Arrays.copyOfRange(tmp, 249, 329), "Big5"));
+			System.out.println("受款人姓名X(80): " + new String(Arrays.copyOfRange(tmp, 329, 409), "Big5"));
+			System.out.println("受款人銀行X(08): " + new String(Arrays.copyOfRange(tmp, 409, 417), "Big5"));
+			System.out.println("受款人帳號 X(50): " + new String(Arrays.copyOfRange(tmp, 417, 467), "Big5"));
+			System.out.println("還款本金9(12)V99: " + new String(Arrays.copyOfRange(tmp, 467, 481), "Big5"));
+			System.out.println("更正記號X(01): " + new String(Arrays.copyOfRange(tmp, 481, 482), "Big5"));
+			System.out.println("申報國別X(02): " + new String(Arrays.copyOfRange(tmp, 482, 484), "Big5"));
+			System.out.println("============================================================================================");
+		}
 
 		//讀取測試資料，並運行程式
-//		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
-//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-//		String fileTypeName = "TRANSACTION";
-//		one.read_Transaction_File(filePath, fileTypeName, "001");
-		System.out.println(ETL_Tool_FormatCheck.checkTimestamp("20171206151317"));
+		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
+		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+		String fileTypeName = "TRANSACTION";
+		one.read_Transaction_File(filePath, fileTypeName, "001");
+		System.out.println(ETL_Tool_FormatCheck.checkTimestamp("20171206140406"));
 	}
 
 }
