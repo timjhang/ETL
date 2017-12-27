@@ -229,7 +229,7 @@ public class ETL_E_PARTY_ADDRESS {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "空值"));
-						} else if (!checkMaps.get("domain_id").containsKey(domain_id)) {
+						} else if (!checkMaps.get("domain_id").containsKey(domain_id.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "非預期"));
@@ -253,7 +253,7 @@ public class ETL_E_PARTY_ADDRESS {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "異動代號", "空值"));
-						} else if (!checkMaps.get("change_code").containsKey(change_code)) {
+						} else if (!checkMaps.get("change_code").containsKey(change_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "異動代號", "非預期"));
@@ -267,7 +267,7 @@ public class ETL_E_PARTY_ADDRESS {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "地址類別", "空值"));
-						} else if (!checkMaps.get("address_type").containsKey(address_type)) {
+						} else if (!checkMaps.get("address_type").containsKey(address_type.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "地址類別", "非預期"));
@@ -277,7 +277,7 @@ public class ETL_E_PARTY_ADDRESS {
 						String country = strQueue.popBytesString(2);
 						data.setCountry(country);
 						
-						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(country) && !checkMaps.get("country").containsKey(country)) {
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(country) && !checkMaps.get("country").containsKey(country.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "地址國別", "非預期"));

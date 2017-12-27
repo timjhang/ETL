@@ -227,12 +227,12 @@ public class ETL_E_TRANSACTION {
 						// 本會代號檢核 R X(07)*
 						String domain_id = strQueue.popBytesString(7);
 						data.setDomain_id(domain_id);
-
+						
 						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "空值"));
-						} else if (!checkMaps.get("domain_id").containsKey(domain_id)) {
+						} else if (!checkMaps.get("domain_id").containsKey(domain_id.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "非預期"));
@@ -285,15 +285,15 @@ public class ETL_E_TRANSACTION {
 						String transaction_time = strQueue.popBytesString(14);
 						data.setTransaction_time(ETL_Tool_StringX.toTimestamp(transaction_time));
 
-//						if (ETL_Tool_FormatCheck.isEmpty(transaction_time)) {
-//							data.setError_mark("Y");
-//							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-//									String.valueOf(rowCount), "實際交易時間", "空值"));
-//						} else if (!ETL_Tool_FormatCheck.checkTimestamp(transaction_time)) {
-//							data.setError_mark("Y");
-//							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-//									String.valueOf(rowCount), "實際交易時間", "格式錯誤"));
-//						}
+						if (ETL_Tool_FormatCheck.isEmpty(transaction_time)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "實際交易時間", "空值"));
+						} else if (!ETL_Tool_FormatCheck.checkTimestamp(transaction_time)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "實際交易時間", "格式錯誤"));
+						}
 
 						// 交易幣別 R X(03)*
 						String currency_code = strQueue.popBytesString(3);
@@ -303,7 +303,7 @@ public class ETL_E_TRANSACTION {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易幣別", "空值"));
-						} else if (!checkMaps.get("currency_code").containsKey(currency_code)) {
+						} else if (!checkMaps.get("currency_code").containsKey(currency_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易幣別", "非預期"));
@@ -317,7 +317,7 @@ public class ETL_E_TRANSACTION {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易金額正負號", "空值"));
-						} else if (!checkMaps.get("amt_sign").containsKey(amt_sign)) {
+						} else if (!checkMaps.get("amt_sign").containsKey(amt_sign.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易金額正負號", "非預期"));
@@ -345,7 +345,7 @@ public class ETL_E_TRANSACTION {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "存提區分", "空值"));
-						} else if (!checkMaps.get("direction").containsKey(direction)) {
+						} else if (!checkMaps.get("direction").containsKey(direction.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "存提區分", "非預期"));
@@ -359,7 +359,7 @@ public class ETL_E_TRANSACTION {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易類別", "空值"));
-						} else if (!checkMaps.get("transaction_type").containsKey(transaction_type)) {
+						} else if (!checkMaps.get("transaction_type").containsKey(transaction_type.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易類別", "非預期"));
@@ -373,7 +373,7 @@ public class ETL_E_TRANSACTION {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易管道", "空值"));
-						} else if (!checkMaps.get("channel_type").containsKey(channel_type)) {
+						} else if (!checkMaps.get("channel_type").containsKey(channel_type.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "交易管道", "非預期"));
@@ -458,7 +458,7 @@ public class ETL_E_TRANSACTION {
 						data.setEc_flag(ec_flag);
 
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(ec_flag)
-								&& !checkMaps.get("ec_flag").containsKey(ec_flag)) {
+								&& !checkMaps.get("ec_flag").containsKey(ec_flag.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "更正記號", "非預期"));
@@ -678,11 +678,10 @@ public class ETL_E_TRANSACTION {
 		}
 
 		//讀取測試資料，並運行程式
-//		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
-//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-//		String fileTypeName = "TRANSACTION";
-//		one.read_Transaction_File(filePath, fileTypeName, "001");
-		System.out.println(ETL_Tool_StringX.toTimestamp("20171206140406"));
+		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
+		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+		String fileTypeName = "TRANSACTION";
+		one.read_Transaction_File(filePath, fileTypeName, "001");
 	}
 
 }

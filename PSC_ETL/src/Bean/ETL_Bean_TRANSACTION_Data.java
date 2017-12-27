@@ -10,10 +10,10 @@ public class ETL_Bean_TRANSACTION_Data {
 
 	private String central_no;// 報送單位
 	private Date record_date;// 檔案日期
+	private String file_type;// 檔名業務別
 	private Integer row_count;// 行數
 	private String domain_id;// 本會代號
 	private String party_number;// 客戶統編
-	private String file_type;// 檔名業務別
 	private String account_id;// 帳號
 	private String transaction_id;// 主機交易序號
 	private Date transaction_date;// 作帳日

@@ -233,7 +233,7 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "空值"));
-						} else if (!checkMaps.get("domain_id").containsKey(domain_id)) {
+						} else if (!checkMaps.get("domain_id").containsKey(domain_id.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "非預期"));
@@ -257,7 +257,7 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "異動代號", "空值"));
-						} else if (!checkMaps.get("change_code").containsKey(change_code)) {
+						} else if (!checkMaps.get("change_code").containsKey(change_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "異動代號", "非預期"));
@@ -291,7 +291,7 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "帳戶類別", "空值"));
-						} else if (!checkMaps.get("account_type_code").containsKey(account_type_code)) {
+						} else if (!checkMaps.get("account_type_code").containsKey(account_type_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "帳戶類別", "非預期"));
@@ -305,7 +305,7 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "連結服務", "空值"));
-						} else if (!checkMaps.get("property_code").containsKey(property_code)) {
+						} else if (!checkMaps.get("property_code").containsKey(property_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "連結服務", "非預期"));
@@ -319,7 +319,7 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "幣別", "空值"));
-						} else if (!checkMaps.get("currency_code").containsKey(currency_code)) {
+						} else if (!checkMaps.get("currency_code").containsKey(currency_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "幣別", "非預期"));
@@ -333,7 +333,7 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "帳戶狀態", "空值"));
-						} else if (!checkMaps.get("status_code").containsKey(status_code)) {
+						} else if (!checkMaps.get("status_code").containsKey(status_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "帳戶狀態", "非預期"));
@@ -347,7 +347,7 @@ public class ETL_E_ACCOUNT {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "開戶管道", "空值"));
-						} else if (!checkMaps.get("account_opening_channel").containsKey(account_opening_channel)) {
+						} else if (!checkMaps.get("account_opening_channel").containsKey(account_opening_channel.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "開戶管道", "非預期"));
@@ -390,7 +390,7 @@ public class ETL_E_ACCOUNT {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "帳戶餘額正負號", "空值"));
 						} else if (!checkMaps.get("balance_acct_currency_sign")
-								.containsKey(balance_acct_currency_sign)) {
+								.containsKey(balance_acct_currency_sign.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "帳戶餘額正負號", "非預期"));
@@ -416,7 +416,7 @@ public class ETL_E_ACCOUNT {
 						data.setBalance_last_month_avg_sign(balance_last_month_avg_sign);
 
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_sign) && !checkMaps
-								.get("balance_last_month_avg_sign").containsKey(balance_last_month_avg_sign)) {
+								.get("balance_last_month_avg_sign").containsKey(balance_last_month_avg_sign.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "過去一個月平均餘額正負號", "非預期"));
@@ -440,7 +440,7 @@ public class ETL_E_ACCOUNT {
 						data.setCaution_note(caution_note);
 
 						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(caution_note)
-								&& !checkMaps.get("caution_note").containsKey(caution_note)) {
+								&& !checkMaps.get("caution_note").containsKey(caution_note.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "警示註記", "非預期"));
