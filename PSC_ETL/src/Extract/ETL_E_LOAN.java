@@ -629,10 +629,10 @@ public class ETL_E_LOAN {
 		}
 		
 		//讀取測試資料，並運行程式
-//		ETL_E_LOAN one = new ETL_E_LOAN();
-//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-//		String fileTypeName = "LOAN";
-//		one.read_Loan_File(filePath, fileTypeName, "001");
+		ETL_E_LOAN one = new ETL_E_LOAN();
+		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+		String fileTypeName = "LOAN";
+		one.read_Loan_File(filePath, fileTypeName, "001");
 	}
 
 }

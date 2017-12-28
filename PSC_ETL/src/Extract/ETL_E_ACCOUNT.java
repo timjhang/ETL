@@ -34,7 +34,8 @@ public class ETL_E_ACCOUNT {
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
 	// 欄位檢核用陣列
-	private String[][] checkMapArray = { { "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
+	private String[][] checkMapArray = { 
+			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "ACCOUNT_CHANGE_CODE" }, // 異動代號
 			{ "account_type_code", "ACCOUNT_ACCOUNT_TYPE_CODE" }, // 帳戶類別
 			{ "property_code", "ACCOUNT_PROPERTY_CODE" }, // 連結服務

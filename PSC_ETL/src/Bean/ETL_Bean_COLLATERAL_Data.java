@@ -10,7 +10,7 @@ public class ETL_Bean_COLLATERAL_Data {
 	private String central_no;// 報送單位
 	private Date record_date;// 檔案日期
 	private String file_type;// 檔名業務別
-	private int row_count;// 行數
+	private Integer row_count;// 行數
 	private String domain_id;// 本會代號
 	private String collateral_id;// 擔保品編號
 	private String change_code;// 異動代號
