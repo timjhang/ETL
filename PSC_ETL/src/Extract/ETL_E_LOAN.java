@@ -3,8 +3,13 @@ package Extract;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +34,8 @@ public class ETL_E_LOAN {
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
 	// 欄位檢核用陣列
-	private String[][] checkMapArray = { { "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
+	private String[][] checkMapArray = { 
+			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "LOAN_CHANGE_CODE" }, // 異動代號
 			{ "loan_category_code", "LOAN_LOAN_CATEGORY_CODE" }, // 放款種類
 			{ "loan_type_code", "LOAN_LOAN_TYPE_CODE" }, // 利率類別
@@ -122,8 +128,8 @@ public class ETL_E_LOAN {
 					strQueue.setTargetString(lineStr);
 
 					// 檢查整行bytes數(1 + 7 + 8 + 198 = 214)
-					if (strQueue.getTotalByteLength() != 216) {
-						fileFmtErrMsg = "首錄位元數非預期216";
+					if (strQueue.getTotalByteLength() != 214) {
+						fileFmtErrMsg = "首錄位元數非預期214";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -195,9 +201,9 @@ public class ETL_E_LOAN {
 						 * 整行bytes數檢核(01+07+11+01+30+08+20+20+02+01+03+14+03+14+
 						 * 14+04+07+14+40 = 214)
 						 */
-						if (strQueue.getTotalByteLength() != 216) {
+						if (strQueue.getTotalByteLength() != 214) {
 							data.setError_mark("Y");
-							fileFmtErrMsg = "非預期216";
+							fileFmtErrMsg = "明細錄位元數非預期214";
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 
@@ -224,7 +230,7 @@ public class ETL_E_LOAN {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "空值"));
-						} else if (!checkMaps.get("domain_id").containsKey(domain_id)) {
+						} else if (!checkMaps.get("domain_id").containsKey(domain_id.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "本會代號", "非預期"));
@@ -248,7 +254,7 @@ public class ETL_E_LOAN {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "異動代號", "空值"));
-						} else if (!checkMaps.get("change_code").containsKey(change_code)) {
+						} else if (!checkMaps.get("change_code").containsKey(change_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "異動代號", "非預期"));
@@ -308,7 +314,7 @@ public class ETL_E_LOAN {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "放款種類", "空值"));
-						} else if (!checkMaps.get("loan_category_code").containsKey(loan_category_code)) {
+						} else if (!checkMaps.get("loan_category_code").containsKey(loan_category_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "放款種類", "非預期"));
@@ -322,7 +328,7 @@ public class ETL_E_LOAN {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "利率類別", "空值"));
-						} else if (!checkMaps.get("loan_type_code").containsKey(loan_type_code)) {
+						} else if (!checkMaps.get("loan_type_code").containsKey(loan_type_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "利率類別", "非預期"));
@@ -336,7 +342,7 @@ public class ETL_E_LOAN {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "幣別", "空值"));
-						} else if (!checkMaps.get("loan_currency_code").containsKey(loan_currency_code)) {
+						} else if (!checkMaps.get("loan_currency_code").containsKey(loan_currency_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "幣別", "非預期"));
@@ -364,7 +370,7 @@ public class ETL_E_LOAN {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "放款狀態", "空值"));
-						} else if (!checkMaps.get("loan_status_code").containsKey(loan_status_code)) {
+						} else if (!checkMaps.get("loan_status_code").containsKey(loan_status_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "放款狀態", "非預期"));
@@ -454,8 +460,8 @@ public class ETL_E_LOAN {
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
 					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 191 = 214)
-					if (strQueue.getTotalByteLength() != 216) {
-						fileFmtErrMsg = "尾錄位元數非預期216";
+					if (strQueue.getTotalByteLength() != 214) {
+						fileFmtErrMsg = "尾錄位元數非預期214";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
 								"行數bytes檢查", fileFmtErrMsg));
 					}
@@ -583,11 +589,50 @@ public class ETL_E_LOAN {
 		}
 	}
 
-	public static void main(String[] argv) {
-		ETL_E_LOAN one = new ETL_E_LOAN();
-		String filePath = "D:/aaa";
-		String fileTypeName = "LOAN";
-		one.read_Loan_File(filePath, fileTypeName, "001");
+	public static void main(String[] argv) throws IOException {
+		
+		//讀取測試資料，並只列出明細錄欄位
+	    Charset charset = Charset.forName("Big5");
+		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\LOAN.txt"), charset);
+		
+		if ( lines.size() > 2 ){
+			
+			lines.remove(0);
+			lines.remove(lines.size()-1);
+			
+			System.out.println("============================================================================================");
+			for (String line : lines) {
+				byte[] tmp = line.getBytes(charset);
+				System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
+				System.out.println("位元組長度: "+ tmp.length);
+				System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+				System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+				System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+				System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+				System.out.println("放款帳號X(30): " + new String(Arrays.copyOfRange(tmp, 20, 50), "Big5"));
+				System.out.println("初貸日X(08): " + new String(Arrays.copyOfRange(tmp, 50, 58), "Big5"));
+				System.out.println("批覆書編號X(20): " + new String(Arrays.copyOfRange(tmp, 58, 78), "Big5"));
+				System.out.println("額度編號X(20): " + new String(Arrays.copyOfRange(tmp, 78, 98), "Big5"));
+				System.out.println("放款種類X(02): " + new String(Arrays.copyOfRange(tmp, 98, 100), "Big5"));
+				System.out.println("利率類別X(01): " + new String(Arrays.copyOfRange(tmp, 100, 101), "Big5"));
+				System.out.println("幣別X(03): " + new String(Arrays.copyOfRange(tmp, 101, 104), "Big5"));
+				System.out.println("貸放金額9(12)V99): " + new String(Arrays.copyOfRange(tmp, 104, 118), "Big5"));
+				System.out.println("放款狀態X(03): " + new String(Arrays.copyOfRange(tmp, 118, 121), "Big5"));
+				System.out.println("本金餘額9(12)V99): " + new String(Arrays.copyOfRange(tmp, 121, 135), "Big5"));
+				System.out.println("已還本金9(12)V99): " + new String(Arrays.copyOfRange(tmp, 135, 149), "Big5"));
+				System.out.println("違繳天數9(04): " + new String(Arrays.copyOfRange(tmp, 149, 153), "Big5"));
+				System.out.println("帳戶行X(07): " + new String(Arrays.copyOfRange(tmp, 153, 160), "Big5"));
+				System.out.println("到期一次還本金額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 160, 174), "Big5"));
+				System.out.println("收回原因X(40): " + new String(Arrays.copyOfRange(tmp, 174, 214), "Big5"));
+				System.out.println("============================================================================================");
+			}
+		}
+		
+		//讀取測試資料，並運行程式
+//		ETL_E_LOAN one = new ETL_E_LOAN();
+//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+//		String fileTypeName = "LOAN";
+//		one.read_Loan_File(filePath, fileTypeName, "001");
 	}
 
 }

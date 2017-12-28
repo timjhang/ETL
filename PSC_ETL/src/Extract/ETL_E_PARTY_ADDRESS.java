@@ -450,22 +450,29 @@ public class ETL_E_PARTY_ADDRESS {
 		//讀取測試資料，並列出明細錄欄位
 	    Charset charset = Charset.forName("Big5");
 		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\PARTY_ADDRESS.txt"), charset);
-		System.out.println("============================================================================================");
-		for (String line : lines) {
-			byte[] tmp = line.getBytes(charset);
-			System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
-			System.out.println("位元組長度: "+ tmp.length);
-			System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
-			System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
-			System.out.println("客戶統編X(11): "+ new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
-			System.out.println("異動代號X(01): "+ new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
-			System.out.println("地址類別X(03): "+ new String(Arrays.copyOfRange(tmp, 20, 23), "Big5"));
-			System.out.println("地址國別X(02): "+ new String(Arrays.copyOfRange(tmp, 23, 25), "Big5"));
-			System.out.println("郵遞區號X(12): "+ new String(Arrays.copyOfRange(tmp, 25, 37), "Big5"));
-			System.out.println("地址X(100): "+ new String(Arrays.copyOfRange(tmp, 37, 137), "Big5"));
-			System.out.println("============================================================================================");
-		}
+		
+		if ( lines.size() > 2 ){
+			
+			lines.remove(0);
+			lines.remove(lines.size()-1);
 
+			System.out.println("============================================================================================");
+			for (String line : lines) {
+				byte[] tmp = line.getBytes(charset);
+				System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
+				System.out.println("位元組長度: "+ tmp.length);
+				System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+				System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+				System.out.println("客戶統編X(11): "+ new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+				System.out.println("異動代號X(01): "+ new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+				System.out.println("地址類別X(03): "+ new String(Arrays.copyOfRange(tmp, 20, 23), "Big5"));
+				System.out.println("地址國別X(02): "+ new String(Arrays.copyOfRange(tmp, 23, 25), "Big5"));
+				System.out.println("郵遞區號X(12): "+ new String(Arrays.copyOfRange(tmp, 25, 37), "Big5"));
+				System.out.println("地址X(100): "+ new String(Arrays.copyOfRange(tmp, 37, 137), "Big5"));
+				System.out.println("============================================================================================");
+			}
+		}
+		
 		//讀取測試資料，並運行程式
 		ETL_E_PARTY_ADDRESS one = new ETL_E_PARTY_ADDRESS();
 		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";

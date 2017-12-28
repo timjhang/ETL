@@ -10,7 +10,7 @@ public class ETL_Bean_LOAN_Data {
 	private String central_no;// 報送單位
 	private Date record_date;// 檔案日期
 	private String file_type;// 檔名業務別
-	private int row_count;// 行數
+	private Integer row_count;// 行數
 	private String domain_id;// 本會代號
 	private String party_number;// 客戶統編
 	private String change_code;// 異動代號
@@ -25,7 +25,7 @@ public class ETL_Bean_LOAN_Data {
 	private String loan_status_code;// 放款狀態
 	private BigDecimal outstanding_loan_balance;// 本金餘額
 	private BigDecimal total_repayments_value;// 已還本金
-	private int delinquency_days;// 違繳天數
+	private Integer delinquency_days;// 違繳天數
 	private String execution_branch_code;// 帳戶行
 	private BigDecimal last_payment_value;// 到期一次還本金額
 	private String cls;// 收回原因

@@ -497,26 +497,33 @@ public class ETL_E_LOAN_DETAIL {
 
 	public static void main(String[] argv) throws IOException {
 		
-		//讀取測試資料，並列出明細錄欄位
+		//讀取測試資料，並只列出明細錄欄位
 	    Charset charset = Charset.forName("Big5");
 		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\LOAN_DETAIL.txt"), charset);
-		System.out.println("============================================================================================");
-		for (String line : lines) {
-			byte[] tmp = line.getBytes(charset);
-			System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
-			System.out.println("位元組長度: "+ tmp.length);
-			System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
-			System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
-			System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
-			System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
-			System.out.println("批覆書編號X(20): " + new String(Arrays.copyOfRange(tmp, 20, 40), "Big5"));
-			System.out.println("額度編號X(20): " + new String(Arrays.copyOfRange(tmp, 40, 60), "Big5"));
-			System.out.println("批覆書申請日期X(08): " + new String(Arrays.copyOfRange(tmp, 60, 68), "Big5"));
-			System.out.println("批覆書核准日期X(08): " + new String(Arrays.copyOfRange(tmp, 68, 76), "Big5"));
-			System.out.println("額度核准日X(08): " + new String(Arrays.copyOfRange(tmp, 76, 84), "Big5"));
-			System.out.println("批准限額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 84, 98), "Big5"));
-			System.out.println("可動用限額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 98, 112), "Big5"));
+		
+		if ( lines.size() > 2 ){
+			
+			lines.remove(0);
+			lines.remove(lines.size()-1);
+			
 			System.out.println("============================================================================================");
+			for (String line : lines) {
+				byte[] tmp = line.getBytes(charset);
+				System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
+				System.out.println("位元組長度: "+ tmp.length);
+				System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+				System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+				System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+				System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+				System.out.println("批覆書編號X(20): " + new String(Arrays.copyOfRange(tmp, 20, 40), "Big5"));
+				System.out.println("額度編號X(20): " + new String(Arrays.copyOfRange(tmp, 40, 60), "Big5"));
+				System.out.println("批覆書申請日期X(08): " + new String(Arrays.copyOfRange(tmp, 60, 68), "Big5"));
+				System.out.println("批覆書核准日期X(08): " + new String(Arrays.copyOfRange(tmp, 68, 76), "Big5"));
+				System.out.println("額度核准日X(08): " + new String(Arrays.copyOfRange(tmp, 76, 84), "Big5"));
+				System.out.println("批准限額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 84, 98), "Big5"));
+				System.out.println("可動用限額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 98, 112), "Big5"));
+				System.out.println("============================================================================================");
+			}			
 		}
 		
 		//讀取測試資料，並運行程式
