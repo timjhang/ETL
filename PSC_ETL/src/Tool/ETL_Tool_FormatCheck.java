@@ -16,7 +16,7 @@ public class ETL_Tool_FormatCheck {
 	}
 	
 	/**
-	 * 檢測字串是否符合Timestamp格式 yyyyMMddhhmmss
+	 * 檢測字串是否符合Timestamp格式 yyyyMMddHHmmss
 	 * @param dateStr 檢測字串
 	 * @return true 成功 / false 失敗
 	 */
@@ -66,6 +66,7 @@ public class ETL_Tool_FormatCheck {
 	    SimpleDateFormat format = new SimpleDateFormat(pattern);
 	    try{
 	       format.parse(inputString);
+	       format.setLenient(false); // 過濾不合理日期
 	       return true;
 	    }catch(Exception e)
 	    {
