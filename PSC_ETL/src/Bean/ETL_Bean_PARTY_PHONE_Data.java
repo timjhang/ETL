@@ -9,9 +9,11 @@ public class ETL_Bean_PARTY_PHONE_Data {
 	// 報送單位
 	private String central_no;
 	// 檔案日期
-	private Date record_date = new Date(); // test  temp
+	private Date record_date;
 	// 檔名業務別
 	private String file_type;
+	// 行數
+	private Integer row_count;
 	// 本會代號
 	private String domain_id;
 	// 客戶統編
@@ -32,11 +34,11 @@ public class ETL_Bean_PARTY_PHONE_Data {
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
 	}
-	
+
 	public String getCentral_no() {
 		return central_no;
 	}
-	
+
 	public void setCentral_no(String central_no) {
 		this.central_no = central_no;
 	}
@@ -55,6 +57,14 @@ public class ETL_Bean_PARTY_PHONE_Data {
 
 	public void setFile_type(String file_type) {
 		this.file_type = file_type;
+	}
+
+	public Integer getRow_count() {
+		return row_count;
+	}
+
+	public void setRow_count(Integer row_count) {
+		this.row_count = row_count;
 	}
 
 	public String getDomain_id() {

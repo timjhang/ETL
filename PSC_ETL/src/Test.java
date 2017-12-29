@@ -9,13 +9,16 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
 import DB.ConnectionHelper;
 import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_PHONE;
+import Profile.ETL_Profile;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 
@@ -30,13 +33,37 @@ public class Test {
 //			test4();
 //			test5();
 //			test6();
-			connection();
+//			connection();
+			updateTest();
 //			Date date = new Date().setTime(0);
 //			date.setTime(0);
 //			System.out.println(date);
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public static void updateTest()
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
+		String insert_query = " UPDATE " + ETL_Profile.db2TableSchema + ".TIMTEST SET TVALUE = ? WHERE TKEY = ?";
+
+		Connection con = ConnectionHelper.getDB2Connection();
+		PreparedStatement pstmt = con.prepareStatement(insert_query);
+
+		pstmt.setString(1, "TEST");
+		pstmt.setString(2, "123");
+
+		pstmt.executeUpdate();
+
+		if (pstmt != null) {
+			pstmt.close();
+		}
+		if (con != null) {
+			con.close();
+		}
+
 	}
 	
 	private static void columnTest() {
@@ -53,7 +80,7 @@ public class Test {
 	private static void connection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Connection con = ConnectionHelper.getDB2Connection();
 		ETL_E_PARTY_PHONE one = new ETL_E_PARTY_PHONE();
-		one.read_Party_Phone_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY_PHONE", "003");
+//		one.read_Party_Phone_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY_PHONE", "ETL00001", "003");
 		
 //		ETL_E_PARTY two = new ETL_E_PARTY();
 //		two.read_Party_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY", "003");

@@ -82,11 +82,27 @@ public class ETL_E_PARTY {
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
 	// 回傳boolean 成功(true)/失敗(false)
-	public void read_Party_File(String filePath, String fileTypeName, String upload_no) {
+	// filePath 讀檔路徑
+	// fileTypeName 讀檔業務別
+	// batch_no 批次編號
+	// exc_central_no 批次執行_報送單位
+	// exc_record_date 批次執行_檔案日期
+	// upload_no 上傳批號
+	// program_no 程式代號
+	public void read_Party_File(String filePath, String fileTypeName,
+		String batch_no, String exc_central_no, Date exc_record_date, String upload_no, String program_no) {
 		
 		System.out.println("#######Extrace - ETL_E_PARTY - Start");
 		
 		try {
+			// 處理前寫入ETL_Detail_Log
+			ETL_P_Log.write_ETL_Detail_Log(
+					batch_no, exc_central_no, exc_record_date, upload_no, "E",
+					program_no, "S", "", "", new Date(), null);
+			
+			// 處理Party_Phone錯誤計數
+			int detail_ErrorCount = 0;
+			
 			// 取得目標檔案File
 			List<File> fileList = ETF_Tool_FileReader.getTargetFileList(filePath, fileTypeName);
 			
@@ -109,6 +125,8 @@ public class ETL_E_PARTY {
 				
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
+				// 設定批次編號
+				pfn.setBatch_no(batch_no);
 				
 //				System.out.println(parseFile.getAbsoluteFile()); // test
 				FileInputStream fis = new FileInputStream(parseFile);
@@ -120,6 +138,8 @@ public class ETL_E_PARTY {
 				int successCount = 0;
 				// 失敗計數
 				int failureCount = 0;
+				// 尾錄總數
+				int iTotalCount = 0;
 				
 				// 嚴重錯誤訊息變數
 				String fileFmtErrMsg = ""; 
@@ -138,9 +158,9 @@ public class ETL_E_PARTY {
 					// 注入首錄字串
 					strQueue.setTargetString(lineStr);
 					
-					// 檢查整行bytes數(1 + 7 + 8 + 601 = 617)
-					if (strQueue.getTotalByteLength() != 617) {
-						fileFmtErrMsg = "首錄位元數非預期619";
+					// 檢查整行bytes數(1 + 7 + 8 + 602 = 618)
+					if (strQueue.getTotalByteLength() != 618) {
+						fileFmtErrMsg = "首錄位元數非預期618";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 					}
@@ -177,8 +197,8 @@ public class ETL_E_PARTY {
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 					}
 					
-					// 保留欄位檢核(601)
-					String keepColumn = strQueue.popBytesString(601);
+					// 保留欄位檢核(602)
+					String keepColumn = strQueue.popBytesString(602);
 					
 					if (!"".equals(fileFmtErrMsg)) {
 						failureCount++; // 錯誤計數 + 1
@@ -198,6 +218,8 @@ public class ETL_E_PARTY {
 					
 					// 生成一個Data
 					ETL_Bean_PARTY_Data data = new ETL_Bean_PARTY_Data(pfn);
+					// 寫入資料行數
+					data.setRow_count(rowCount);
 					
 					// 區別碼(1)
 					String typeCode = strQueue.popBytesString(1);
@@ -206,10 +228,10 @@ public class ETL_E_PARTY {
 					}
 
 
-					// 整行bytes數檢核(617)
-					if (strQueue.getTotalByteLength() != 617) {
+					// 整行bytes數檢核(618)
+					if (strQueue.getTotalByteLength() != 618) {
 						data.setError_mark("Y");
-						fileFmtErrMsg = "非預期619";
+						fileFmtErrMsg = "非預期618";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						
@@ -402,14 +424,14 @@ public class ETL_E_PARTY {
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "年收入(法人)", "非數字"));
 						}
 						
-						// 職業/行業 c-*20(5)
-						String occupation_code = strQueue.popBytesString(5);
+						// 職業/行業 c-*20(6)
+						String occupation_code = strQueue.popBytesString(6);
 						data.setOccupation_code(occupation_code);
 						if (ETL_Tool_FormatCheck.isEmpty(occupation_code)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "職業/行業", "空值"));
-						} else if (!checkMaps.get("c-20").containsKey(occupation_code)) {
+						} else if (!checkMaps.get("c-20").containsKey(occupation_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "職業/行業", "非預期"));
@@ -630,10 +652,10 @@ public class ETL_E_PARTY {
 						String annual_income = strQueue.popBytesString(10);
 						data.setAnnual_income(ETL_Tool_StringX.toLong(annual_income));
 						
-						// 職業/行業 c-20(5)
-						String occupation_code = strQueue.popBytesString(5);
+						// 職業/行業 c-20(6)
+						String occupation_code = strQueue.popBytesString(6);
 						data.setOccupation_code(occupation_code);
-						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(occupation_code) && !checkMaps.get("c-20").containsKey(occupation_code)) {
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(occupation_code) && !checkMaps.get("c-20").containsKey(occupation_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "職業/行業", "非預期"));
@@ -782,9 +804,9 @@ public class ETL_E_PARTY {
 				// 尾錄檢查
 				if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 					
-					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 594 = 617)
-					if (strQueue.getTotalByteLength() != 617) {
-						fileFmtErrMsg = "尾錄位元數非預期619";
+					// 整行bytes數檢核 (1 + 7 + 8 + 7 + 595 = 618)
+					if (strQueue.getTotalByteLength() != 618) {
+						fileFmtErrMsg = "尾錄位元數非預期618";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 					}
@@ -817,18 +839,19 @@ public class ETL_E_PARTY {
 					
 					// 總筆數檢核(7)
 					String totalCount = strQueue.popBytesString(7);
+					iTotalCount = ETL_Tool_StringX.toInt(totalCount);
 					if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
-					} else if (Integer.valueOf(totalCount) == (rowCount - 2)) {
+					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
 					}
 					
-					// 保留欄檢核(594)
-					String keepColumn = strQueue.popBytesString(594);
+					// 保留欄檢核(595)
+					String keepColumn = strQueue.popBytesString(595);
 					
 					if (!"".equals(fileFmtErrMsg)) {
 						failureCount++;
@@ -860,9 +883,30 @@ public class ETL_E_PARTY {
 				errWriter.insert_Error_Log();
 				
 				// ETL_Log寫入DB
-				ETL_P_Log.write_ETL_Log(pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
-						"E", parseStartDate, parseEndDate, rowCount, successCount, failureCount, pfn.getFileName());
+				ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+						"E", parseStartDate, parseEndDate, iTotalCount, successCount, failureCount, pfn.getFileName());
+				
+				// 累加PARTY_PHONE處理錯誤筆數
+				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
+			
+			// 執行結果
+			String exe_result;
+			// 執行結果說明
+			String exe_result_description;
+			
+			if (detail_ErrorCount == 0) {
+				exe_result = "Y";
+				exe_result_description = "檔案轉入檢核無錯誤";
+			} else {
+				exe_result = "N";
+				exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
+			}
+			
+			// 處理後更新ETL_Detail_Log  
+			ETL_P_Log.update_ETL_Detail_Log(
+					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
+					"E", exe_result, exe_result_description, new Date());
 		
 		} catch (Exception ex) {
 			
@@ -893,8 +937,8 @@ public class ETL_E_PARTY {
 		
 		InsertAdapter insertAdapter = new InsertAdapter(); 
 		insertAdapter.setSql("{call SP_INSERT_PARTY_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-		insertAdapter.setCreateArrayTypesName("T_PARTY"); // DB2 type - PARTY_PHONE
-		insertAdapter.setCreateStructTypeName("A_PARTY"); // DB2 array type - PARTY_PHONE
+		insertAdapter.setCreateArrayTypesName("A_PARTY"); // DB2 array type - PARTY_PHONE
+		insertAdapter.setCreateStructTypeName("T_PARTY"); // DB2 type - PARTY_PHONE
 		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage);  // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
@@ -908,9 +952,10 @@ public class ETL_E_PARTY {
 	
 	public static void main(String[] argv) {
 		ETL_E_PARTY one = new ETL_E_PARTY();
-		String filePath = "D:/aaa";
+		String filePath = "C:/Users/10404003/Desktop/農經/171228";
 		String fileTypeName = "PARTY";
-		one.read_Party_File(filePath, fileTypeName, "001");
+		one.read_Party_File(filePath, fileTypeName, 
+				"ETL00001", "951", new Date(), "001", "ETL_E_PARTY");
 	}
 	
 }

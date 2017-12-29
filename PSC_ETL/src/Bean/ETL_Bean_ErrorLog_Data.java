@@ -5,6 +5,7 @@ import Tool.ETL_Tool_ParseFileName;
 public class ETL_Bean_ErrorLog_Data {
 	// ETL Error Log Data
 	
+	private String BATCH_NO; // 批次編號
 	private String CENTRAL_NO; // 報送單位
 	private java.util.Date RECORD_DATE; // 檔案日期
 	private String FILE_TYPE; // 檔名業務別
@@ -31,9 +32,10 @@ public class ETL_Bean_ErrorLog_Data {
 	 * @param SRC_FILE 來源檔案(檔案全名)
 	 */
 	// ETL_P_ErrorLog_Data's Constructor 第一版, 直接輸入參數
-	public ETL_Bean_ErrorLog_Data(String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE, String FILE_NAME, String UPLOAD_NO,
+	public ETL_Bean_ErrorLog_Data(String BATCH_NO, String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE, String FILE_NAME, String UPLOAD_NO,
 			String STEP_TYPE, String ROW_COUNT, String FIELD_NAME, String ERROR_DESCRIPTION, String SRC_FILE) {
 		
+		this.BATCH_NO = BATCH_NO;
 		this.CENTRAL_NO = CENTRAL_NO;
 		this.RECORD_DATE = RECORD_DATE;
 		this.FILE_TYPE = FILE_TYPE;
@@ -57,6 +59,7 @@ public class ETL_Bean_ErrorLog_Data {
 	 */
 	// ETL_P_ErrorLog_Data's Constructor 第二版, 加入解析檔名物件
 	public ETL_Bean_ErrorLog_Data(ETL_Tool_ParseFileName pfn, String UPLOAD_NO, String STEP_TYPE, String ROW_COUNT, String FIELD_NAME, String ERROR_DESCRIPTION) {
+		this.BATCH_NO = pfn.getBatch_no();
 		this.CENTRAL_NO = pfn.getCentral_No();
 		this.RECORD_DATE = pfn.getRecord_Date();
 		this.FILE_TYPE = pfn.getFile_Type();
@@ -68,11 +71,19 @@ public class ETL_Bean_ErrorLog_Data {
 		this.ERROR_DESCRIPTION = ERROR_DESCRIPTION;
 		this.SRC_FILE = pfn.getFileName();
 	}
-	
+
+	public String getBATCH_NO() {
+		return BATCH_NO;
+	}
+
+	public void setBATCH_NO(String bATCH_NO) {
+		BATCH_NO = bATCH_NO;
+	}
+
 	public String getCENTRAL_NO() {
 		return CENTRAL_NO;
 	}
-	
+
 	public void setCENTRAL_NO(String cENTRAL_NO) {
 		CENTRAL_NO = cENTRAL_NO;
 	}
@@ -148,5 +159,5 @@ public class ETL_Bean_ErrorLog_Data {
 	public void setSRC_FILE(String sRC_FILE) {
 		SRC_FILE = sRC_FILE;
 	}
-	
+		
 }

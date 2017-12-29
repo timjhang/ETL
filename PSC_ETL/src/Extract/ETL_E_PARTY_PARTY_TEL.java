@@ -183,6 +183,8 @@ public class ETL_E_PARTY_PARTY_TEL {
 					
 					// 生成一個Data
 					ETL_Bean_PARTY_PARTY_TEL_Data data = new ETL_Bean_PARTY_PARTY_TEL_Data(pfn);
+					// 寫入資料行數
+					data.setRow_count(rowCount);
 					
 					// 區別碼(1)
 					String typeCode = strQueue.popBytesString(1);
@@ -351,7 +353,7 @@ public class ETL_E_PARTY_PARTY_TEL {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
-					} else if (Integer.valueOf(totalCount) == (rowCount - 2)) {
+					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(
 								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
@@ -390,7 +392,7 @@ public class ETL_E_PARTY_PARTY_TEL {
 				errWriter.insert_Error_Log();
 				
 				// ETL_Log寫入DB
-				ETL_P_Log.write_ETL_Log(pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+				ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no() /* TODO V2 */, pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 						"E", parseStartDate, parseEndDate, rowCount, successCount, failureCount, pfn.getFileName());
 			}
 		
@@ -423,8 +425,8 @@ public class ETL_E_PARTY_PARTY_TEL {
 		
 		InsertAdapter insertAdapter = new InsertAdapter(); 
 		insertAdapter.setSql("{call SP_INSERT_PARTY_PARTY_TEL_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2 - SP
-		insertAdapter.setCreateArrayTypesName("T_PARTY_PARTY_TEL"); // DB2 type - PARTY_PHONE
-		insertAdapter.setCreateStructTypeName("A_PARTY_PARTY_TEL"); // DB2 array type - PARTY_PHONE
+		insertAdapter.setCreateArrayTypesName("A_PARTY_PARTY_TEL"); // DB2 array type - PARTY_PHONE
+		insertAdapter.setCreateStructTypeName("T_PARTY_PARTY_TEL"); // DB2 type - PARTY_PHONE
 		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage);  // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);

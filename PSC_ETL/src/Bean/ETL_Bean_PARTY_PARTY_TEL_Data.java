@@ -12,6 +12,8 @@ public class ETL_Bean_PARTY_PARTY_TEL_Data {
 	private Date record_date;
 	// 檔名業務別
 	private String file_type;
+	// 行數
+	private Integer row_count;
 	// 本會代號
 	private String domain_id;
 	// 本會(行)客戶統編
@@ -64,6 +66,14 @@ public class ETL_Bean_PARTY_PARTY_TEL_Data {
 
 	public void setFile_type(String file_type) {
 		this.file_type = file_type;
+	}
+
+	public Integer getRow_count() {
+		return row_count;
+	}
+
+	public void setRow_count(Integer row_count) {
+		this.row_count = row_count;
 	}
 
 	public String getDomain_id() {
@@ -153,5 +163,5 @@ public class ETL_Bean_PARTY_PARTY_TEL_Data {
 	public void setError_mark(String error_mark) {
 		this.error_mark = error_mark;
 	}
-	
+
 }
