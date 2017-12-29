@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -12,27 +13,38 @@ import Profile.ETL_Profile;
 public class ETL_P_Log {
 
 	public static void main(String[] args) throws Exception {
-		String CENTRAL_NO = "951";
-		DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-		java.util.Date date = new java.util.Date();
-		java.util.Date RECORD_DATE = formatter.parse(formatter.format(date));
-		String FILE_TYPE = "CF";
-		String FILE_NAME = "PARTY";
-		String UPLOAD_NO = "001";
-		String STEP_TYPE = "E";
-		formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		java.util.Date START_DATETIME = formatter.parse(formatter.format(date));
-		java.util.Date END_DATETIME = formatter.parse(formatter.format(date));
-		int TOTAL_CNT = 5;
-		int SUCCESS_CNT = 5;
-		int FAILED_CNT = 0;
-		String SRC_FILE = "951_CF_PARTY_20171211.TXT";
-		ETL_P_Log.write_ETL_Log(CENTRAL_NO, RECORD_DATE, FILE_TYPE, FILE_NAME, UPLOAD_NO, STEP_TYPE, START_DATETIME,
-				END_DATETIME, TOTAL_CNT, SUCCESS_CNT, FAILED_CNT, SRC_FILE);
+//		String CENTRAL_NO = "951";
+//		DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+//		java.util.Date date = new java.util.Date();
+//		java.util.Date RECORD_DATE = formatter.parse(formatter.format(date));
+//		String FILE_TYPE = "CF";
+//		String FILE_NAME = "PARTY";
+//		String UPLOAD_NO = "001";
+//		String STEP_TYPE = "E";
+//		formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//		java.util.Date START_DATETIME = formatter.parse(formatter.format(date));
+//		java.util.Date END_DATETIME = formatter.parse(formatter.format(date));
+//		int TOTAL_CNT = 5;
+//		int SUCCESS_CNT = 5;
+//		int FAILED_CNT = 0;
+//		String SRC_FILE = "951_CF_PARTY_20171211.TXT";
+//		ETL_P_Log.write_ETL_Log(CENTRAL_NO, RECORD_DATE, FILE_TYPE, FILE_NAME, UPLOAD_NO, STEP_TYPE, START_DATETIME,
+//				END_DATETIME, TOTAL_CNT, SUCCESS_CNT, FAILED_CNT, SRC_FILE);
+//		
+//		write_ETL_Detail_Log("123", "234", new java.util.Date(), "456", "567", 
+//				"678", "S", "", "", new java.util.Date(),
+//				null);
+//		write_ETL_Detail_Log("555", "234", new java.util.Date(), "456", "5", 
+//				"6", "S", "", "", null,
+//				null);
+//		
+//		update_ETL_Detail_Log("555", "234", new java.util.Date(), "456", "5", 
+//				"6", "S", "", "", new java.util.Date());
+		
 	}
 
 	/**
-	 * ETL_Log格式
+	 * ETL_FILE_Log格式
 	 * @param CENTRAL_NO 報送單位
 	 * @param RECORD_DATE 檔案日期
 	 * @param FILE_TYPE 檔名業務別
@@ -50,41 +62,44 @@ public class ETL_P_Log {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static void write_ETL_Log(String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE, String FILE_NAME,
+	public static void write_ETL_FILE_Log(String BATCH_NO, String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE, String FILE_NAME,
 			String UPLOAD_NO, String STEP_TYPE, java.util.Date START_DATETIME, java.util.Date END_DATETIME,
 			int TOTAL_CNT, int SUCCESS_CNT, int FAILED_CNT, String SRC_FILE)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		String insert_query = " INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_LOG (" +
-				"CENTRAL_NO," +
-				"RECORD_DATE," +
-				"FILE_TYPE," +
-				"FILE_NAME," +
-				"UPLOAD_NO," +
-				"STEP_TYPE," +
-				"START_DATETIME," +
-				"END_DATETIME," +
-				"TOTAL_CNT," +
-				"SUCCESS_CNT," +
-				"FAILED_CNT," +
-				"SRC_FILE" +
-				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String insert_query = 
+				" INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_FILE_LOG ( " +
+					" BATCH_NO, " +
+					" CENTRAL_NO, " +
+					" RECORD_DATE, " +
+					" FILE_TYPE, " +
+					" FILE_NAME, " +
+					" UPLOAD_NO, " +
+					" STEP_TYPE, " +
+					" START_DATETIME, " +
+					" END_DATETIME, " +
+					" TOTAL_CNT, " +
+					" SUCCESS_CNT, " +
+					" FAILED_CNT, " +
+					" SRC_FILE " +
+				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Connection con = ConnectionHelper.getDB2Connection();
 		PreparedStatement pstmt = con.prepareStatement(insert_query);
 
-		pstmt.setString(1, CENTRAL_NO);
-		pstmt.setDate(2, new Date(RECORD_DATE.getTime()));
-		pstmt.setString(3, FILE_TYPE);
-		pstmt.setString(4, FILE_NAME);
-		pstmt.setString(5, UPLOAD_NO);
-		pstmt.setString(6, STEP_TYPE);
-		pstmt.setDate(7, new Date(START_DATETIME.getTime()));
-		pstmt.setDate(8, new Date(END_DATETIME.getTime()));
-		pstmt.setInt(9, TOTAL_CNT);
-		pstmt.setInt(10, SUCCESS_CNT);
-		pstmt.setInt(11, FAILED_CNT);
-		pstmt.setString(12, SRC_FILE);
+		pstmt.setString(1, BATCH_NO);
+		pstmt.setString(2, CENTRAL_NO);
+		pstmt.setDate(3, new Date(RECORD_DATE.getTime()));
+		pstmt.setString(4, FILE_TYPE);
+		pstmt.setString(5, FILE_NAME);
+		pstmt.setString(6, UPLOAD_NO);
+		pstmt.setString(7, STEP_TYPE);
+		pstmt.setTimestamp(8, new Timestamp(START_DATETIME.getTime()));
+		pstmt.setTimestamp(9, new Timestamp(END_DATETIME.getTime()));
+		pstmt.setInt(10, TOTAL_CNT);
+		pstmt.setInt(11, SUCCESS_CNT);
+		pstmt.setInt(12, FAILED_CNT);
+		pstmt.setString(13, SRC_FILE);
 
 		pstmt.executeUpdate();
 
@@ -97,7 +112,7 @@ public class ETL_P_Log {
 
 	}
 
-	/**
+	/**  未更新V2  2017.12.29  Tim Jhang
 	 * Error_Log格式
 	 * @param CENTRAL_NO 報送單位
 	 * @param RECORD_DATE 檔案日期
@@ -144,6 +159,133 @@ public class ETL_P_Log {
 		pstmt.setString(8, FIELD_NAME);
 		pstmt.setString(9, ERROR_DESCRIPTION);
 		pstmt.setString(10, SRC_FILE);
+
+		pstmt.executeUpdate();
+
+		if (pstmt != null) {
+			pstmt.close();
+		}
+		if (con != null) {
+			con.close();
+		}
+	}
+	
+	// 寫入ETL_Detail_Log
+	/**
+	 * 
+	 * @param batch_no 批次編號
+	 * @param central_no 報送單位
+	 * @param record_date 檔案日期
+	 * @param upload_no 上傳批號
+	 * @param step_type 步驟
+	 * @param program_no 程式代號
+	 * @param exe_status 執行狀態
+	 * @param exe_result 執行結果
+	 * @param exe_result_description 執行結果說明
+	 * @param start_datetime 開始日期時間
+	 * @param end_datetime 結束日期時間
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public static void write_ETL_Detail_Log(
+			String batch_no, String central_no, java.util.Date record_date, String upload_no, String step_type, 
+			String program_no, String exe_status, String exe_result, String exe_result_description, java.util.Date start_datetime,
+			java.util.Date end_datetime) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		String insert_query = 
+				" INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG ( " +
+					" BATCH_NO, " +
+					" CENTRAL_NO, " +
+					" RECORD_DATE, " +
+					" UPLOAD_NO, " +
+					" STEP_TYPE, " +
+					" PROGRAM_NO, " +
+					" EXE_STATUS, " +
+					" EXE_RESULT, " +
+					" EXE_RESULT_DESCRIPTION, " +
+					" START_DATETIME, " +
+					" END_DATETIME " +
+				" ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+
+		Connection con = ConnectionHelper.getDB2Connection();
+		PreparedStatement pstmt = con.prepareStatement(insert_query);
+
+		pstmt.setString(1, batch_no);
+		pstmt.setString(2, central_no);
+		pstmt.setDate(3, (record_date==null)?null:(new java.sql.Date(record_date.getTime())));
+		pstmt.setString(4, upload_no);
+		pstmt.setString(5, step_type);
+		pstmt.setString(6, program_no);
+		pstmt.setString(7, exe_status);
+		pstmt.setString(8, exe_result);
+		pstmt.setString(9, exe_result_description);
+		pstmt.setTimestamp(10, (start_datetime==null)?null:(new Timestamp(start_datetime.getTime())));
+		pstmt.setTimestamp(11, (end_datetime==null)?null:(new Timestamp(end_datetime.getTime())));
+		
+		pstmt.executeUpdate();
+
+		if (pstmt != null) {
+			pstmt.close();
+		}
+		if (con != null) {
+			con.close();
+		}
+	}
+	
+	// 更新ETL_Detail_Log
+	/**
+	 * 
+	 * @param batch_no 批次編號(條件)
+	 * @param central_no 報送單位(條件)
+	 * @param record_date 檔案日期(條件)
+	 * @param upload_no 上傳批號(條件)
+	 * @param step_type 步驟(條件)
+	 * @param program_no 程式代號(更新)
+	 * @param exe_status 執行狀態(更新)
+	 * @param exe_result 執行結果(更新)
+	 * @param exe_result_description 執行結果說明(更新)
+	 * @param end_datetime 結束日期時間(更新)
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public static void update_ETL_Detail_Log(
+			// 搜尋項目參數
+			String batch_no, String central_no, java.util.Date record_date, String upload_no, String step_type,
+			// 更新參數
+			String program_no, String exe_status, String exe_result, String exe_result_description, java.util.Date end_datetime
+			) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		String insert_query = " UPDATE " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG " +
+				" SET " +
+					" PROGRAM_NO = ? ," +
+					" EXE_STATUS = ? ," +
+					" EXE_RESULT = ? ," +
+					" EXE_RESULT_DESCRIPTION = ? ," +
+					" END_DATETIME = ? " +
+				" WHERE " +
+					" BATCH_NO = ? " +
+					" AND CENTRAL_NO = ? " +
+					" AND RECORD_DATE = ? " +
+					" AND UPLOAD_NO = ? " +
+					" AND STEP_TYPE = ? ";
+
+		Connection con = ConnectionHelper.getDB2Connection();
+		PreparedStatement pstmt = con.prepareStatement(insert_query);
+
+		pstmt.setString(1, program_no);
+		pstmt.setString(2, exe_status);
+		pstmt.setString(3, exe_result);
+		pstmt.setString(4, exe_result_description);
+		pstmt.setTimestamp(5, (end_datetime==null)?null:(new Timestamp(end_datetime.getTime())));
+		pstmt.setString(6, batch_no);
+		pstmt.setString(7, central_no);
+		pstmt.setDate(8, (record_date==null)?null:(new java.sql.Date(record_date.getTime())));
+		pstmt.setString(9, upload_no);
+		pstmt.setString(10, step_type);
 
 		pstmt.executeUpdate();
 

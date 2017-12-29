@@ -50,8 +50,8 @@ public class ETL_P_ErrorLog_Writer {
 		
 		InsertAdapter insertAdapter = new InsertAdapter(); 
 		insertAdapter.setSql("{call SP_INSERT_ERROR_LOGS(?)}"); // 呼叫error_log寫入DB2 - SP
-		insertAdapter.setCreateArrayTypesName("T_ERROR_LOG"); // DB2 type - error_log
-		insertAdapter.setCreateStructTypeName("A_ERROR_LOG"); // DB2 array type - error_log
+		insertAdapter.setCreateArrayTypesName("A_ERROR_LOG"); // DB2 type - error_log
+		insertAdapter.setCreateStructTypeName("T_ERROR_LOG"); // DB2 array type - error_log
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage);  // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.errorLogList, insertAdapter);
