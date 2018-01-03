@@ -72,11 +72,27 @@ public class ETL_E_TRANSACTION {
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
 	// 回傳boolean 成功(true)/失敗(false)
-	public void read_Transaction_File(String filePath, String fileTypeName, String upload_no) {
+	// filePath 讀檔路徑
+	// fileTypeName 讀檔業務別
+	// batch_no 批次編號
+	// exc_central_no 批次執行_報送單位
+	// exc_record_date 批次執行_檔案日期
+	// upload_no 上傳批號
+	// program_no 程式代號
+	public void read_Transaction_File(String filePath, String fileTypeName,
+			String batch_no, String exc_central_no, Date exc_record_date, String upload_no, String program_no) {
 
 		System.out.println("#######Extrace - ETL_E_TRANSACTION - Start");
 
 		try {
+			// 處理前寫入ETL_Detail_Log
+			ETL_P_Log.write_ETL_Detail_Log(
+					batch_no, exc_central_no, exc_record_date, upload_no, "E",
+					program_no, "S", "", "", new Date(), null);
+			
+			// 處理Party_Phone錯誤計數
+			int detail_ErrorCount = 0;
+			
 			// 取得目標檔案File
 			List<File> fileList = ETF_Tool_FileReader.getTargetFileList(filePath, fileTypeName);
 
@@ -100,6 +116,14 @@ public class ETL_E_TRANSACTION {
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
 
+				// 業務別非預期, 不進行解析
+				if (pfn.getFile_Type() == null) {
+					System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
+					continue;
+				}
+				// 設定批次編號
+				pfn.setBatch_no(batch_no);
+				
 				// System.out.println(parseFile.getAbsoluteFile()); // test
 				FileInputStream fis = new FileInputStream(parseFile);
 				BufferedReader br = new BufferedReader(new InputStreamReader(fis, "BIG5"));
@@ -110,6 +134,8 @@ public class ETL_E_TRANSACTION {
 				int successCount = 0;
 				// 失敗計數
 				int failureCount = 0;
+				// 尾錄總數
+				int iTotalCount = 0;
 
 				// 嚴重錯誤訊息變數
 				String fileFmtErrMsg = "";
@@ -529,6 +555,8 @@ public class ETL_E_TRANSACTION {
 
 					// 總筆數檢核(7)
 					String totalCount = strQueue.popBytesString(7);
+					iTotalCount = ETL_Tool_StringX.toInt(totalCount);
+					
 					if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
 						fileFmtErrMsg = "尾錄總筆數格式錯誤";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
@@ -572,10 +600,29 @@ public class ETL_E_TRANSACTION {
 				errWriter.insert_Error_Log();
 
 				// ETL_Log寫入DB
-				ETL_P_Log.write_ETL_Log(pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(),
-						pfn.getFile_Name(), upload_no, "E", parseStartDate, parseEndDate, rowCount, successCount,
-						failureCount, pfn.getFileName());
+				ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+						"E", parseStartDate, parseEndDate, iTotalCount /* TODO V2 */, successCount, failureCount, pfn.getFileName());
+				
+				// 累加PARTY_PHONE處理錯誤筆數
+				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
+			// 執行結果
+			String exe_result;
+			// 執行結果說明
+			String exe_result_description;
+			
+			if (detail_ErrorCount == 0) {
+				exe_result = "Y";
+				exe_result_description = "檔案轉入檢核無錯誤";
+			} else {
+				exe_result = "N";
+				exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
+			}
+			
+			// 處理後更新ETL_Detail_Log  
+			ETL_P_Log.update_ETL_Detail_Log(
+					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
+					"E", exe_result, exe_result_description, new Date());
 
 		} catch (Exception ex) {
 
@@ -688,7 +735,8 @@ public class ETL_E_TRANSACTION {
 		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
 		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
 		String fileTypeName = "TRANSACTION";
-		one.read_Transaction_File(filePath, fileTypeName, "001");
+		one.read_Transaction_File(filePath, fileTypeName, 
+				"ETL00001", "951", new Date(), "001", "ETL_E_TRANSACTION");
 	}
 
 }
