@@ -437,7 +437,7 @@ public class ETL_E_LOAN_DETAIL {
 					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
+								String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 					}
 
 					// 保留欄檢核(89)

@@ -398,7 +398,7 @@ public class ETL_E_COLLATERAL {
 						if (ETL_Tool_FormatCheck.isEmpty(party_number)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "客戶統編", "空值"));
+									String.valueOf(rowCount), "客戶(主債務人)統編", "空值"));
 						}
 
 						// data list 加入一個檔案
@@ -464,7 +464,7 @@ public class ETL_E_COLLATERAL {
 					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-								String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
+								String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 					}
 
 					// 保留欄檢核(180)
