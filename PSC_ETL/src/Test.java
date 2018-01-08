@@ -15,12 +15,12 @@ import Extract.ETL_E_TRANSACTION;
 public class Test {
 
 	public static void main(String[] argv) throws IOException {
-		ACCOUNT();
+		PARTY_ADDRESS();
 	}
 
 	public static void PARTY_ADDRESS() throws IOException {
 		ETL_E_PARTY_ADDRESS program = new ETL_E_PARTY_ADDRESS();
-		List<String> lines = getProperties("D:\\ETL\\properties.txt");
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
 		Date exc_record_date = new Date();
 
@@ -40,7 +40,7 @@ public class Test {
 
 	public static void ACCOUNT() throws IOException {
 		ETL_E_ACCOUNT program = new ETL_E_ACCOUNT();
-		List<String> lines = getProperties("D:\\ETL\\properties.txt");
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
 		Date exc_record_date = new Date();
 
@@ -60,7 +60,7 @@ public class Test {
 
 	public static void TRANSACTION() throws IOException {
 		ETL_E_TRANSACTION program = new ETL_E_TRANSACTION();
-		List<String> lines = getProperties("D:\\ETL\\properties.txt");
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
 		Date exc_record_date = new Date();
 
@@ -80,7 +80,7 @@ public class Test {
 
 	public static void LOAN_DETAIL() throws IOException {
 		ETL_E_LOAN_DETAIL program = new ETL_E_LOAN_DETAIL();
-		List<String> lines = getProperties("D:\\ETL\\properties.txt");
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
 		Date exc_record_date = new Date();
 
@@ -100,7 +100,7 @@ public class Test {
 
 	public static void LOAN() throws IOException {
 		ETL_E_LOAN program = new ETL_E_LOAN();
-		List<String> lines = getProperties("D:\\ETL\\properties.txt");
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
 		Date exc_record_date = new Date();
 
@@ -120,7 +120,7 @@ public class Test {
 
 	public static void COLLATERAL() throws IOException {
 		ETL_E_COLLATERAL program = new ETL_E_COLLATERAL();
-		List<String> lines = getProperties("D:\\ETL\\properties.txt");
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
 		Date exc_record_date = new Date();
 

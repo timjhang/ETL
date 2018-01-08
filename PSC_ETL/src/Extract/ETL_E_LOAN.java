@@ -640,7 +640,7 @@ public class ETL_E_LOAN {
 		
 		//讀取測試資料，並只列出明細錄欄位
 	    Charset charset = Charset.forName("Big5");
-		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\LOAN.txt"), charset);
+		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\600_LOAN_20171130.txt"), charset);
 		
 		if ( lines.size() > 2 ){
 			
@@ -676,11 +676,11 @@ public class ETL_E_LOAN {
 		}
 		
 		//讀取測試資料，並運行程式
-		ETL_E_LOAN one = new ETL_E_LOAN();
-		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-		String fileTypeName = "LOAN";
-		one.read_Loan_File(filePath, fileTypeName, 
-				"ETL00001", "951", new Date(), "001", "ETL_E_LOAN");
+//		ETL_E_LOAN one = new ETL_E_LOAN();
+//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+//		String fileTypeName = "LOAN";
+//		one.read_Loan_File(filePath, fileTypeName, 
+//				"ETL00001", "951", new Date(), "001", "ETL_E_LOAN");
 	}
 
 }

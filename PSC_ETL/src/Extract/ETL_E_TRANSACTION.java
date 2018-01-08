@@ -127,7 +127,7 @@ public class ETL_E_TRANSACTION {
 				// System.out.println(parseFile.getAbsoluteFile()); // test
 				FileInputStream fis = new FileInputStream(parseFile);
 				BufferedReader br = new BufferedReader(new InputStreamReader(fis, "BIG5"));
-
+				
 				// rowCount == 處理行數
 				int rowCount = 1; // 從1開始
 				// 成功計數
@@ -685,13 +685,13 @@ public class ETL_E_TRANSACTION {
 				&& ETL_Tool_FormatCheck.isEmpty(now)) ? false : true;
 	}
 
-	public static void main(String[] argv) throws IOException {
+	public static void main(String[] argv) throws Exception {
 
 		//讀取測試資料，並列出明細錄欄位
 	    Charset charset = Charset.forName("Big5");
-		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\TRANSACTION.txt"), charset);
-		
-		if ( lines.size() > 2 ){
+		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\600_P_TRANSACTION_20171206.txt"), charset);
+
+	    		if ( lines.size() > 2 ){
 			
 			lines.remove(0);
 			lines.remove(lines.size()-1);
@@ -731,12 +731,12 @@ public class ETL_E_TRANSACTION {
 			}
 		}
 
-		//讀取測試資料，並運行程式
-		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
-		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-		String fileTypeName = "TRANSACTION";
-		one.read_Transaction_File(filePath, fileTypeName, 
-				"ETL00001", "951", new Date(), "001", "ETL_E_TRANSACTION");
+//		//讀取測試資料，並運行程式
+//		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
+//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+//		String fileTypeName = "TRANSACTION";
+//		one.read_Transaction_File(filePath, fileTypeName, 
+//				"ETL00001", "951", new Date(), "001", "ETL_E_TRANSACTION");
 	}
 
 }

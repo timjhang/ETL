@@ -14,22 +14,22 @@ public class ETL_Profile {
 	
 	// Driver, Url, User, Password
 	public final static String db2Driver = "com.ibm.db2.jcc.DB2Driver";
-	private final static String db2SPSchema = "IAN";
-	public final static String db2TableSchema = "IAN";
-//	private final static String db2SPSchema = "ADMINISTRATOR";
-//	public final static String db2TableSchema = "ADMINISTRATOR";
-	public final static String db2Url = 
-			"jdbc:db2://localhost:50000/sample:" +
-			"currentschema=" + db2SPSchema + ";" +
-			"currentFunctionPath=" + db2SPSchema + ";";
+//	private final static String db2SPSchema = "IAN";
+//	public final static String db2TableSchema = "IAN";
+	private final static String db2SPSchema = "ADMINISTRATOR";
+	public final static String db2TableSchema = "ADMINISTRATOR";
 //	public final static String db2Url = 
-//			"jdbc:db2://172.18.21.206:50000/ETLDB600:" +
+//			"jdbc:db2://localhost:50000/sample:" +
 //			"currentschema=" + db2SPSchema + ";" +
 //			"currentFunctionPath=" + db2SPSchema + ";";
-	public final static String db2User = "IAN";
-	public final static String db2Password = "Administrator7456";
-//	public final static String db2User = "Administrator";
-//	public final static String db2Password = "9ol.)P:?";
+	public final static String db2Url = 
+			"jdbc:db2://172.18.21.206:50000/ETLDB600:" +
+			"currentschema=" + db2SPSchema + ";" +
+			"currentFunctionPath=" + db2SPSchema + ";";
+//	public final static String db2User = "IAN";
+//	public final static String db2Password = "Administrator7456";
+	public final static String db2User = "Administrator";
+	public final static String db2Password = "9ol.)P:?";
 	
 	// Error Log寫入域值
 	public final static int ErrorLog_Stage = 10000;

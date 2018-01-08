@@ -387,11 +387,11 @@ public class ETL_E_ACCOUNT {
 						if (ETL_Tool_FormatCheck.isEmpty(account_open_date)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "檔案日期", "空值"));
+									String.valueOf(rowCount), "開戶日期", "空值"));
 						} else if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "檔案日期", "格式錯誤"));
+									String.valueOf(rowCount), "開戶日期", "格式錯誤"));
 						}
 
 						// 結清(銷戶)日期 O X(08)
@@ -645,7 +645,7 @@ public class ETL_E_ACCOUNT {
 		
 		//讀取測試資料，並只列出明細錄欄位
 	    Charset charset = Charset.forName("Big5");
-		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\ACCOUNT.txt"), charset);
+		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\600_P_ACCOUNT_20171206.txt"), charset);
 		
 		if ( lines.size() > 2 ){
 			
