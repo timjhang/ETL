@@ -351,7 +351,7 @@ public class ETL_E_PARTY_PHONE {
 					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(
-								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 					}
 					
 					// 保留欄檢核(20)
@@ -461,7 +461,7 @@ public class ETL_E_PARTY_PHONE {
 	
 	public static void main(String[] argv) {
 		ETL_E_PARTY_PHONE one = new ETL_E_PARTY_PHONE();
-		String filePath = "C:/Users/10404003/Desktop/農經/171228";
+		String filePath = "C:/Users/10404003/Desktop/農經/2017/171228";
 		String fileTypeName = "PARTY_PHONE";
 		one.read_Party_Phone_File(filePath, fileTypeName, 
 				"ETL00001", "951", new Date(), "001", "ETL_E_PARTY_PHONE");

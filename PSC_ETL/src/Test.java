@@ -1,160 +1,131 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.ParseException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 
-import DB.ConnectionHelper;
 import Extract.ETL_E_PARTY;
+import Extract.ETL_E_PARTY_PARTY_REL;
 import Extract.ETL_E_PARTY_PHONE;
-import Profile.ETL_Profile;
-import Tool.ETL_Tool_FormatCheck;
+import Tool.ETF_Tool_FileReader;
 import Tool.ETL_Tool_ParseFileName;
-
+import Tool.ETL_Tool_StringQueue;
 
 public class Test {
 
-	public static void main(String[] argv) {
-		try {
-//			test1();
-//			test2();
-//			test3();
-//			test4();
-//			test5();
-//			test6();
-//			connection();
-			updateTest();
-//			Date date = new Date().setTime(0);
-//			date.setTime(0);
-//			System.out.println(date);
+	public static void main(String[] argv) throws Exception {
+//		PARTY();
+//		PARTY_PHONE();
+//		PARTY_PARTY_REL();
+		
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+//		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		
+		List<File> fileList = ETF_Tool_FileReader.getTargetFileList(lines.get(0), "PARTY_ADDRESS");
+		
+		System.out.println("共有檔案 " + fileList.size() + " 個！");
+		System.out.println("===============");
+		for (int i = 0; i < fileList.size(); i++) {
+			System.out.println(fileList.get(i).getName());
+		}
+		System.out.println("===============");
+		
+		for (int i = 0 ; i < fileList.size(); i++) {
+			// 取得檔案
+			File parseFile = fileList.get(i);
 			
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			// 檔名
+			String fileName = parseFile.getName();
+			
+			// 解析fileName物件
+			ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
+			
+			FileInputStream fis = new FileInputStream(parseFile);
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis,"BIG5"));
+			
+			// ETL_字串處理Queue
+//			ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue();
+			
+//			String lineStr = "";
+			int count = 1;
+			while (br.ready()) {
+//				br.readLine().getBytes().length;
+//				System.out.println(lineStr); // test
+//				strQueue.setTargetString(lineStr); // queue裝入新String
+				System.out.println("i = " + count + ", bytes = " + br.readLine().getBytes().length);
+				count++;
+			}
+		}
+	}
+
+	public static void PARTY() throws IOException {
+		ETL_E_PARTY program = new ETL_E_PARTY();
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		Date exc_record_date = new Date();
+
+		try {
+			filePath = lines.get(0);
+			fileTypeName = "PARTY";
+			batch_no = lines.get(1);
+			exc_central_no = lines.get(2);
+			upload_no = lines.get(3);
+			program_no = lines.get(4);
+			program.read_Party_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
+					upload_no, program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
-	public static void updateTest()
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public static void PARTY_PHONE() throws IOException {
+		ETL_E_PARTY_PHONE program = new ETL_E_PARTY_PHONE();
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		Date exc_record_date = new Date();
 
-		String insert_query = " UPDATE " + ETL_Profile.db2TableSchema + ".TIMTEST SET TVALUE = ? WHERE TKEY = ?";
-
-		Connection con = ConnectionHelper.getDB2Connection();
-		PreparedStatement pstmt = con.prepareStatement(insert_query);
-
-		pstmt.setString(1, "TEST");
-		pstmt.setString(2, "123");
-
-		pstmt.executeUpdate();
-
-		if (pstmt != null) {
-			pstmt.close();
-		}
-		if (con != null) {
-			con.close();
-		}
-
-	}
-	
-	private static void columnTest() {
-		String[][] array = {
-				{"PARTY_PHONE_column_1", "TimTest"}, 
-				{"PARTY_PHONE_column_2", "TimTest"}, 
-				{"PARTY_PHONE_column_3", "TimTest"}};
-		System.out.println(array.length);
-		System.out.println(array[0].length);
-		System.out.println(array[0][1]);
-		System.out.println(array[1][0]);
-	}
-	
-	private static void connection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		Connection con = ConnectionHelper.getDB2Connection();
-		ETL_E_PARTY_PHONE one = new ETL_E_PARTY_PHONE();
-//		one.read_Party_Phone_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY_PHONE", "ETL00001", "003");
-		
-//		ETL_E_PARTY two = new ETL_E_PARTY();
-//		two.read_Party_File("C:/Users/10404003/Desktop/農經/171221/file/", "PARTY", "003");
-	}
-	
-	private static void test1() throws Exception {
-		ETL_Tool_ParseFileName one = new ETL_Tool_ParseFileName("018_FR_PARTY_PHONE_20171211.txt");
-		System.out.println(one.getFileName());
-		System.out.println(one.getCentral_No());
-		System.out.println(one.getFile_Type());
-		System.out.println(one.getRecord_Date());
-		System.out.println(one.getFile_Name());
-	}
-	
-	private static void test2() throws Exception {
-		String input = "張";
-//		System.out.println(input.getBytes().length);
-		System.out.println(bytesToHexString(input.getBytes()));
-	}
-	
-	// bytes轉16進位
-	private static String bytesToHexString(byte[] src){  
-	    StringBuilder stringBuilder = new StringBuilder("");  
-	    if (src == null || src.length <= 0) {  
-	        return null;  
-	    }  
-	    for (int i = 0; i < src.length; i++) {  
-	        int v = src[i] & 0xFF;  
-	        String hv = Integer.toHexString(v);
-	        if (hv.length() < 2) {  
-	            stringBuilder.append(0);  
-	        }  
-	        stringBuilder.append(hv.toUpperCase());
-	    }  
-	    return stringBuilder.toString();  
-	}
-	
-	private static void test3() throws UnsupportedEncodingException {
-		String babel = "一二三";
-		System.out.println(babel);
-		//Convert string to ByteBuffer:
-		ByteBuffer babb = Charset.forName("UTF-8").encode(babel);
-		try{
-		    //Convert ByteBuffer to String
-		    System.out.println(new String(babb.array(), "UTF-8"));
-		}
-		catch(Exception e){
-		    e.printStackTrace();
+		try {
+			filePath = lines.get(0);
+			fileTypeName = "PARTY_PHONE";
+			batch_no = lines.get(1);
+			exc_central_no = lines.get(2);
+			upload_no = lines.get(3);
+			program_no = lines.get(4);
+			program.read_Party_Phone_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
+					upload_no, program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-	
-	private static void test4() {
-		System.out.println(ETL_Tool_FormatCheck.checkNum("0000123"));
-	}
-	
-	private static void test5() {
-		
-		String temp = "00000123";
-		System.out.println(Integer.valueOf(temp));
-		
-	}
-	
-	private static void test6() throws IOException {
-		File file = new File("C:/Users/10404003/Desktop/農經/171221/file/600_CF_PARTY_20171206.TXT");
-		FileInputStream fis = new FileInputStream(file);
-		BufferedReader br = new BufferedReader(new InputStreamReader(fis,"BIG5"));
-		
-		String str = "";
-		int count = 0;
-		while (br.ready()) {
-			str = br.readLine();
-			count++;
+
+	public static void PARTY_PARTY_REL() throws IOException {
+		ETL_E_PARTY_PARTY_REL program = new ETL_E_PARTY_PARTY_REL();
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		Date exc_record_date = new Date();
+
+		try {
+			filePath = lines.get(0);
+			fileTypeName = "PARTY_PARTY_REL";
+			batch_no = lines.get(1);
+			exc_central_no = lines.get(2);
+			upload_no = lines.get(3);
+			program_no = lines.get(4);
+			program.read_Party_Party_Rel_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
+					upload_no, program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		System.out.println("count = " + count);
 	}
-	
+
+	private static List<String> getProperties(String path) throws IOException {
+		Charset charset = Charset.forName("Big5");
+		List<String> lines = Files.readAllLines(Paths.get(path), charset);
+		return lines;
+	}
 }

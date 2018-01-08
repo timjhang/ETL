@@ -4,7 +4,7 @@ import java.util.Date;
 
 import Tool.ETL_Tool_ParseFileName;
 
-public class ETL_Bean_PARTY_PARTY_TEL_Data {
+public class ETL_Bean_PARTY_PARTY_REL_Data {
 
 	// 報送單位
 	private String central_no;
@@ -38,7 +38,7 @@ public class ETL_Bean_PARTY_PARTY_TEL_Data {
 	private String error_mark = ""; // 預設無錯誤
 	
 	// Constructor
-	public ETL_Bean_PARTY_PARTY_TEL_Data(ETL_Tool_ParseFileName pfn) {
+	public ETL_Bean_PARTY_PARTY_REL_Data(ETL_Tool_ParseFileName pfn) {
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();

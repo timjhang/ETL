@@ -6,13 +6,11 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import Bean.ETL_Bean_ErrorLog_Data;
 import Bean.ETL_Bean_PARTY_Data;
-import Bean.ETL_Bean_PARTY_PHONE_Data;
 import DB.ETL_P_Data_Writer;
 import DB.ETL_P_ErrorLog_Writer;
 import DB.ETL_P_Log;
@@ -125,6 +123,11 @@ public class ETL_E_PARTY {
 				
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
+				// 業務別非預期, 不進行解析
+				if (pfn.getFile_Type() == null) {
+					System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
+					continue;
+				}
 				// 設定批次編號
 				pfn.setBatch_no(batch_no);
 				
@@ -847,7 +850,7 @@ public class ETL_E_PARTY {
 					} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
 						fileFmtErrMsg = "尾錄總筆數與統計不符";
 						errWriter.addErrLog(
-								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount - 2), "總筆數", fileFmtErrMsg));
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 					}
 					
 					// 保留欄檢核(595)
@@ -952,7 +955,7 @@ public class ETL_E_PARTY {
 	
 	public static void main(String[] argv) {
 		ETL_E_PARTY one = new ETL_E_PARTY();
-		String filePath = "C:/Users/10404003/Desktop/農經/171228";
+		String filePath = "C:/Users/10404003/Desktop/農經/2017/171228";
 		String fileTypeName = "PARTY";
 		one.read_Party_File(filePath, fileTypeName, 
 				"ETL00001", "951", new Date(), "001", "ETL_E_PARTY");
