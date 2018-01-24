@@ -572,10 +572,10 @@ public class ETL_E_ACCOUNT {
 				errWriter.insert_Error_Log();
 				
 				// ETL_FILE_Log寫入DB
-				ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no() /* TODO V2 */, pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
-						"E", parseStartDate, parseEndDate, iTotalCount /* TODO V2 */, successCount, failureCount, pfn.getFileName());
+				ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+						"E", parseStartDate, parseEndDate, iTotalCount , successCount, failureCount, pfn.getFileName());
 				
-				// 累加PARTY_PHONE處理錯誤筆數  // TODO V2
+				// 累加PARTY_PHONE處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
 			// 執行結果
@@ -644,40 +644,40 @@ public class ETL_E_ACCOUNT {
 	public static void main(String[] argv) throws IOException {
 		
 		//讀取測試資料，並只列出明細錄欄位
-	    Charset charset = Charset.forName("Big5");
-		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\600_P_ACCOUNT_20171206.txt"), charset);
-		
-		if ( lines.size() > 2 ){
-			
-			lines.remove(0);
-			lines.remove(lines.size()-1);
-			
-			System.out.println("============================================================================================");
-			for (String line : lines) {
-				byte[] tmp = line.getBytes(charset);
-				System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
-				System.out.println("位元組長度: "+ tmp.length);
-				System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
-				System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
-				System.out.println("客戶統編X(11): "+ new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
-				System.out.println("異動代號X(01): "+ new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
-				System.out.println("帳號X(30): "+ new String(Arrays.copyOfRange(tmp, 20, 50), "Big5"));
-				System.out.println("帳戶行X(07): "+ new String(Arrays.copyOfRange(tmp, 50, 57), "Big5"));
-				System.out.println("帳戶類別X(02): "+ new String(Arrays.copyOfRange(tmp, 57, 59), "Big5"));
-				System.out.println("連結服務X(01): "+ new String(Arrays.copyOfRange(tmp, 59, 60), "Big5"));
-				System.out.println("幣別X(03): "+ new String(Arrays.copyOfRange(tmp, 60, 63), "Big5"));
-				System.out.println("帳戶狀態X(01): "+ new String(Arrays.copyOfRange(tmp, 63, 64), "Big5"));
-				System.out.println("開戶管道X(01): "+ new String(Arrays.copyOfRange(tmp, 64, 65), "Big5"));
-				System.out.println("開戶日期X(08): "+ new String(Arrays.copyOfRange(tmp, 65, 73), "Big5"));
-				System.out.println("結清(銷戶)日期X(08): "+ new String(Arrays.copyOfRange(tmp, 73, 81), "Big5"));
-				System.out.println("帳戶餘額正負號X(01): "+ new String(Arrays.copyOfRange(tmp, 81, 82), "Big5"));
-				System.out.println("帳戶餘額9(12)V99: "+ new String(Arrays.copyOfRange(tmp, 82, 96), "Big5"));
-				System.out.println("過去一個月平均餘額正負號X(01): "+ new String(Arrays.copyOfRange(tmp, 96, 97), "Big5"));
-				System.out.println("過去一個月平均餘額9(12)V99: "+ new String(Arrays.copyOfRange(tmp, 97, 111), "Big5"));
-				System.out.println("警示註記X(02): "+ new String(Arrays.copyOfRange(tmp, 111, 113), "Big5"));
-				System.out.println("============================================================================================");
-			}			
-		}
+//	    Charset charset = Charset.forName("Big5");
+//		List<String> lines = Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\600_P_ACCOUNT_20171206.txt"), charset);
+//		
+//		if ( lines.size() > 2 ){
+//			
+//			lines.remove(0);
+//			lines.remove(lines.size()-1);
+//			
+//			System.out.println("============================================================================================");
+//			for (String line : lines) {
+//				byte[] tmp = line.getBytes(charset);
+//				System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
+//				System.out.println("位元組長度: "+ tmp.length);
+//				System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+//				System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+//				System.out.println("客戶統編X(11): "+ new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+//				System.out.println("異動代號X(01): "+ new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+//				System.out.println("帳號X(30): "+ new String(Arrays.copyOfRange(tmp, 20, 50), "Big5"));
+//				System.out.println("帳戶行X(07): "+ new String(Arrays.copyOfRange(tmp, 50, 57), "Big5"));
+//				System.out.println("帳戶類別X(02): "+ new String(Arrays.copyOfRange(tmp, 57, 59), "Big5"));
+//				System.out.println("連結服務X(01): "+ new String(Arrays.copyOfRange(tmp, 59, 60), "Big5"));
+//				System.out.println("幣別X(03): "+ new String(Arrays.copyOfRange(tmp, 60, 63), "Big5"));
+//				System.out.println("帳戶狀態X(01): "+ new String(Arrays.copyOfRange(tmp, 63, 64), "Big5"));
+//				System.out.println("開戶管道X(01): "+ new String(Arrays.copyOfRange(tmp, 64, 65), "Big5"));
+//				System.out.println("開戶日期X(08): "+ new String(Arrays.copyOfRange(tmp, 65, 73), "Big5"));
+//				System.out.println("結清(銷戶)日期X(08): "+ new String(Arrays.copyOfRange(tmp, 73, 81), "Big5"));
+//				System.out.println("帳戶餘額正負號X(01): "+ new String(Arrays.copyOfRange(tmp, 81, 82), "Big5"));
+//				System.out.println("帳戶餘額9(12)V99: "+ new String(Arrays.copyOfRange(tmp, 82, 96), "Big5"));
+//				System.out.println("過去一個月平均餘額正負號X(01): "+ new String(Arrays.copyOfRange(tmp, 96, 97), "Big5"));
+//				System.out.println("過去一個月平均餘額9(12)V99: "+ new String(Arrays.copyOfRange(tmp, 97, 111), "Big5"));
+//				System.out.println("警示註記X(02): "+ new String(Arrays.copyOfRange(tmp, 111, 113), "Big5"));
+//				System.out.println("============================================================================================");
+//			}			
+//		}
 
 		//讀取測試資料，並運行程式
 		ETL_E_ACCOUNT one = new ETL_E_ACCOUNT();

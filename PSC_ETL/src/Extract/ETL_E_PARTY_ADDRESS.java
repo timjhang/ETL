@@ -425,7 +425,7 @@ public class ETL_E_PARTY_ADDRESS {
 				
 				// ETL_FILE_Log寫入DB
 				ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
-						"E", parseStartDate, parseEndDate, iTotalCount /* TODO V2 */, successCount, failureCount, pfn.getFileName());
+						"E", parseStartDate, parseEndDate, iTotalCount, successCount, failureCount, pfn.getFileName());
 				
 				// 累加PARTY_PHONE處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
