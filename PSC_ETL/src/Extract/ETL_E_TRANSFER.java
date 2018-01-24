@@ -32,7 +32,8 @@ public class ETL_E_TRANSFER {
 	private String[][] checkMapArray = { { "T_3", "COMM_FILE_TYPE" }, // 檔名業務別
 			{ "T_4", "COMM_DOMAIN_ID" }, // 金融機構代號
 			{ "T_9", "TRANSFER_DIRECTION" }, // 顧客境外交易資料_匯入或匯出
-			{ "T_10", "COMM_CURRENCY_CODE" }// 幣別
+			{ "T_10", "COMM_CURRENCY_CODE" },// 幣別
+			{"BIC" , "COMM_NATIONALITY_CODE"}//國籍代碼檢驗
 	};
 
 	// 欄位檢核用母Map
@@ -332,9 +333,9 @@ public class ETL_E_TRANSFER {
 						data.setOrdering_customer_party_id(ordering_customer_party_id);
 
 						// 匯款人顧客姓名 X(80) *
-						String rdering_customer_party_name = strQueue.popBytesString(80);
-						data.setRdering_customer_party_name(rdering_customer_party_name);
-						if (ETL_Tool_FormatCheck.isEmpty(rdering_customer_party_name)) {
+						String ordering_customer_party_name = strQueue.popBytesString(80);
+						data.setOrdering_customer_party_name(ordering_customer_party_name);
+						if (ETL_Tool_FormatCheck.isEmpty(ordering_customer_party_name)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "匯款人顧客姓名", "空值"));
@@ -351,7 +352,16 @@ public class ETL_E_TRANSFER {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "匯款銀行BIC 編碼", "空值"));
+						}else if(ordering_bank_bic.length()<6) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "匯款銀行BIC 編碼", "長度小於6"));
+						}else if(!checkMaps.get("BIC").containsKey(getCOMM_NATIONALITY_CODE(ordering_bank_bic.trim()))) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+										String.valueOf(rowCount), "匯款銀行BIC 編碼", "非預期"));
 						}
+						
 
 						// 受款人銀行帳戶編號 X(50) *
 						String beneficiary_customer_account_number = strQueue.popBytesString(50);
@@ -382,6 +392,14 @@ public class ETL_E_TRANSFER {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "受款銀行BIC 編碼", "空值"));
+						}else if(beneficiary_bank_bic.length()<6) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(beneficiary_bank_bic), "受款銀行BIC 編碼", "長度小於6"));
+						}else if(!checkMaps.get("BIC").containsKey(getCOMM_NATIONALITY_CODE(beneficiary_bank_bic.trim()))) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "受款銀行BIC 編碼", "非預期"));
 						}
 
 						// 交易類別 X(04) *
@@ -543,6 +561,14 @@ public class ETL_E_TRANSFER {
 
 		System.out.println("#######Extrace - ETL_E_TRANSFER - End"); //
 
+	}
+	
+	private static String getCOMM_NATIONALITY_CODE(String str){
+			if(str==null || str.length()<6) {
+				return null;
+			}
+			
+			return str.substring(4, 6);
 	}
 
 	// List增加一個data

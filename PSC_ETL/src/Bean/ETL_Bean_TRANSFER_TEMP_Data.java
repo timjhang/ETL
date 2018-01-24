@@ -36,7 +36,7 @@ public class ETL_Bean_TRANSFER_TEMP_Data {
 	//匯款人顧客編號	
 	private String ordering_customer_party_id;
 	//匯款人顧客姓名	
-	private String rdering_customer_party_name;
+	private String ordering_customer_party_name;
 	//匯款人顧客地址	
 	private String ordering_customer_address_line;
 	//匯款銀行bic 編碼	
@@ -158,12 +158,7 @@ public class ETL_Bean_TRANSFER_TEMP_Data {
 	public void setOrdering_customer_party_id(String ordering_customer_party_id) {
 		this.ordering_customer_party_id = ordering_customer_party_id;
 	}
-	public String getRdering_customer_party_name() {
-		return rdering_customer_party_name;
-	}
-	public void setRdering_customer_party_name(String rdering_customer_party_name) {
-		this.rdering_customer_party_name = rdering_customer_party_name;
-	}
+
 	public String getOrdering_customer_address_line() {
 		return ordering_customer_address_line;
 	}
@@ -241,6 +236,14 @@ public class ETL_Bean_TRANSFER_TEMP_Data {
 	}
 	public void setError_mark(String error_mark) {
 		this.error_mark = error_mark;
+	}
+
+	public String getOrdering_customer_party_name() {
+		return ordering_customer_party_name;
+	}
+
+	public void setOrdering_customer_party_name(String ordering_customer_party_name) {
+		this.ordering_customer_party_name = ordering_customer_party_name;
 	}
 
 }
