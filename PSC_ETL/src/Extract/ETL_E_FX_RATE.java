@@ -17,7 +17,7 @@ import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
-import Tool.ETF_Tool_FileReader;
+import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
@@ -76,7 +76,7 @@ public class ETL_E_FX_RATE {
 			// 處理錯誤計數
 			int detail_ErrorCount = 0;
 			// 取得目標檔案File
-			List<File> fileList = ETF_Tool_FileReader.getTargetFileList(filePath, fileTypeName);
+			List<File> fileList = ETL_Tool_FileReader.getTargetFileList(filePath, fileTypeName);
 			System.out.println("共有檔案 " + fileList.size() + " 個！");
 			System.out.println("===============");
 			for (int i = 0; i < fileList.size(); i++) {

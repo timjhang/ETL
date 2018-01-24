@@ -17,7 +17,7 @@ import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
-import Tool.ETF_Tool_FileReader;
+import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
@@ -78,7 +78,7 @@ public class ETL_E_FCX {
 			// 處理錯誤計數
 			int detail_ErrorCount = 0;
 			// 取得目標檔案File
-			List<File> fileList = ETF_Tool_FileReader.getTargetFileList_noFT(filePath, fileTypeName);
+			List<File> fileList = ETL_Tool_FileReader.getTargetFileList_noFT(filePath, fileTypeName);
 
 			System.out.println("共有檔案 " + fileList.size() + " 個！");
 			System.out.println("===============");
@@ -302,12 +302,12 @@ public class ETL_E_FCX {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "實際交易時間", "空值"));
 
-						} else if (!ETL_Tool_FormatCheck.checkDate(transaction_time, "yyyyMMddHHmmss")) {
+						} else if (!ETL_Tool_FormatCheck.checkTimestamp(transaction_time)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "實際交易時間", "格式錯誤"));
 						} else {
-							data.setTransaction_time(ETL_Tool_StringX.toTimestamp(transaction_time, "yyyyMMddHHmmss"));
+							data.setTransaction_time(ETL_Tool_StringX.toTimestamp(transaction_time));
 						}
 
 						// 結構或結售 X(01) FCX_DIRECTION *
