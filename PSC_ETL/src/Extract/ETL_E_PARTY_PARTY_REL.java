@@ -430,7 +430,7 @@ public class ETL_E_PARTY_PARTY_REL {
 				exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
 			}
 			
-			// 處理後更新ETL_Detail_Log  
+			// 處理後更新ETL_Detail_Log  -- test  tmep  2018.01.24  TimJhang
 //			ETL_P_Log.update_ETL_Detail_Log(
 //					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
 //					"E", exe_result, exe_result_description, new Date());

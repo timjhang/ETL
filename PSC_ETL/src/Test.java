@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -74,8 +75,10 @@ public class Test {
 			fileTypeName = "PARTY";
 			batch_no = lines.get(1);
 			exc_central_no = lines.get(2);
-			upload_no = lines.get(3);
-			program_no = lines.get(4);
+			String str_exc_record_date = lines.get(3);
+			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(str_exc_record_date);
+			upload_no = lines.get(4);
+			program_no = lines.get(5);
 			program.read_Party_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
 					upload_no, program_no);
 		} catch (Exception e) {
@@ -94,8 +97,10 @@ public class Test {
 			fileTypeName = "PARTY_PHONE";
 			batch_no = lines.get(1);
 			exc_central_no = lines.get(2);
-			upload_no = lines.get(3);
-			program_no = lines.get(4);
+			String str_exc_record_date = lines.get(3);
+			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(str_exc_record_date);
+			upload_no = lines.get(4);
+			program_no = lines.get(5);
 			program.read_Party_Phone_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
 					upload_no, program_no);
 		} catch (Exception e) {
@@ -114,8 +119,10 @@ public class Test {
 			fileTypeName = "PARTY_PARTY_REL";
 			batch_no = lines.get(1);
 			exc_central_no = lines.get(2);
-			upload_no = lines.get(3);
-			program_no = lines.get(4);
+			String str_exc_record_date = lines.get(3);
+			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(str_exc_record_date);
+			upload_no = lines.get(4);
+			program_no = lines.get(5);
 			program.read_Party_Party_Rel_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
 					upload_no, program_no);
 		} catch (Exception e) {

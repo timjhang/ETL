@@ -268,7 +268,7 @@ public class ETL_E_PARTY_PHONE {
 //									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 							// TODO V3 Start
 							errWriter.addErrLog(
-									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期43"));
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期43")); // TODO V3
 							
 							// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
 							continue;
@@ -408,7 +408,7 @@ public class ETL_E_PARTY_PHONE {
 //							successCount++;
 //						}
 						
-						// TODO V3  Start
+						// TODO V3  Start  搬家 + 執行錯誤寫入
 						// 程式統計檢核 
 						if ((rowCount - 2) != (successCount + failureCount)) { // TODO V3
 							fileFmtErrMsg = "總筆數 <> 成功比數 + 失敗筆數";
@@ -438,7 +438,7 @@ public class ETL_E_PARTY_PHONE {
 //					ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 //							"E", parseStartDate, parseEndDate, iTotalCount, successCount, failureCount, pfn.getFileName());
 					
-					// TODO V3  Start  搬家 + 執行錯誤寫入
+					// TODO V3  Start
 					// 執行結果
 					String file_exe_result;
 					// 執行結果說明
