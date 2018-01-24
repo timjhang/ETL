@@ -33,7 +33,7 @@ public class ETL_E_PARTY_PHONE {
 	// TODO
 	private String[][] checkMapArray =
 		{
-			{"comm_file_type", "COMM_FILE_TYPE"}, // 業務別  // TODO V3
+			{"comm_file_type", "COMM_FILE_TYPE"}, // 業務別 // TODO V3
 			{"c-2", "COMM_DOMAIN_ID"}, // 本會代號
 			{"c-4", "PARTY_PHONE_CHANGE_CODE"}, // 異動代號
 			{"c-5", "PARTY_PHONE_PHONE_TYPE"} // 電話類別
@@ -170,7 +170,7 @@ public class ETL_E_PARTY_PHONE {
 				try { // TODO V3
 					
 					// 開始前ETL_FILE_Log寫入DB // TODO V3
-					ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date /* TODO V3*/, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+					ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", parseStartDate, null, 0, 0, 0, pfn.getFileName());
 				
 					// 嚴重錯誤訊息變數(讀檔)
@@ -408,9 +408,9 @@ public class ETL_E_PARTY_PHONE {
 //							successCount++;
 //						}
 						
-						// TODO V3  Start
+						// TODO V3  Start  搬家 + 執行錯誤寫入
 						// 程式統計檢核 
-						if ((rowCount - 2) != (successCount + failureCount)) { // TODO V3
+						if ((rowCount - 2) != (successCount + failureCount)) {
 							fileFmtErrMsg = "總筆數 <> 成功比數 + 失敗筆數";
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "程式檢核", fileFmtErrMsg));
@@ -438,13 +438,13 @@ public class ETL_E_PARTY_PHONE {
 //					ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 //							"E", parseStartDate, parseEndDate, iTotalCount, successCount, failureCount, pfn.getFileName());
 					
-					// TODO V3  Start  搬家 + 執行錯誤寫入
+					// TODO V3  Start
 					// 執行結果
 					String file_exe_result;
 					// 執行結果說明
 					String file_exe_result_description;
 					
-					if (!"".equals(fileFmtErrMsg)) { // TODO V3
+					if (!"".equals(fileFmtErrMsg)) {
 						file_exe_result = "S";
 						file_exe_result_description = "解析檔案出現嚴重錯誤";
 						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤\n";
@@ -457,13 +457,13 @@ public class ETL_E_PARTY_PHONE {
 					}
 					
 					// 處理後更新ETL_FILE_Log
-					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date /* TODO V3*/, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", parseEndDate, iTotalCount , successCount, failureCount, file_exe_result, file_exe_result_description);
 					// TODO V3  End
 					
 				} catch (Exception ex) { // TODO V3
 					// 執行錯誤更新ETL_FILE_Log
-					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date /* TODO V3*/, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", new Date(), iTotalCount, successCount, failureCount, "S", ex.getMessage());
 					
 					ex.printStackTrace();
