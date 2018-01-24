@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ETF_Tool_FileReader {
+public class ETL_Tool_FileReader {
 	
 	public static boolean forTest = false;
 	
@@ -46,7 +46,7 @@ public class ETF_Tool_FileReader {
 					pfn = new ETL_Tool_ParseFileName(fileNameArray[i]);
 				} catch (Exception ex) {
 					// 檔名解析中出現錯誤時, 印出錯誤  且  跳過此圈後續, 繼續迴圈
-					System.out.println(ex.getMessage());
+//					System.out.println(ex.getMessage());
 					continue;
 				}
 					

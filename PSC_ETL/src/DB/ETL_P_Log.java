@@ -45,12 +45,13 @@ public class ETL_P_Log {
 
 	/**
 	 * ETL_FILE_Log格式
+	 * @param BATCH_NO 批次編號
 	 * @param CENTRAL_NO 報送單位
 	 * @param RECORD_DATE 檔案日期
 	 * @param FILE_TYPE 檔名業務別
 	 * @param FILE_NAME 檔案名稱
 	 * @param UPLOAD_NO 上傳批號
-	 * @param STEP_TYPE 步驟 STEP_TYPE
+	 * @param STEP_TYPE 步驟
 	 * @param START_DATETIME 執行開始日期時間
 	 * @param END_DATETIME 執行結束日期時間
 	 * @param TOTAL_CNT 總筆數
@@ -81,8 +82,10 @@ public class ETL_P_Log {
 					" TOTAL_CNT, " +
 					" SUCCESS_CNT, " +
 					" FAILED_CNT, " +
+					" EXE_RESULT, " +
+					" EXE_RESULT_DESCRIPTION, " +
 					" SRC_FILE " +
-				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Connection con = ConnectionHelper.getDB2Connection();
 		PreparedStatement pstmt = con.prepareStatement(insert_query);
@@ -94,12 +97,86 @@ public class ETL_P_Log {
 		pstmt.setString(5, FILE_NAME);
 		pstmt.setString(6, UPLOAD_NO);
 		pstmt.setString(7, STEP_TYPE);
-		pstmt.setTimestamp(8, new Timestamp(START_DATETIME.getTime()));
-		pstmt.setTimestamp(9, new Timestamp(END_DATETIME.getTime()));
+		pstmt.setTimestamp(8, (START_DATETIME==null)?null:(new Timestamp(START_DATETIME.getTime())));
+		pstmt.setTimestamp(9, (END_DATETIME==null)?null:(new Timestamp(END_DATETIME.getTime())));
 		pstmt.setInt(10, TOTAL_CNT);
 		pstmt.setInt(11, SUCCESS_CNT);
 		pstmt.setInt(12, FAILED_CNT);
-		pstmt.setString(13, SRC_FILE);
+		pstmt.setString(13, "");
+		pstmt.setString(14, "");
+		pstmt.setString(15, SRC_FILE);
+
+		pstmt.executeUpdate();
+
+		if (pstmt != null) {
+			pstmt.close();
+		}
+		if (con != null) {
+			con.close();
+		}
+
+	}
+	
+	/**  更新ETL_FILE_Log  V3  2018.01.24  TimJhang
+	 * ETL_FILE_Log格式
+	 * @param BATCH_NO 批次編號
+	 * @param CENTRAL_NO 報送單位
+	 * @param RECORD_DATE 檔案日期
+	 * @param FILE_TYPE 檔名業務別
+	 * @param FILE_NAME 檔案名稱
+	 * @param UPLOAD_NO 上傳批號
+	 * @param STEP_TYPE 步驟 
+	 * @param END_DATETIME 執行結束日期時間
+	 * @param TOTAL_CNT 總筆數
+	 * @param SUCCESS_CNT 成功筆數
+	 * @param FAILED_CNT 失敗筆數
+	 * @param EXE_RESULT 執行結果
+	 * @param EXE_RESULT_DESCRIPTION 執行結果說明
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public static void update_End_ETL_FILE_Log(String BATCH_NO, String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE, String FILE_NAME,
+			String UPLOAD_NO, String STEP_TYPE, java.util.Date END_DATETIME,
+			int TOTAL_CNT, int SUCCESS_CNT, int FAILED_CNT,
+			String EXE_RESULT, String EXE_RESULT_DESCRIPTION)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
+		String insert_query = 
+				" UPDATE " + ETL_Profile.db2TableSchema + ".ETL_FILE_LOG SET " +
+					" END_DATETIME = ?, " +
+					" TOTAL_CNT = ?, " +
+					" SUCCESS_CNT = ?, " +
+					" FAILED_CNT = ?, " +
+					" EXE_RESULT = ?, " +
+					" EXE_RESULT_DESCRIPTION = ? " +
+				" WHERE BATCH_NO = ? " + 
+					" AND CENTRAL_NO = ? " +
+					" AND RECORD_DATE = ? " +
+					" AND FILE_TYPE = ? " +
+					" AND FILE_NAME = ? " +
+					" AND UPLOAD_NO = ? " +
+					" AND STEP_TYPE = ? "
+				;
+
+		Connection con = ConnectionHelper.getDB2Connection();
+		PreparedStatement pstmt = con.prepareStatement(insert_query);
+
+		pstmt.setTimestamp(1, new Timestamp(END_DATETIME.getTime()));
+		pstmt.setInt(2, TOTAL_CNT);
+		pstmt.setInt(3, SUCCESS_CNT);
+		pstmt.setInt(4, FAILED_CNT);
+		pstmt.setString(5, EXE_RESULT);
+		pstmt.setString(6, EXE_RESULT_DESCRIPTION);
+		pstmt.setString(7, BATCH_NO);
+		pstmt.setString(8, CENTRAL_NO);
+		pstmt.setDate(9, new Date(RECORD_DATE.getTime()));
+		pstmt.setString(10, FILE_TYPE);
+		pstmt.setString(11, FILE_NAME);
+		pstmt.setString(12, UPLOAD_NO);
+		pstmt.setString(13, STEP_TYPE);
+		
 
 		pstmt.executeUpdate();
 
@@ -252,7 +329,7 @@ public class ETL_P_Log {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static void update_ETL_Detail_Log(
+	public static void update_End_ETL_Detail_Log (
 			// 搜尋項目參數
 			String batch_no, String central_no, java.util.Date record_date, String upload_no, String step_type,
 			// 更新參數
