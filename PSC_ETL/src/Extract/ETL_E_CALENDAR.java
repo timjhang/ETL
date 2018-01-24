@@ -233,14 +233,19 @@ public class ETL_E_CALENDAR {
 
 						String is_business_day = strQueue.popBytesString(1);
 						data.setIs_business_day(is_business_day);
-						// 是否為營業日檢核
-						if (!ETL_Tool_FormatCheck.isEmpty(is_business_day)) {
-							if (advancedCheck && !checkMaps.get("T_5").containsKey(is_business_day.trim())) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "是否為營業日", "非預期"));
-							}
+						
+						
+						// 是否為營業日檢核 V3 改成必填
+						if (ETL_Tool_FormatCheck.isEmpty(is_business_day)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "是否為營業日", "空值"));
+						}else if (!checkMaps.get("T_5").containsKey(is_business_day.trim())) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+									String.valueOf(rowCount), "是否為營業日", "非預期"));
 						}
+		
 
 						// 保留欄位檢核(13)
 						String keepColumn = strQueue.popBytesString(13);
