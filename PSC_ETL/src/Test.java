@@ -12,7 +12,7 @@ import java.util.List;
 import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_PARTY_REL;
 import Extract.ETL_E_PARTY_PHONE;
-import Tool.ETF_Tool_FileReader;
+import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
 
@@ -26,7 +26,7 @@ public class Test {
 		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 //		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
 		
-		List<File> fileList = ETF_Tool_FileReader.getTargetFileList(lines.get(0), "PARTY_ADDRESS");
+		List<File> fileList = ETL_Tool_FileReader.getTargetFileList(lines.get(0), "PARTY_ADDRESS");
 		
 		System.out.println("共有檔案 " + fileList.size() + " 個！");
 		System.out.println("===============");

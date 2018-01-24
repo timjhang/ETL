@@ -8,12 +8,15 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import DB.ConnectionHelper;
 import Extract.ETL_E_PARTY;
@@ -39,6 +42,23 @@ public class TestTim {
 //			Date date = new Date().setTime(0);
 //			date.setTime(0);
 //			System.out.println(date);
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void testInput() {
+		try {
+			File parseFile = new File("");
+			FileInputStream fis = new FileInputStream(parseFile);
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis,"BIG5"));
+			
+//			Files reader = new Files();
+			List<String> strList = new ArrayList<String>();
+			strList = Files.readAllLines(parseFile.toPath(), Charset.forName(""));//, "BIG5");//.readAllLines(null, "BIG5");
+//			strList = Files.;
+//			readAllLines(parseFile.getPath(), )
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();

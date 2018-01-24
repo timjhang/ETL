@@ -100,15 +100,18 @@ public class ETL_Tool_StringQueue {
 	// pop出擷取字串(bytes長度切)
 	public String popBytesString(int popLength) throws Exception {
 		if (popLength < 0) {
-			throw new Exception("ETL_Tool_TokenString - popBytes - 輸入參數須為正！");
+//			throw new Exception("ETL_Tool_TokenString - popBytes - 輸入參數須為正！");
+			System.out.println("ETL_Tool_TokenString - popBytes - 輸入參數須為正！");
 		}
 		
 		if (popOutBytesLength >= totalByteLength) {
-			throw new Exception("ETL_Tool_TokenString - popBytes - 字串已pop完畢!");
+//			throw new Exception("ETL_Tool_TokenString - popBytes - 字串已pop完畢!");
+			System.out.println("ETL_Tool_TokenString - popBytes - 字串已pop完畢!");
 		}
 		
 		if (popOutBytesLength + popLength > totalByteLength) {
-			throw new Exception("ETL_Tool_TokenString - popBytes - 超出pop範圍!");
+//			throw new Exception("ETL_Tool_TokenString - popBytes - 超出pop範圍!");
+			System.out.println("ETL_Tool_TokenString - popBytes - 超出pop範圍!");
 		}
 		
 		// 結果array
