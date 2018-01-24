@@ -2,9 +2,6 @@ package Tool;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-
-import DB.ETL_Q_ColumnCheckCodes;
 
 public class ETL_Tool_ParseFileName {
 	// 拆解檔案名工具
@@ -122,28 +119,5 @@ public class ETL_Tool_ParseFileName {
 	public void setBatch_no(String batch_no) {
 		Batch_no = batch_no;
 	}
-	
-	// 欄位檢核用母Map
-//	private Map<String, Map<String, String>> checkMaps;
-	
-	// 欄位檢核用陣列
-//	private String[][] checkMapArray =
-//	{
-//		{"comm_file_type", "COMM_FILE_TYPE"} // 本會代號
-//		
-//	};
-	
-	// class生成時, 取得所有檢核用子map, 置入母map內
-//	{
-//		try {
-//			
-//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-//			
-//		} catch (Exception ex) {
-//			checkMaps = null;
-//			System.out.println("ETL_Tool_ParseFileName 抓取checkMaps資料有誤!");
-//			ex.printStackTrace();
-//		}
-//	};
 	
 }
