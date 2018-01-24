@@ -33,7 +33,7 @@ public class ETL_E_PARTY_PHONE {
 	// TODO
 	private String[][] checkMapArray =
 		{
-			{"comm_file_type", "COMM_FILE_TYPE"}, // 本會代號 // TODO V3
+			{"comm_file_type", "COMM_FILE_TYPE"}, // 業務別  // TODO V3
 			{"c-2", "COMM_DOMAIN_ID"}, // 本會代號
 			{"c-4", "PARTY_PHONE_CHANGE_CODE"}, // 異動代號
 			{"c-5", "PARTY_PHONE_PHONE_TYPE"} // 電話類別
