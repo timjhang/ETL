@@ -21,23 +21,24 @@ public class ETL_Tool_FormatCheck {
 	 * @return true 成功 / false 失敗
 	 */
 	public static boolean checkTimestamp(String dateStr) {
-		boolean isVaild = false;
-		
 		if (isEmpty(dateStr)) {
-			return isVaild;
+			return false;
+		}
+		
+		// 00000000000000代表1900/01/01 00:00:00
+		if ("00000000000000".equals(dateStr)) {
+			return true;
 		}
 		
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 			sdf.setLenient(false); // 過濾不合理日期
 			sdf.parse(dateStr);
-			isVaild = true;
+			return true;
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
-			return isVaild;
+			return false;
 		}
-		
-		return isVaild;
 	}
 	
 	// 日期格式檢核工具  (通過檢核:true\檢核失敗:false)
@@ -47,16 +48,20 @@ public class ETL_Tool_FormatCheck {
 			return false;
 		}
 		
+		// 00000000代表1900/01/01
+		if ("00000000".equals(dateStr)) {
+			return true;
+		}
+		
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 			sdf.setLenient(false); // 過濾不合理日期
 			Date realDate = sdf.parse(dateStr);
+			return true;
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 			return false;
 		}
-		
-		return true;
 	}
 	
 
@@ -65,8 +70,8 @@ public class ETL_Tool_FormatCheck {
 	{ 
 	    SimpleDateFormat format = new SimpleDateFormat(pattern);
 	    try{
+		   format.setLenient(false); // 過濾不合理日期
 	       format.parse(inputString);
-	       format.setLenient(false); // 過濾不合理日期
 	       return true;
 	    }catch(Exception e)
 	    {

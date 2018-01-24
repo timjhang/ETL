@@ -19,7 +19,12 @@ public class ETL_Tool_StringX {
 		Timestamp timestamp = null;
 		Date parsedDate;
 		
-		if( ETL_Tool_FormatCheck.checkTimestamp(dateStr)){
+		// 00000000000000代表1900/01/01 00:00:00
+		if ("00000000000000".equals(dateStr)) {
+			dateStr = "19000101000000";
+		}
+		
+		if(ETL_Tool_FormatCheck.checkTimestamp(dateStr)){
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 			try {
 				parsedDate = dateFormat.parse(dateStr);
@@ -62,7 +67,12 @@ public class ETL_Tool_StringX {
 	 * @return Util Date，有錯誤則回傳null
 	 * @throws Exception
 	 */
-	public static Date toUtilDate(String dateStr)throws Exception{
+	public static Date toUtilDate(String dateStr)throws Exception {
+		
+		// 00000000代表1900/01/01
+		if ("00000000".equals(dateStr)) {
+			return new SimpleDateFormat("yyyyMMdd").parse("19000101");
+		}
 		
 		return ETL_Tool_FormatCheck.checkDate(dateStr) ? new SimpleDateFormat("yyyyMMdd").parse(dateStr) : null;
 	}
