@@ -102,16 +102,20 @@ public class ETL_Tool_StringQueue {
 		if (popLength < 0) {
 //			throw new Exception("ETL_Tool_TokenString - popBytes - 輸入參數須為正！");
 			System.out.println("ETL_Tool_TokenString - popBytes - 輸入參數須為正！");
+			return "";
 		}
 		
 		if (popOutBytesLength >= totalByteLength) {
 //			throw new Exception("ETL_Tool_TokenString - popBytes - 字串已pop完畢!");
 			System.out.println("ETL_Tool_TokenString - popBytes - 字串已pop完畢!");
+			return "";
 		}
 		
 		if (popOutBytesLength + popLength > totalByteLength) {
 //			throw new Exception("ETL_Tool_TokenString - popBytes - 超出pop範圍!");
 			System.out.println("ETL_Tool_TokenString - popBytes - 超出pop範圍!");
+			// 截出最後的內容
+			popLength = totalByteLength - popOutBytesLength;
 		}
 		
 		// 結果array

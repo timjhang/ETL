@@ -465,6 +465,7 @@ public class ETL_E_PARTY_PHONE {
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", new Date(), iTotalCount, successCount, failureCount, "S", ex.getMessage());
+					processErrMsg = processErrMsg + ex.getMessage() + "\n";
 					
 					ex.printStackTrace();
 				}
@@ -546,10 +547,10 @@ public class ETL_E_PARTY_PHONE {
 	
 	public static void main(String[] argv) throws Exception { // TODO V3
 		ETL_E_PARTY_PHONE one = new ETL_E_PARTY_PHONE();
-		String filePath = "C:/Users/10404003/Desktop/農經/2018/180124";
+		String filePath = "C:/Users/10404003/Desktop/農經/2018/180125";
 		String fileTypeName = "PARTY_PHONE";
 		one.read_Party_Phone_File(filePath, fileTypeName, 
-				"ETL00001", "600", new SimpleDateFormat("yyyyMMdd").parse("20180124"), "001", "ETL_E_PARTY_PHONE");
+				"ETL00001", "600", new SimpleDateFormat("yyyyMMdd").parse("20180125"), "001", "ETL_E_PARTY_PHONE");
 	}
 	
 }
