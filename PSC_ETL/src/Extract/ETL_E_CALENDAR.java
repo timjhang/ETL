@@ -95,12 +95,13 @@ public class ETL_E_CALENDAR {
 				String fileName = parseFile.getName();
 				Date parseStartDate = new Date(); // 開始執行時間
 				System.out.println("解析檔案： " + fileName + " Start " + parseStartDate);
+				
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName, true);
 
 				// 報送單位非預期, 不進行解析
 				if (exc_central_no == null || "".equals(exc_central_no.trim())) {
-					System.out.println("## ETL_E_PARTY_PHONE - read_Party_Phone_File - 控制程式無提供報送單位，不進行解析！"); // TODO V3
+					System.out.println("## ETL_E_CALENDAR - read_CALENDAR_File - 控制程式無提供報送單位，不進行解析！"); // TODO V3
 					processErrMsg = processErrMsg + "控制程式無提供報送單位，不進行解析！\n";
 					continue;
 				} else if (!exc_central_no.trim().equals(pfn.getCentral_No().trim())) {
@@ -110,17 +111,17 @@ public class ETL_E_CALENDAR {
 				}
 
 				// 業務別非預期, 不進行解析
-				if (pfn.getFile_Type() == null || "".equals(pfn.getFile_Type().trim())
-						|| !checkMaps.get("comm_file_type").containsKey(pfn.getFile_Type().trim())) {
-
-					System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
-					processErrMsg = processErrMsg + pfn.getFileName() + " 處理業務別非預期，不進行解析！\n";
-					continue;
-				}
+//				if (pfn.getFile_Type() == null || "".equals(pfn.getFile_Type().trim())
+//						|| !checkMaps.get("comm_file_type").containsKey(pfn.getFile_Type().trim())) {
+//
+//					System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
+//					processErrMsg = processErrMsg + pfn.getFileName() + " 處理業務別非預期，不進行解析！\n";
+//					continue;
+//				}
 
 				// 資料日期非預期, 不進行解析
 				if (exc_record_date == null) {
-					System.out.println("## ETL_E_PARTY_PHONE - read_Party_Phone_File - 控制程式無提供資料日期，不進行解析！"); // TODO V3
+					System.out.println("## ETL_E_CALENDAR - read_CALENDAR_File - 控制程式無提供資料日期，不進行解析！"); // TODO V3
 					processErrMsg = processErrMsg + "控制程式無提供資料日期，不進行解析！\n";
 					continue;
 				} else if (!exc_record_date.equals(pfn.getRecord_Date())) {
@@ -232,11 +233,13 @@ public class ETL_E_CALENDAR {
 							// 整行bytes數檢核(1 + 8 + 1 +13= 23)
 							if (strQueue.getTotalByteLength() != 23) {
 								data.setError_mark("Y");
-								fileFmtErrMsg = "非預期23";
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
+										String.valueOf(rowCount), "行數bytes檢查", "非預期23"));
 
-								// 資料bytes不正確, 為格式嚴重錯誤, 跳出迴圈不繼續執行
+								failureCount++;
+								rowCount++; // 處理行數 ++
+								
+								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
 								continue;
 							}
 
@@ -395,7 +398,9 @@ public class ETL_E_CALENDAR {
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", new Date(), iTotalCount,
 							successCount, failureCount, "S", ex.getMessage());
-
+					
+					processErrMsg = processErrMsg + ex.getMessage() + "\n";
+					
 					ex.printStackTrace();
 				}
 

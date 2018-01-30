@@ -1,5 +1,6 @@
 package Bean;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -24,7 +25,7 @@ public class ETL_Bean_SERVICE_TEMP_Data {
 	//服務日期	
 	private Date service_date;
 	//服務時間	
-	private Timestamp service_time;
+	private Time service_time;
 	//服務類別	
 	private String service_type;
 	//服務管道類別	
@@ -106,12 +107,16 @@ public class ETL_Bean_SERVICE_TEMP_Data {
 	public void setService_date(Date service_date) {
 		this.service_date = service_date;
 	}
-	public Timestamp getService_time() {
+
+	public Time getService_time() {
 		return service_time;
 	}
-	public void setService_time(Timestamp service_time) {
+
+	public void setService_time(Time service_time) {
 		this.service_time = service_time;
 	}
+
+
 	public String getService_type() {
 		return service_type;
 	}
