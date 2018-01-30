@@ -272,6 +272,8 @@ public class ETL_E_PARTY {
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期618"));
 							
 							// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
+							failureCount++;
+							rowCount++;
 							continue;
 						}
 						
@@ -317,13 +319,17 @@ public class ETL_E_PARTY {
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "是否為本行客戶", "空值"));
 							// 無法區分是否為本行客戶, 則無法判定檢核方式, 跳過後續檢核不執行 // TODO temp
-							break;
+							failureCount++;
+							rowCount++;
+							continue;
 						} else if (!checkMaps.get("c-5").containsKey(my_customer_flag)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "是否為本行客戶", "非預期"));
 							// 無法區分是否為本行客戶, 則無法判定檢核方式, 跳過後續檢核不執行  // TODO temp
-							break;
+							failureCount++;
+							rowCount++;
+							continue;
 						}
 						
 						// 由是否為本行/非本行客戶, 區分兩種完全不同檢核方式

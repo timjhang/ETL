@@ -10,17 +10,17 @@ import DB.ConnectionHelper;
 import Profile.ETL_Profile;
 import Tool.ETL_Tool_CastObjUtil;
 
-public class ETL_T_PARTY_PHONE {
+public class ETL_T_PARTY_PARTY_REL {
 
-	// 觸發DB2轉換Procedure, 轉換資料寫進PARTY_PHONE_LOAD  // TODO
-	public void trans_to_PARTY_PHONE_LOAD(ETL_Bean_LogData logData) {
+	// 觸發DB2轉換Procedure, 轉換資料寫進PARTY_PARTY_REL_LOAD  // TODO
+	public void trans_to_PARTY_PARTY_REL_LOAD(ETL_Bean_LogData logData) {
 		
-		System.out.println("#######Transform - ETL_T_PARTY_PHONE - Start"); // TODO
+		System.out.println("#######Transform - ETL_T_PARTY_PARTY_REL - Start"); // TODO
 		
 		try {
 			
 			// TODO
-			String sql = "{call " + ETL_Profile.db2TableSchema + ".Transform.TempTo_PARTY_PHONE_LOAD(?,?,?)}";
+			String sql = "{call " + ETL_Profile.db2TableSchema + ".Transform.TempTo_PARTY_PARTY_REL_LOAD(?,?,?)}";
 			
 			Connection con = ConnectionHelper.getDB2Connection();
 			CallableStatement cstmt = con.prepareCall(sql);
@@ -44,13 +44,13 @@ public class ETL_T_PARTY_PHONE {
 			ex.printStackTrace();
 		}
 		
-		System.out.println("#######Transform - ETL_T_PARTY_PHONE - End"); // TODO
+		System.out.println("#######Transform - ETL_T_PARTY_PARTY_REL - End"); // TODO
 		
 	}
 	
 	public static void main(String[] argv) {
 		
-		ETL_T_PARTY_PHONE one = new ETL_T_PARTY_PHONE();
+		ETL_T_PARTY_PARTY_REL one = new ETL_T_PARTY_PARTY_REL();
 		ETL_Bean_LogData two = new ETL_Bean_LogData();
 		two.setBATCH_NO("1");
 		two.setCENTRAL_NO("2");
@@ -59,7 +59,7 @@ public class ETL_T_PARTY_PHONE {
 		two.setUPLOAD_NO("5");
 		two.setRECORD_DATE(new java.util.Date());
 		
-		one.trans_to_PARTY_PHONE_LOAD(two);
+		one.trans_to_PARTY_PARTY_REL_LOAD(two); // TODO
 		
 	}
 	

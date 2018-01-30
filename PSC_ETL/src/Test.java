@@ -24,44 +24,44 @@ public class Test {
 //		PARTY_PHONE();
 //		PARTY_PARTY_REL();
 		
-		List<String> lines = getProperties("C:\\ETL\\properties.txt");
-//		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
-		
-		List<File> fileList = ETL_Tool_FileReader.getTargetFileList(lines.get(0), "PARTY_ADDRESS");
-		
-		System.out.println("共有檔案 " + fileList.size() + " 個！");
-		System.out.println("===============");
-		for (int i = 0; i < fileList.size(); i++) {
-			System.out.println(fileList.get(i).getName());
-		}
-		System.out.println("===============");
-		
-		for (int i = 0 ; i < fileList.size(); i++) {
-			// 取得檔案
-			File parseFile = fileList.get(i);
-			
-			// 檔名
-			String fileName = parseFile.getName();
-			
-			// 解析fileName物件
-			ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
-			
-			FileInputStream fis = new FileInputStream(parseFile);
-			BufferedReader br = new BufferedReader(new InputStreamReader(fis,"BIG5"));
-			
-			// ETL_字串處理Queue
-//			ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue();
-			
-//			String lineStr = "";
-			int count = 1;
-			while (br.ready()) {
-//				br.readLine().getBytes().length;
-//				System.out.println(lineStr); // test
-//				strQueue.setTargetString(lineStr); // queue裝入新String
-				System.out.println("i = " + count + ", bytes = " + br.readLine().getBytes().length);
-				count++;
-			}
-		}
+//		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+////		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+//		
+//		List<File> fileList = ETL_Tool_FileReader.getTargetFileList(lines.get(0), "PARTY_ADDRESS");
+//		
+//		System.out.println("共有檔案 " + fileList.size() + " 個！");
+//		System.out.println("===============");
+//		for (int i = 0; i < fileList.size(); i++) {
+//			System.out.println(fileList.get(i).getName());
+//		}
+//		System.out.println("===============");
+//		
+//		for (int i = 0 ; i < fileList.size(); i++) {
+//			// 取得檔案
+//			File parseFile = fileList.get(i);
+//			
+//			// 檔名
+//			String fileName = parseFile.getName();
+//			
+//			// 解析fileName物件
+//			ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
+//			
+//			FileInputStream fis = new FileInputStream(parseFile);
+//			BufferedReader br = new BufferedReader(new InputStreamReader(fis,"BIG5"));
+//			
+//			// ETL_字串處理Queue
+////			ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue();
+//			
+////			String lineStr = "";
+//			int count = 1;
+//			while (br.ready()) {
+////				br.readLine().getBytes().length;
+////				System.out.println(lineStr); // test
+////				strQueue.setTargetString(lineStr); // queue裝入新String
+//				System.out.println("i = " + count + ", bytes = " + br.readLine().getBytes().length);
+//				count++;
+//			}
+//		}
 	}
 
 	public static void PARTY() throws IOException {

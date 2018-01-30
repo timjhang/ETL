@@ -271,6 +271,8 @@ public class ETL_E_PARTY_PHONE {
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期43"));
 							
 							// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
+							failureCount++;
+							rowCount++;
 							continue;
 							// TODO V3 End
 						}

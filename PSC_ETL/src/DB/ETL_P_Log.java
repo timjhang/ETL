@@ -338,7 +338,6 @@ public class ETL_P_Log {
 		
 		String insert_query = " UPDATE " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG " +
 				" SET " +
-					" PROGRAM_NO = ? ," +
 					" EXE_STATUS = ? ," +
 					" EXE_RESULT = ? ," +
 					" EXE_RESULT_DESCRIPTION = ? ," +
@@ -348,21 +347,23 @@ public class ETL_P_Log {
 					" AND CENTRAL_NO = ? " +
 					" AND RECORD_DATE = ? " +
 					" AND UPLOAD_NO = ? " +
-					" AND STEP_TYPE = ? ";
+					" AND STEP_TYPE = ? " +
+					" AND PROGRAM_NO = ? ";
 
 		Connection con = ConnectionHelper.getDB2Connection();
 		PreparedStatement pstmt = con.prepareStatement(insert_query);
 
-		pstmt.setString(1, program_no);
-		pstmt.setString(2, exe_status);
-		pstmt.setString(3, exe_result);
-		pstmt.setString(4, exe_result_description);
-		pstmt.setTimestamp(5, (end_datetime==null)?null:(new Timestamp(end_datetime.getTime())));
-		pstmt.setString(6, batch_no);
-		pstmt.setString(7, central_no);
-		pstmt.setDate(8, (record_date==null)?null:(new java.sql.Date(record_date.getTime())));
-		pstmt.setString(9, upload_no);
-		pstmt.setString(10, step_type);
+		
+		pstmt.setString(1, exe_status);
+		pstmt.setString(2, exe_result);
+		pstmt.setString(3, exe_result_description);
+		pstmt.setTimestamp(4, (end_datetime==null)?null:(new Timestamp(end_datetime.getTime())));
+		pstmt.setString(5, batch_no);
+		pstmt.setString(6, central_no);
+		pstmt.setDate(7, (record_date==null)?null:(new java.sql.Date(record_date.getTime())));
+		pstmt.setString(8, upload_no);
+		pstmt.setString(9, step_type);
+		pstmt.setString(10, program_no);
 
 		pstmt.executeUpdate();
 

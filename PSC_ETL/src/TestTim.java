@@ -37,7 +37,7 @@ public class TestTim {
 //			test4();
 //			test5();
 //			test6();
-//			connection();
+			connection();
 //			updateTest();
 //			Date date = new Date().setTime(0);
 //			date.setTime(0);

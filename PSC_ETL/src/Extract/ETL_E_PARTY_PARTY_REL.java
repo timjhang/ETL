@@ -250,6 +250,8 @@ public class ETL_E_PARTY_PARTY_REL {
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期203"));
 							
 							// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
+							failureCount++;
+							rowCount++;
 							continue;
 						}
 						
