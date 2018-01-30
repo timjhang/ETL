@@ -3,11 +3,11 @@ package Extract;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,7 +22,7 @@ import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
-import Tool.ETF_Tool_FileReader;
+import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
@@ -35,6 +35,7 @@ public class ETL_E_LOAN {
 
 	// 欄位檢核用陣列
 	private String[][] checkMapArray = { 
+			{ "comm_file_type", "COMM_FILE_TYPE"}, // 業務別
 			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
 			{ "change_code", "LOAN_CHANGE_CODE" }, // 異動代號
 			{ "loan_category_code", "LOAN_LOAN_CATEGORY_CODE" }, // 放款種類
@@ -79,7 +80,7 @@ public class ETL_E_LOAN {
 	// upload_no 上傳批號
 	// program_no 程式代號
 	public void read_Loan_File(String filePath, String fileTypeName,
-			String batch_no, String exc_central_no, Date exc_record_date, String upload_no, String program_no) { 
+			String batch_no, String exc_central_no, Date exc_record_date, String upload_no, String program_no) throws Exception {
 
 		System.out.println("#######Extrace - ETL_E_LOAN - Start");
 
@@ -92,8 +93,11 @@ public class ETL_E_LOAN {
 			// 處理Party_Phone錯誤計數
 			int detail_ErrorCount = 0;
 			
+			// 程式執行錯誤訊息
+			String processErrMsg = "";
+			
 			// 取得目標檔案File
-			List<File> fileList = ETF_Tool_FileReader.getTargetFileList(filePath, fileTypeName);
+			List<File> fileList = ETL_Tool_FileReader.getTargetFileList(filePath, fileTypeName);
 
 			System.out.println("共有檔案 " + fileList.size() + " 個！");
 			System.out.println("===============");
@@ -115,11 +119,38 @@ public class ETL_E_LOAN {
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
 				
-				// 業務別非預期, 不進行解析
-				if (pfn.getFile_Type() == null) {
-					System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
+				// 報送單位非預期, 不進行解析
+				if (exc_central_no == null || "".equals(exc_central_no.trim())) {
+					System.out.println("## ETL_E_LOAN - read_Loan_File - 控制程式無提供報送單位，不進行解析！");
+					processErrMsg = processErrMsg + "控制程式無提供報送單位，不進行解析！\n";
+					continue;
+				} else if (!exc_central_no.trim().equals(pfn.getCentral_No().trim())) {
+					System.out.println("##" + pfn.getFileName() + " 處理報送單位非預期，不進行解析！");
+					processErrMsg = processErrMsg + pfn.getFileName() + " 處理報送單位非預期，不進行解析！\n";
 					continue;
 				}
+				
+				// 業務別非預期, 不進行解析
+				if (pfn.getFile_Type() == null 
+						|| "".equals(pfn.getFile_Type().trim()) 
+						|| !checkMaps.get("comm_file_type").containsKey(pfn.getFile_Type().trim())) {
+					
+					System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
+					processErrMsg = processErrMsg + pfn.getFileName() + " 處理業務別非預期，不進行解析！\n";
+					continue;
+				}
+				
+				// 資料日期非預期, 不進行解析
+				if (exc_record_date == null) {
+					System.out.println("## ETL_E_LOAN - read_Loan_File - 控制程式無提供資料日期，不進行解析！");
+					processErrMsg = processErrMsg + "控制程式無提供資料日期，不進行解析！\n";
+					continue;
+				} else if (!exc_record_date.equals(pfn.getRecord_Date())) {
+					System.out.println("## " + pfn.getFileName() + " 處理資料日期非預期，不進行解析！");
+					processErrMsg = processErrMsg + pfn.getFileName() + " 處理資料日期非預期，不進行解析！\n";
+					continue;
+				}
+				
 				// 設定批次編號
 				pfn.setBatch_no(batch_no);
 
@@ -135,8 +166,13 @@ public class ETL_E_LOAN {
 				int failureCount = 0;
 				// 尾錄總數
 				int iTotalCount = 0;
-
-				// 嚴重錯誤訊息變數
+				
+				try {
+					// 開始前ETL_FILE_Log寫入DB
+					ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+							"E", parseStartDate, null, 0, 0, 0, pfn.getFileName());
+				
+					// 嚴重錯誤訊息變數(讀檔)
 				String fileFmtErrMsg = "";
 
 				String lineStr = ""; // 行字串暫存區
@@ -197,11 +233,6 @@ public class ETL_E_LOAN {
 					// 保留欄檢核(198)
 					String reserve_field = strQueue.popBytesString(198);
 
-					if (!"".equals(fileFmtErrMsg)) {
-						failureCount++; // 錯誤計數 + 1
-					} else {
-						successCount++; // 成功計數 + 1
-					}
 					rowCount++; // 處理行數 + 1
 				}
 
@@ -229,12 +260,13 @@ public class ETL_E_LOAN {
 						 */
 						if (strQueue.getTotalByteLength() != 214) {
 							data.setError_mark("Y");
-							fileFmtErrMsg = "明細錄位元數非預期214";
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
-
-							// 資料bytes不正確, 為格式嚴重錯誤, 跳出迴圈不繼續執行
-							break;
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期214"));
+							
+							// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
+							failureCount++;
+							rowCount++;
+							continue;
 						}
 
 						// 區別碼檢核 R X(01)*
@@ -537,26 +569,20 @@ public class ETL_E_LOAN {
 					// 保留欄檢核(191)
 					String reserve_field = strQueue.popBytesString(191);
 
-					if (!"".equals(fileFmtErrMsg)) {
-						failureCount++;
-					} else {
-						successCount++;
+					// 程式統計檢核 
+					if ((rowCount - 2) != (successCount + failureCount)) {
+						fileFmtErrMsg = "總筆數 <> 成功比數 + 失敗筆數";
+						errWriter.addErrLog(
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "程式檢核", fileFmtErrMsg));
 					}
-
-				}
-
-				// 程式統計檢核
-				if (rowCount != (successCount + failureCount)) {
-					fileFmtErrMsg = "總筆數 <> 成功筆數 + 失敗筆數";
-					errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
-							"程式檢核", fileFmtErrMsg));
-				}
-				// 多餘行數檢查
-				if (br.ready()) {
-					fileFmtErrMsg = "出現多餘行數";
-					errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
-							"檔案總行數", fileFmtErrMsg));
-					rowCount++;
+					
+					// 多餘行數檢查
+					if (br.ready()) {
+						fileFmtErrMsg = "出現多餘行數";
+						errWriter.addErrLog(
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案總行數", fileFmtErrMsg));
+						rowCount++;
+					}
 				}
 
 				fis.close();
@@ -566,33 +592,65 @@ public class ETL_E_LOAN {
 				// Error_Log寫入DB
 				errWriter.insert_Error_Log();
 				
-				// ETL_FILE_Log寫入DB
-				ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), pfn.getRecord_Date(), pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
-						"E", parseStartDate, parseEndDate, iTotalCount, successCount, failureCount, pfn.getFileName());
+				// 執行結果
+				String file_exe_result;
+				// 執行結果說明
+				String file_exe_result_description;
 				
+				if (!"".equals(fileFmtErrMsg)) {
+					file_exe_result = "S";
+					file_exe_result_description = "解析檔案出現嚴重錯誤";
+					processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤\n";
+				} else if (failureCount == 0) {
+					file_exe_result = "Y";
+					file_exe_result_description = "執行結果無錯誤資料";
+				} else {
+					file_exe_result = "D";
+					file_exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
+				}
+				
+				// 處理後更新ETL_FILE_Log
+				ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+						"E", parseEndDate, iTotalCount , successCount, failureCount, file_exe_result, file_exe_result_description);
+				
+				} catch (Exception ex) {
+					// 執行錯誤更新ETL_FILE_Log
+					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+							"E", new Date(), iTotalCount, successCount, failureCount, "S", ex.getMessage());
+					processErrMsg = processErrMsg + ex.getMessage() + "\n";
+					
+					ex.printStackTrace();
+				}
 				// 累加PARTY_PHONE處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
 			// 執行結果
-			String exe_result;
+			String detail_exe_result;
 			// 執行結果說明
-			String exe_result_description;
+			String detail_exe_result_description;
 			
-			if (detail_ErrorCount == 0) {
-				exe_result = "Y";
-				exe_result_description = "檔案轉入檢核無錯誤";
+			if (!"".equals(processErrMsg)) {
+				detail_exe_result = "S";
+				detail_exe_result_description = processErrMsg;
+			} else if (detail_ErrorCount == 0) {
+				detail_exe_result = "Y";
+				detail_exe_result_description = "檔案轉入檢核無錯誤";
 			} else {
-				exe_result = "N";
-				exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
+				detail_exe_result = "N";
+				detail_exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
 			}
 			
 			// 處理後更新ETL_Detail_Log  
-			ETL_P_Log.update_ETL_Detail_Log(
+			ETL_P_Log.update_End_ETL_Detail_Log(
 					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
-					"E", exe_result, exe_result_description, new Date());
-
-		} catch (Exception ex) {
-
+					"E", detail_exe_result, detail_exe_result_description, new Date());
+			
+		}catch (Exception ex) {
+			// 處理後更新ETL_Detail_Log
+			ETL_P_Log.update_End_ETL_Detail_Log (
+					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
+					"E", "S", ex.getMessage(), new Date());
+			
 			ex.printStackTrace();
 		}
 
@@ -636,7 +694,7 @@ public class ETL_E_LOAN {
 		}
 	}
 
-	public static void main(String[] argv) throws IOException {
+	public static void main(String[] argv) throws Exception {
 		
 		//讀取測試資料，並只列出明細錄欄位
 	    Charset charset = Charset.forName("Big5");
@@ -676,11 +734,11 @@ public class ETL_E_LOAN {
 		}
 		
 		//讀取測試資料，並運行程式
-//		ETL_E_LOAN one = new ETL_E_LOAN();
-//		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-//		String fileTypeName = "LOAN";
-//		one.read_Loan_File(filePath, fileTypeName, 
-//				"ETL00001", "951", new Date(), "001", "ETL_E_LOAN");
+		ETL_E_LOAN one = new ETL_E_LOAN();
+		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+		String fileTypeName = "LOAN";
+		one.read_Loan_File(filePath, fileTypeName, 
+				"ETL00001", "951",new SimpleDateFormat("yyyyMMdd").parse("20180125"), "001", "ETL_E_LOAN");
 	}
 
 }
