@@ -12,14 +12,14 @@ import Tool.ETL_Tool_CastObjUtil;
 
 public class ETL_T_ACCOUNT {
 
-	// 觸發DB2轉換function, 轉換資料寫進ACCOUNT_LOAD // TODO
-	public void trans_to_ACCOUNT_LOAD(ETL_Bean_LogData logData) { // TODO
+	// 觸發DB2轉換function, 轉換資料寫進ACCOUNT_LOAD
+	public void trans_to_ACCOUNT_LOAD(ETL_Bean_LogData logData) {
 
-		System.out.println("#######Transform - ETL_T_ACCOUNT - Start"); // TODO
+		System.out.println("#######Transform - ETL_T_ACCOUNT - Start");
 
 		try {
 
-			String sql = "begin ? := " + ETL_Profile.db2TableSchema + ".Transform.TempTo_ACCOUNT_LOAD(?,?); end;"; // TODO
+			String sql = "{call " + ETL_Profile.db2TableSchema + ".Transform.TempTo_ACCOUNT_LOAD(?,?,?)}";
 
 			Connection con = ConnectionHelper.getDB2Connection();
 			CallableStatement cstmt = con.prepareCall(sql);
@@ -42,7 +42,7 @@ public class ETL_T_ACCOUNT {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		System.out.println("#######Transform - ETL_T_ACCOUNT - End"); // TODO
+		System.out.println("#######Transform - ETL_T_ACCOUNT - End");
 	}
 
 	public static void main(String[] argv) {
@@ -56,6 +56,6 @@ public class ETL_T_ACCOUNT {
 		two.setUPLOAD_NO("5");
 		two.setRECORD_DATE(new java.util.Date());
 
-		one.trans_to_ACCOUNT_LOAD(two); // TODO
+		one.trans_to_ACCOUNT_LOAD(two);
 	}
 }

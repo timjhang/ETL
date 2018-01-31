@@ -19,7 +19,7 @@ public class ETL_T_PARTY_EMAIL {
 
 		try {
 
-			String sql = "begin ? := " + ETL_Profile.db2TableSchema + ".Transform.TempTo_PARTY_EMAIL_LOAD(?,?); end;";
+			String sql = "{call " + ETL_Profile.db2TableSchema + ".Transform.TempTo_PARTY_EMAIL_LOAD(?,?,?)}";
 
 			Connection con = ConnectionHelper.getDB2Connection();
 			CallableStatement cstmt = con.prepareCall(sql);
