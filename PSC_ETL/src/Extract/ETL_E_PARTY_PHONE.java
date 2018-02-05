@@ -519,8 +519,8 @@ public class ETL_E_PARTY_PHONE {
 		
 		if (dataCount == stageLimit) {
 			insert_Party_Phone_Datas();
-			this.dataCount = 0;
-			this.dataList.clear();
+//			this.dataCount = 0; // TODO V4
+//			this.dataList.clear();
 		}
 	}
 	
@@ -545,14 +545,19 @@ public class ETL_E_PARTY_PHONE {
 		} else {
 			throw new Exception("insert_Party_Phone_Datas 發生錯誤");
 		}
+		
+		// TODO V4
+		// 寫入後將計數與資料List清空
+		this.dataCount = 0;
+		this.dataList.clear();
 	}
 	
 	public static void main(String[] argv) throws Exception { // TODO V3
 		ETL_E_PARTY_PHONE one = new ETL_E_PARTY_PHONE();
-		String filePath = "C:/Users/10404003/Desktop/農經/2018/180125";
+		String filePath = "C:/Users/10404003/Desktop/農經/2018/180205/test";
 		String fileTypeName = "PARTY_PHONE";
 		one.read_Party_Phone_File(filePath, fileTypeName, 
-				"ETL00001", "600", new SimpleDateFormat("yyyyMMdd").parse("20180125"), "001", "ETL_E_PARTY_PHONE");
+				"tim00001", "600", new SimpleDateFormat("yyyyMMdd").parse("20171206"), "001", "ETL_E_PARTY_PHONE");
 	}
 	
 }

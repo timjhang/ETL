@@ -37,6 +37,7 @@ public class ETL_E_PARTY {
 			{"c-4", "PARTY_CHANGE_CODE"}, // 異動代號
 			{"c-4-2", "PARTY_CHANGE_CODE_2"}, // 異動代號
 			{"c-5", "PARTY_MY_CUSTOMER_FLAG"}, // 是否為本行客戶
+			{"c-6", "COMM_DOMAIN_ID"}, // 歸屬本/分會代號
 			{"c-7", "PARTY_ENTITY_TYPE"}, // 顧客類型
 			{"c-8", "PARTY_ENTITY_SUB_TYPE"}, // 客戶子類型
 			{"c-13", "COMM_NATIONALITY_CODE"}, // 國籍
@@ -354,6 +355,10 @@ public class ETL_E_PARTY {
 								data.setError_mark("Y");
 								errWriter.addErrLog(
 										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "歸屬本/分會代號", "空值"));
+							} else if (!checkMaps.get("c-6").containsKey(branch_code)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(
+										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "歸屬本/分會代號", "非預期"));
 							}
 							
 							// 顧客類型 c-*7(3)
@@ -992,8 +997,6 @@ public class ETL_E_PARTY {
 		
 		if (dataCount == stageLimit) {
 			insert_Party_Datas();
-			this.dataCount = 0;
-			this.dataList.clear();
 		}
 	}
 	
@@ -1017,14 +1020,18 @@ public class ETL_E_PARTY {
 		} else {
 			throw new Exception("insert_Party_Datas 發生錯誤");
 		}
+		
+		// 寫入後將計數與資料List清空
+		this.dataCount = 0;
+		this.dataList.clear();
 	}
 	
 	public static void main(String[] argv) throws Exception {
 		ETL_E_PARTY one = new ETL_E_PARTY();
-		String filePath = "C:/Users/10404003/Desktop/農經/2018/180125";
+		String filePath = "C:/Users/10404003/Desktop/農經/2018/180205/test";
 		String fileTypeName = "PARTY";
 		one.read_Party_File(filePath, fileTypeName,
-				"ETL00001", "600", new SimpleDateFormat("yyyyMMdd").parse("20180125"), "001", "ETL_E_PARTY");
+				"tim00001", "018", new SimpleDateFormat("yyyyMMdd").parse("20180116"), "001", "ETL_E_PARTY");
 	}
 	
 }
