@@ -6,9 +6,13 @@ import java.util.Date;
 public class ETL_Tool_FormatCheck {
 	// ETL 檢核工具
 	
-	// 是否為空值檢核工具  (空值:true\非空值:false)
+	/**
+	 * 空值檢核工具  (空值:true\非空值:false)
+	 * @param input
+	 * @return	true 空值 / false 非空值
+	 */
 	public static boolean isEmpty(String input) {
-		if (input == null || "".equals(input.trim())) {
+		if (input == null || "".equals(input.trim())||input.replaceAll("[ |　]", " ").trim().length() == 0) {
 			return true;
 		}
 		
