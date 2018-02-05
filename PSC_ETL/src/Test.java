@@ -16,7 +16,7 @@ import Extract.ETL_E_TRANSACTION;
 public class Test {
 
 	public static void main(String[] argv) throws IOException {
-		LOAN_DETAIL();
+		ACCOUNT();
 	}
 
 	public static void PARTY_ADDRESS() throws IOException {
