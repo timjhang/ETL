@@ -10,16 +10,16 @@ import DB.ConnectionHelper;
 import Profile.ETL_Profile;
 import Tool.ETL_Tool_CastObjUtil;
 
-public class ETL_T_LOAN_GUARANTOR_LOAD {
-	// 觸發DB2轉換Procedure, 轉換資料寫進GUARANTOR_LOAD  // TODO
-		public void trans_to_GUARANTOR_LOAD(ETL_Bean_LogData logData) {
+public class ETL_T_TRANSFER_LOAD {
+	// 觸發DB2轉換Procedure, 轉換資料寫進TRANSFER_LOAD  // TODO
+		public void trans_to_TRANSFER_LOAD(ETL_Bean_LogData logData) {
 			
-			System.out.println("#######Transform - ETL_T_GUARANTOR - Start"); // TODO
+			System.out.println("#######Transform - ETL_T_TRANSFER_LOAD - Start"); // TODO
 			
 			try {
 				
 				// TODO
-				String sql = "{call " + ETL_Profile.db2TableSchema + ".Transform.TempTo_GUARANTOR_LOAD(?,?,?)}";
+				String sql = "{call " + ETL_Profile.db2TableSchema + ".Transform.TempTo_TRANSFER_LOAD(?,?,?)}";
 				
 				Connection con = ConnectionHelper.getDB2Connection();
 				CallableStatement cstmt = con.prepareCall(sql);
@@ -43,7 +43,7 @@ public class ETL_T_LOAN_GUARANTOR_LOAD {
 				ex.printStackTrace();
 			}
 			
-			System.out.println("#######Transform - ETL_T_GUARANTOR - End"); // TODO
+			System.out.println("#######Transform - ETL_T_TRANSFER_LOAD - End"); // TODO
 			
 		}
 }

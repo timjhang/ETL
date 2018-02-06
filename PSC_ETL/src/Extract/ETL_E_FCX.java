@@ -115,13 +115,13 @@ public class ETL_E_FCX {
 				}
 
 				// 業務別非預期, 不進行解析
-//				if (pfn.getFile_Type() == null || "".equals(pfn.getFile_Type().trim())
-//						|| !checkMaps.get("comm_file_type").containsKey(pfn.getFile_Type().trim())) {
-//
-//					System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
-//					processErrMsg = processErrMsg + pfn.getFileName() + " 處理業務別非預期，不進行解析！\n";
-//					continue;
-//				}
+				// if (pfn.getFile_Type() == null || "".equals(pfn.getFile_Type().trim())
+				// || !checkMaps.get("comm_file_type").containsKey(pfn.getFile_Type().trim())) {
+				//
+				// System.out.println("##" + pfn.getFileName() + " 處理業務別非預期，不進行解析！");
+				// processErrMsg = processErrMsg + pfn.getFileName() + " 處理業務別非預期，不進行解析！\n";
+				// continue;
+				// }
 
 				// 資料日期非預期, 不進行解析
 				if (exc_record_date == null) {
@@ -244,8 +244,8 @@ public class ETL_E_FCX {
 
 								failureCount++;
 								rowCount++; // 處理行數 ++
-								
-								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
+
+								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行
 								continue;
 							}
 
@@ -521,15 +521,15 @@ public class ETL_E_FCX {
 					}
 
 					// 處理後更新ETL_FILE_Log
-					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
-							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
-							successCount, failureCount, file_exe_result, file_exe_result_description);
+					ETL_P_Log.update_End_ETL_FILE_Log_NO_FILE_TYPE(pfn.getBatch_no(), pfn.getCentral_No(),
+							exc_record_date /* TODO V3 */, pfn.getFile_Name(), upload_no, "E", parseEndDate,
+							iTotalCount, successCount, failureCount, file_exe_result, file_exe_result_description);
 				} catch (Exception ex) { // TODO V3
 					// 執行錯誤更新ETL_FILE_Log
-					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
-							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", new Date(), iTotalCount,
-							successCount, failureCount, "S", ex.getMessage());
-					
+					ETL_P_Log.update_End_ETL_FILE_Log_NO_FILE_TYPE(pfn.getBatch_no(), pfn.getCentral_No(),
+							exc_record_date, pfn.getFile_Name(), upload_no, "E", new Date(), iTotalCount, successCount,
+							failureCount, "S", ex.getMessage());
+
 					processErrMsg = processErrMsg + ex.getMessage() + "\n";
 
 					ex.printStackTrace();

@@ -17,7 +17,7 @@ public class ETL_Profile {
 	private final static String db2SPSchema = "ADMINISTRATOR";
 	public final static String db2TableSchema = "ADMINISTRATOR";
 	public final static String db2Url = 
-			"jdbc:db2://172.18.6.131:50000/sample:" +
+			"jdbc:db2://172.18.21.206:50000/ETLDB600:" +
 			"currentschema=" + db2SPSchema + ";" +
 			"currentFunctionPath=" + db2SPSchema + ";";
 	public final static String db2User = "Administrator";
