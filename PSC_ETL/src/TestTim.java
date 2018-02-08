@@ -14,16 +14,21 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import DB.ConnectionHelper;
+import DB.ETL_P_Log;
 import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_PHONE;
 import Profile.ETL_Profile;
+import Tool.ETL_Tool_FileByteUtil;
+import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
+import Tool.ETL_Tool_StringQueue;
 
 
 public class TestTim {
@@ -37,15 +42,68 @@ public class TestTim {
 //			test4();
 //			test5();
 //			test6();
-			connection();
+//			connection();
 //			updateTest();
 //			Date date = new Date().setTime(0);
 //			date.setTime(0);
 //			System.out.println(date);
 			
+//			testNewInput();
+			
+			testQueryDetailLog();
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public static void testQueryDetailLog() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, ParseException {
+		
+//		one.read_Party_Phone_File(filePath, fileTypeName, 
+//				"tim00003", "600", new SimpleDateFormat("yyyyMMdd").parse("20171206"), "001", "ETL_E_PARTY_PHONE");
+		
+		boolean result = ETL_P_Log.query_ETL_Detail_Log_Done("tim00003", "600", new SimpleDateFormat("yyyyMMdd").parse("20171206"), "001", 
+				"E", "ETL_E_PARTY_PHONE");
+		
+		System.out.println("result = " + result);
+		
+	}
+	
+	public static void testNewInput() throws Exception {
+		
+		File parseFile = new File("C:/Users/10404003/Desktop/農經/2018/180205/test/018_CF_PARTY_20180116.TXT");
+//		File parseFile = new File("C:/Tim/test.TXT");
+		
+		// ETL_字串處理Queue
+		ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue("952");
+		ETL_Tool_StringQueue strQueue2 = new ETL_Tool_StringQueue("952");
+		
+		List<byte[]> array = ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath());
+		// 讀檔並將結果注入ETL_字串處理Queue  // TODO V4
+		strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
+		strQueue2.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
+		
+		System.out.println("array size = " + array.size());
+		
+		for (int i = 0 ; i < array.size(); i++) {
+//			strQueue.setTargetString();
+			strQueue2.setTargetString();
+//			System.out.println(strQueue.getTotalByteLength());
+//			String str = strQueue.popBytesString(strQueue.getTotalByteLength());
+//			System.out.println(str);
+//			System.out.println("1, " + str.getBytes().length);
+			String str2 = strQueue2.popBytesDiffString(strQueue2.getTotalByteLength());
+			System.out.println(str2);
+//			System.out.println("2, " + str2.getBytes().length);
+//			byte[] oneAry = new byte[1];
+//			oneAry[0] = array.get(i)[0];
+//			System.out.println(new String(oneAry, "UTF8"));
+//			System.out.println(new String(oneAry, "UTF8").equals("2"));
+			
+		}
+		
+		System.out.println(ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList()));
+		
 	}
 	
 	public static void testInput() {

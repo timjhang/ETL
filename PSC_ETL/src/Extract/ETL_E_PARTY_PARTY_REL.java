@@ -168,7 +168,7 @@ public class ETL_E_PARTY_PARTY_REL {
 					String lineStr = ""; // 行字串暫存區
 					
 					// ETL_字串處理Queue
-					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue();
+					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
 					

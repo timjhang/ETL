@@ -36,7 +36,10 @@ public class ETL_Profile {
 	public final static int Data_Stage = 10000;
 	
 	// 業務別
-	public final static String Foreign_Currency = "FR"; // 外幣 
+	public final static String Foreign_Currency = "FR"; // 外幣
+	
+	// 難字表excel檔存放路徑
+	public final static String DifficultWords_Lists_Path = "C:/DifficultWords/%s.xlsx";
 	
 	// 新北市農會附設北區農會電腦共用中心  951  相關參數
 	

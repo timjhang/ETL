@@ -190,7 +190,7 @@ public class ETL_E_PARTY {
 					String lineStr = ""; // 行字串暫存區
 					
 					// ETL_字串處理Queue
-					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue();
+					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
 					
@@ -320,17 +320,17 @@ public class ETL_E_PARTY {
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "是否為本行客戶", "空值"));
 							// 無法區分是否為本行客戶, 則無法判定檢核方式, 跳過後續檢核不執行 // TODO temp
-							failureCount++;
-							rowCount++;
-							continue;
+//							failureCount++;
+//							rowCount++;
+//							continue;
 						} else if (!checkMaps.get("c-5").containsKey(my_customer_flag)) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "是否為本行客戶", "非預期"));
 							// 無法區分是否為本行客戶, 則無法判定檢核方式, 跳過後續檢核不執行  // TODO temp
-							failureCount++;
-							rowCount++;
-							continue;
+//							failureCount++;
+//							rowCount++;
+//							continue;
 						}
 						
 						// 由是否為本行/非本行客戶, 區分兩種完全不同檢核方式
@@ -831,6 +831,142 @@ public class ETL_E_PARTY {
 							String trust_total_asset = strQueue.popBytesString(14);
 							data.setTrust_total_asset(ETL_Tool_StringX.strToBigDecimal(trust_total_asset, 2));
 							
+						}
+						
+						// 無法分辨本行/非本行客戶, 依然寫入欄位資料, 不進行任何檢核
+						if (!"N".equals(my_customer_flag) && !"Y".equals(my_customer_flag)) {
+							
+							// 歸屬本/分會代號 c-6(7)
+							String branch_code = strQueue.popBytesString(7);
+							data.setBranch_code(branch_code);
+							
+							// 顧客類型 c-7(3)
+							String entity_type = strQueue.popBytesString(3);
+							data.setEntity_type(entity_type);
+							
+							// 客戶子類型 c-8(1)
+							String entity_sub_type = strQueue.popBytesString(1);
+							data.setEntity_sub_type(entity_sub_type);
+							
+							// 中文名字 c-9(40)
+							String party_first_name_1 = strQueue.popBytesString(40);
+							data.setParty_first_name_1(party_first_name_1);
+							
+							// 中文姓氏 c-*10(80)
+							String party_last_name_1 = strQueue.popBytesString(80);
+							data.setParty_last_name_1(party_last_name_1);
+							
+							// 出生年月日/創立日期 c-11(8)	
+							String date_of_birth = strQueue.popBytesString(8);
+							data.setDate_of_birth(ETL_Tool_StringX.toUtilDate(date_of_birth));
+							
+							// 亡故日期 c-12(8)
+							String deceased_date = strQueue.popBytesString(8);
+							data.setDeceased_date(ETL_Tool_StringX.toUtilDate(deceased_date));
+							
+							// 國籍 c-13(2)
+							String nationality_code = strQueue.popBytesString(2);
+							data.setNationality_code(nationality_code);
+							
+							// 英文名字 c-14(40)
+							String party_first_name_2 = strQueue.popBytesString(40);
+							data.setParty_first_name_2(party_first_name_2);
+							
+							// 英文姓氏 c-15(80)
+							String party_last_name_2 = strQueue.popBytesString(80);
+							data.setParty_last_name_2(party_last_name_2);
+							
+							// 顧客開戶日期 c-16(8)
+							String open_date = strQueue.popBytesString(8);
+							data.setOpen_date(ETL_Tool_StringX.toUtilDate(open_date));
+							
+							// 顧客結清日期 c-17(8)
+							String close_date = strQueue.popBytesString(8);
+							data.setClose_date(ETL_Tool_StringX.toUtilDate(close_date));
+							
+							// 性別 c-18(1)
+							String gender = strQueue.popBytesString(1);
+							data.setGender(gender);
+							
+							// 年收入(法人) c-19(10)
+							String annual_income = strQueue.popBytesString(10);
+							data.setAnnual_income(ETL_Tool_StringX.toLong(annual_income));
+							
+							// 職業/行業 c-20(6)
+							String occupation_code = strQueue.popBytesString(6);
+							data.setOccupation_code(occupation_code);
+							
+							// 婚姻狀況 c-21(1)
+							String marital_status_code = strQueue.popBytesString(1);
+							data.setMarital_status_code(marital_status_code);
+							
+							// 服務機構 c-22(30)
+							String employer_name = strQueue.popBytesString(30);
+							data.setEmployer_name(employer_name);
+							
+							// 服務機構統編 c-23(8)
+							String employer = strQueue.popBytesString(8);
+							data.setEmployer(employer);
+							
+							// 行內員工註記 c-24(1)
+							String employee_flag = strQueue.popBytesString(1);
+							data.setEmployee_flag(employee_flag);
+							
+							// 出生地 c-25(18)
+							String place_of_birth = strQueue.popBytesString(18);
+							data.setPlace_of_birth(place_of_birth);
+							
+							// 是否具多重國籍(自然人) c-26(1)
+							String multiple_nationality_flag = strQueue.popBytesString(1);
+							data.setMultiple_nationality_flag(multiple_nationality_flag);
+							
+							// 第二國籍 c-27(2)
+							String nationality_code_2 = strQueue.popBytesString(2);
+							data.setNationality_code_2(nationality_code_2);
+							
+							// 顧客電子郵件 c-28(80)
+							String email_address = strQueue.popBytesString(80);
+							data.setEmail_address(email_address);
+							
+							// 金融卡約定服務 c-29(1)
+							String registered_service_atm = strQueue.popBytesString(1);
+							data.setRegistered_service_atm(registered_service_atm);
+							
+							// 電話約定服務 c-30(1)
+							String registered_service_telephone = strQueue.popBytesString(1);
+							data.setRegistered_service_telephone(registered_service_telephone);
+							
+							// 傳真約定服務 c-31(1)
+							String registered_service_fax = strQueue.popBytesString(1);
+							data.setRegistered_service_fax(registered_service_fax);
+							
+							// 網銀約定服務 c-32(1)
+							String registered_service_internet = strQueue.popBytesString(1);
+							data.setRegistered_service_internet(registered_service_internet);
+							
+							// 行動銀行約定服務 c-33(1)
+							String registered_service_mobile = strQueue.popBytesString(1);
+							data.setRegistered_service_mobile(registered_service_mobile);
+							
+							// 是否得發行無記名股票 (法人) c-34(1)
+							String bearer_stock_flag = strQueue.popBytesString(1);
+							data.setBearer_stock_flag(bearer_stock_flag);
+							
+							// 無記名股票 (法人)資訊說明 c-35(40)
+							String bearer_stock_description = strQueue.popBytesString(40);
+							data.setBearer_stock_description(bearer_stock_description);
+							
+							// 外國人士居留或交易目的 c-36(80)
+							String foreign_transaction_purpose = strQueue.popBytesString(80);
+							data.setForeign_transaction_purpose(foreign_transaction_purpose);
+							
+							// 顧客AUM餘額 c-37(14)
+							String total_asset = strQueue.popBytesString(14);
+							data.setTotal_asset(ETL_Tool_StringX.strToBigDecimal(total_asset, 2));
+							
+							// 信託客戶AUM餘額 c-38(14)
+							String trust_total_asset = strQueue.popBytesString(14);
+							data.setTrust_total_asset(ETL_Tool_StringX.strToBigDecimal(trust_total_asset, 2));
 						}
 						
 						
