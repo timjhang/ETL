@@ -26,6 +26,8 @@ public class ETL_Bean_PARTY_PHONE_Data {
 	private String phone_number;
 	// 錯誤註記
 	private String error_mark = "";// 預設無錯誤
+	// 上傳批號(測試用)  // TODO V4
+	private String upload_no;
 	
 	// Constructor
 	public ETL_Bean_PARTY_PHONE_Data(ETL_Tool_ParseFileName pfn) {
@@ -33,6 +35,7 @@ public class ETL_Bean_PARTY_PHONE_Data {
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
+		this.upload_no = pfn.getUpload_no();  // TODO V4
 	}
 
 	public String getCentral_no() {
@@ -114,5 +117,15 @@ public class ETL_Bean_PARTY_PHONE_Data {
 	public void setError_mark(String error_mark) {
 		this.error_mark = error_mark;
 	}
+
+	// TODO V4  Start
+	public String getUpload_no() {
+		return upload_no;
+	}
+
+	public void setUpload_no(String upload_no) {
+		this.upload_no = upload_no;
+	}
+	// TODO V4  End
 	
 }
