@@ -130,7 +130,7 @@ public class ETL_E_PARTY_PHONE {
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
 				// 設定批次編號  // TODO V4  搬家
 				pfn.setBatch_no(batch_no);
-				// 設定上船批號  // TODO V4  搬家
+				// 設定上船批號  // TODO V4
 				pfn.setUpload_no(upload_no);
 				
 				// 報送單位非預期, 不進行解析
@@ -377,7 +377,7 @@ public class ETL_E_PARTY_PHONE {
 						// 區別碼檢核(1) // TODO V4  Start
 						String typeCode = strQueue.popBytesString(1);
 						if (!"3".equals(typeCode)) {
-							fileFmtErrMsg = "尾錄區別碼有誤:" + typeCode;  // TODO V4
+							fileFmtErrMsg = "尾錄區別碼有誤:" + typeCode;
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
 						}
