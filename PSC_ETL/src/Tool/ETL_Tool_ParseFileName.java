@@ -20,6 +20,8 @@ public class ETL_Tool_ParseFileName {
 	private Date Record_Date;
 	// 檔案日期文字
 	private String Record_Date_String;
+	// 上傳批號(測試用)
+	private String upload_no;
 	
 	// ETL_Tool_ParseFileName's Constructor
 	public ETL_Tool_ParseFileName(String fileName) throws Exception {
@@ -118,6 +120,14 @@ public class ETL_Tool_ParseFileName {
 
 	public void setBatch_no(String batch_no) {
 		Batch_no = batch_no;
+	}
+
+	public String getUpload_no() {
+		return upload_no;
+	}
+
+	public void setUpload_no(String upload_no) {
+		this.upload_no = upload_no;
 	}
 	
 }

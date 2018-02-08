@@ -17,11 +17,17 @@ public class ETL_Profile {
 	private final static String db2SPSchema = "ADMINISTRATOR";
 	public final static String db2TableSchema = "ADMINISTRATOR";
 	public final static String db2Url = 
-			"jdbc:db2://172.18.6.131:50000/sample:" +
+			"jdbc:db2://172.18.21.206:50000/ETLDB600:" +
 			"currentschema=" + db2SPSchema + ";" +
 			"currentFunctionPath=" + db2SPSchema + ";";
 	public final static String db2User = "Administrator";
 	public final static String db2Password = "9ol.)P:?";
+//	public final static String db2Url = 
+//			"jdbc:db2://localhost:50000/sample:" +
+//			"currentschema=" + db2SPSchema + ";" +
+//			"currentFunctionPath=" + db2SPSchema + ";";
+//	public final static String db2User = "db2admin";
+//	public final static String db2Password = "timPSC2017";
 	
 	// Error Log寫入域值
 	public final static int ErrorLog_Stage = 10000;
@@ -30,7 +36,10 @@ public class ETL_Profile {
 	public final static int Data_Stage = 10000;
 	
 	// 業務別
-	public final static String Foreign_Currency = "FR"; // 外幣 
+	public final static String Foreign_Currency = "FR"; // 外幣
+	
+	// 難字表excel檔存放路徑
+	public final static String DifficultWords_Lists_Path = "C:/DifficultWords/%s.xlsx";
 	
 	// 新北市農會附設北區農會電腦共用中心  951  相關參數
 	

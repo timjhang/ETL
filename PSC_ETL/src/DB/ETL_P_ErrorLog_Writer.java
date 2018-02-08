@@ -26,12 +26,12 @@ public class ETL_P_ErrorLog_Writer {
 		}
 		
 		this.errorLogList.add(errorLog);
-		errorLogCount++;
+		this.errorLogCount++;
 		
 		// 若超過域值  先行寫入DB
-		if (errorLogCount == stageLimit) {
+		if (this.errorLogCount == stageLimit) {
 			insert_ErrorLog_To_DB();
-			errorLogCount = 0; // 計數歸0
+			this.errorLogCount = 0; // 計數歸0
 			this.errorLogList.clear(); // 清空list
 		}
 	}
@@ -61,6 +61,9 @@ public class ETL_P_ErrorLog_Writer {
 		} else {
 			throw new Exception("insert_ErrorLog 發生錯誤");
 		}
+		
+		this.errorLogCount = 0; // 計數歸0
+		this.errorLogList.clear(); // 清空list
 	}
 	
 }
