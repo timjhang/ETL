@@ -79,6 +79,7 @@ public class ETL_E_PARTY_PHONE {
 		
 		try {
 			// TODO V4  Start
+			// 批次不重複執行
 			if (ETL_P_Log.query_ETL_Detail_Log_Done(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no)) {
 				String inforMation = 
 						"batch_no = " + batch_no + ", " +
@@ -130,7 +131,7 @@ public class ETL_E_PARTY_PHONE {
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
 				// 設定批次編號  // TODO V4  搬家
 				pfn.setBatch_no(batch_no);
-				// 設定上船批號  // TODO V4
+				// 設定上傳批號  // TODO V4
 				pfn.setUpload_no(upload_no);
 				
 				// 報送單位非預期, 不進行解析

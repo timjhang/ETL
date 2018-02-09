@@ -22,6 +22,8 @@ import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
+import Tool.ETL_Tool_FileByteUtil;
+import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
@@ -82,6 +84,21 @@ public class ETL_E_COLLATERAL {
 		System.out.println("#######Extrace - ETL_E_COLLATERAL - Start");
 
 		try {
+			// 批次不重複執行
+			if (ETL_P_Log.query_ETL_Detail_Log_Done(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no)) {
+				String inforMation = 
+						"batch_no = " + batch_no + ", " +
+						"exc_central_no = " + exc_central_no + ", " +
+						"exc_record_date = " + exc_record_date + ", " +
+						"upload_no = " + upload_no + ", " +
+						"step_type = E, " +
+						"program_no = " + program_no;
+				
+				System.out.println("#######Extrace - ETL_E_COLLATERAL - 不重複執行\n" + inforMation);
+				System.out.println("#######Extrace - ETL_E_COLLATERAL - End");
+				
+				return;
+			}
 			// 處理前寫入ETL_Detail_Log
 			ETL_P_Log.write_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no, "S",
 					"", "", new Date(), null);
@@ -115,6 +132,12 @@ public class ETL_E_COLLATERAL {
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
 
+				// 設定批次編號
+				pfn.setBatch_no(batch_no);
+				
+				// 設定上傳批號
+				pfn.setUpload_no(upload_no);
+				
 				// 報送單位非預期, 不進行解析
 				if (exc_central_no == null || "".equals(exc_central_no.trim())) {
 					System.out.println("## ETL_E_COLLATERAL - read_Collateral_File - 控制程式無提供報送單位，不進行解析！");
@@ -146,13 +169,6 @@ public class ETL_E_COLLATERAL {
 					continue;
 				}
 
-				// 設定批次編號
-				pfn.setBatch_no(batch_no);
-
-				// System.out.println(parseFile.getAbsoluteFile()); // test
-				FileInputStream fis = new FileInputStream(parseFile);
-				BufferedReader br = new BufferedReader(new InputStreamReader(fis, "BIG5"));
-
 				// rowCount == 處理行數
 				int rowCount = 1; // 從1開始
 				// 成功計數
@@ -174,20 +190,23 @@ public class ETL_E_COLLATERAL {
 					String lineStr = ""; // 行字串暫存區
 
 					// ETL_字串處理Queue
-					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue();
+					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-
+					// 讀檔並將結果注入ETL_字串處理Queue
+					strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
+					// 首、明細、尾錄, 基本組成檢查
+					boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
+					
 					// 首錄檢查
-					if (br.ready()) {
-						lineStr = br.readLine();
-
-						// 注入首錄字串
-						strQueue.setTargetString(lineStr);
-
+					if (isFileFormatOK) {
+						
+						// strQueue工具注入第一筆資料
+						strQueue.setTargetString();
+						
 						// 檢查整行bytes數(1 + 7 + 8 + 187 = 203)
 						if (strQueue.getTotalByteLength() != 203) {
-							fileFmtErrMsg = "首錄位元數非預期203";
+							fileFmtErrMsg = "首錄位元數非預期203:" + strQueue.getTotalByteLength();
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
@@ -235,22 +254,12 @@ public class ETL_E_COLLATERAL {
 					}
 
 					// 明細錄檢查- 逐行讀取檔案
-					if ("".equals(fileFmtErrMsg)) // 沒有嚴重錯誤時進行
-						while (br.ready()) {
-
-							lineStr = br.readLine();
-							// System.out.println(lineStr); // test
-							strQueue.setTargetString(lineStr); // queue裝入新String
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) // 沒有嚴重錯誤時進行
+					while (strQueue.setTargetString() < strQueue.getByteListSize()) {
 
 							// 生成一個Data
 							ETL_Bean_COLLATERAL_Data data = new ETL_Bean_COLLATERAL_Data(pfn);
 							data.setRow_count(rowCount);
-
-							// 區別碼(1)
-							String typeCode = strQueue.popBytesString(1);
-							if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
-								break;
-							}
 
 							/*
 							 * 整行bytes數檢核(01+07+20+01+20+20+02+14+14+40+11+40+02
@@ -259,7 +268,7 @@ public class ETL_E_COLLATERAL {
 							if (strQueue.getTotalByteLength() != 203) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "行數bytes檢查", "非預期203"));
+										String.valueOf(rowCount), "行數bytes檢查", "非預期203:" + strQueue.getTotalByteLength()));
 
 								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行
 								failureCount++;
@@ -268,11 +277,8 @@ public class ETL_E_COLLATERAL {
 							}
 
 							// 區別碼檢核 R X(01)*
-							if (ETL_Tool_FormatCheck.isEmpty(typeCode)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "區別碼", "空值"));
-							} else if (!"2".equals(typeCode)) {
+							String typeCode = strQueue.popBytesString(1);
+							if (!"2".equals(typeCode)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "區別碼", "非預期:" + typeCode));
@@ -451,16 +457,22 @@ public class ETL_E_COLLATERAL {
 					insert_Collateral_Datas();
 
 					// 尾錄檢查
-					if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
 						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 180 = 203)
 						if (strQueue.getTotalByteLength() != 203) {
-							fileFmtErrMsg = "尾錄位元數非預期203";
+							fileFmtErrMsg = "尾錄位元數非預期203:" + strQueue.getTotalByteLength();
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
 
-						// 區別碼檢核(1) 經"逐行讀取檔案"區塊, 若無嚴重錯誤應為3, 此處無檢核
+						// 區別碼檢核(1)
+						String typeCode = strQueue.popBytesString(1);
+						if (!"3".equals(typeCode)) {
+							fileFmtErrMsg = "尾錄區別碼有誤:" + typeCode;
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
+						}
 
 						/*
 						 * 報送單位檢核(7) 報送單位一致性檢查,嚴重錯誤,不進行迴圈並記錄錯誤訊息
@@ -511,29 +523,26 @@ public class ETL_E_COLLATERAL {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "程式檢核", fileFmtErrMsg));
 						}
-
-						// 多餘行數檢查
-						if (br.ready()) {
-							fileFmtErrMsg = "出現多餘行數";
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "檔案總行數", fileFmtErrMsg));
-							rowCount++;
-						}
 					}
 
-					fis.close();
 					Date parseEndDate = new Date(); // 開始執行時間
 					System.out.println("解析檔案： " + fileName + " End " + parseEndDate);
-
-					// Error_Log寫入DB
-					errWriter.insert_Error_Log();
 
 					// 執行結果
 					String file_exe_result;
 					// 執行結果說明
 					String file_exe_result_description;
 
-					if (!"".equals(fileFmtErrMsg)) {
+					if (!isFileFormatOK) {
+						file_exe_result = "S";
+						file_exe_result_description = "解析檔案出現嚴重錯誤-區別碼錯誤";
+						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤-區別碼錯誤\n";
+						
+						// 寫入Error Log
+						errWriter.addErrLog(
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0", "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
+						
+					} else if (!"".equals(fileFmtErrMsg)) {
 						file_exe_result = "S";
 						file_exe_result_description = "解析檔案出現嚴重錯誤";
 						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤\n";
@@ -542,18 +551,20 @@ public class ETL_E_COLLATERAL {
 						file_exe_result_description = "執行結果無錯誤資料";
 					} else {
 						file_exe_result = "D";
-						file_exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
+						file_exe_result_description = "錯誤資料筆數: " + failureCount;
 					}
 
+					// Error_Log寫入DB
+					errWriter.insert_Error_Log();
+					
 					// 處理後更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
 							successCount, failureCount, file_exe_result, file_exe_result_description);
-				} catch (Exception ex) { // TODO V3
+				} catch (Exception ex) {
 					// 執行錯誤更新ETL_FILE_Log
-					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
-							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", new Date(), iTotalCount,
-							successCount, failureCount, "S", ex.getMessage());
+					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+							"E", new Date(), 0, 0, 0, "S", ex.getMessage());
 					processErrMsg = processErrMsg + ex.getMessage() + "\n";
 
 					ex.printStackTrace();
@@ -566,7 +577,20 @@ public class ETL_E_COLLATERAL {
 			// 執行結果說明
 			String detail_exe_result_description;
 
-			if (!"".equals(processErrMsg)) {
+			if (fileList.size() == 0) { // TODO V4
+				detail_exe_result = "S";
+				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
+				
+				// ETL_Error Log寫入輔助工具
+				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
+				// 寫入一筆Error Log
+				errWriter.addErrLog(
+						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+								upload_no, "E", "0", "ETL_E_COLLATERAL程式處理", detail_exe_result_description, null)); // TODO V4
+				// Error_Log寫入DB
+				errWriter.insert_Error_Log();
+				
+			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
 				detail_exe_result_description = processErrMsg;
 			} else if (detail_ErrorCount == 0) {
@@ -625,6 +649,8 @@ public class ETL_E_COLLATERAL {
 		} else {
 			throw new Exception("insert_Collateral_Datas 發生錯誤");
 		}
+		
+		// 寫入後將計數與資料List清空
 		this.dataCount = 0;
 		this.dataList.clear();
 	}
