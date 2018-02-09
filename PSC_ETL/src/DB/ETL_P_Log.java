@@ -68,7 +68,7 @@ public class ETL_P_Log {
 			int TOTAL_CNT, int SUCCESS_CNT, int FAILED_CNT, String SRC_FILE)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		String insert_query = 
+		String sql_statement = 
 				" INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_FILE_LOG ( " +
 					" BATCH_NO, " +
 					" CENTRAL_NO, " +
@@ -88,7 +88,7 @@ public class ETL_P_Log {
 				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Connection con = ConnectionHelper.getDB2Connection();
-		PreparedStatement pstmt = con.prepareStatement(insert_query);
+		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setString(1, BATCH_NO);
 		pstmt.setString(2, CENTRAL_NO);
@@ -143,7 +143,7 @@ public class ETL_P_Log {
 			String EXE_RESULT, String EXE_RESULT_DESCRIPTION)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		String insert_query = 
+		String sql_statement = 
 				" UPDATE " + ETL_Profile.db2TableSchema + ".ETL_FILE_LOG SET " +
 					" END_DATETIME = ?, " +
 					" TOTAL_CNT = ?, " +
@@ -161,7 +161,7 @@ public class ETL_P_Log {
 				;
 
 		Connection con = ConnectionHelper.getDB2Connection();
-		PreparedStatement pstmt = con.prepareStatement(insert_query);
+		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setTimestamp(1, new Timestamp(END_DATETIME.getTime()));
 		pstmt.setInt(2, TOTAL_CNT);
@@ -210,7 +210,7 @@ public class ETL_P_Log {
 			String FILE_NAME, String UPLOAD_NO, String STEP_TYPE, String ROW_COUNT, String FIELD_NAME,
 			String ERROR_DESCRIPTION, String SRC_FILE) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		String insert_query = " INSERT INTO ETL_LOG (" +
+		String sql_statement = " INSERT INTO ETL_LOG (" +
 				"CENTRAL_NO," +
 				"RECORD_DATE," +
 				"FILE_TYPE," +
@@ -224,7 +224,7 @@ public class ETL_P_Log {
 				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Connection con = ConnectionHelper.getDB2Connection();
-		PreparedStatement pstmt = con.prepareStatement(insert_query);
+		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setString(1, CENTRAL_NO);
 		pstmt.setDate(2, new Date(RECORD_DATE.getTime()));
@@ -271,7 +271,7 @@ public class ETL_P_Log {
 			String program_no, String exe_status, String exe_result, String exe_result_description, java.util.Date start_datetime,
 			java.util.Date end_datetime) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		String insert_query = 
+		String sql_statement = 
 				" INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG ( " +
 					" BATCH_NO, " +
 					" CENTRAL_NO, " +
@@ -287,7 +287,7 @@ public class ETL_P_Log {
 				" ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
 		Connection con = ConnectionHelper.getDB2Connection();
-		PreparedStatement pstmt = con.prepareStatement(insert_query);
+		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setString(1, batch_no);
 		pstmt.setString(2, central_no);
@@ -336,9 +336,8 @@ public class ETL_P_Log {
 			String program_no, String exe_status, String exe_result, String exe_result_description, java.util.Date end_datetime
 			) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		String insert_query = " UPDATE " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG " +
+		String sql_statement = " UPDATE " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG " +
 				" SET " +
-					" PROGRAM_NO = ? ," +
 					" EXE_STATUS = ? ," +
 					" EXE_RESULT = ? ," +
 					" EXE_RESULT_DESCRIPTION = ? ," +
@@ -348,21 +347,23 @@ public class ETL_P_Log {
 					" AND CENTRAL_NO = ? " +
 					" AND RECORD_DATE = ? " +
 					" AND UPLOAD_NO = ? " +
-					" AND STEP_TYPE = ? ";
+					" AND STEP_TYPE = ? " +
+					" AND PROGRAM_NO = ? ";
 
 		Connection con = ConnectionHelper.getDB2Connection();
-		PreparedStatement pstmt = con.prepareStatement(insert_query);
+		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
-		pstmt.setString(1, program_no);
-		pstmt.setString(2, exe_status);
-		pstmt.setString(3, exe_result);
-		pstmt.setString(4, exe_result_description);
-		pstmt.setTimestamp(5, (end_datetime==null)?null:(new Timestamp(end_datetime.getTime())));
-		pstmt.setString(6, batch_no);
-		pstmt.setString(7, central_no);
-		pstmt.setDate(8, (record_date==null)?null:(new java.sql.Date(record_date.getTime())));
-		pstmt.setString(9, upload_no);
-		pstmt.setString(10, step_type);
+		
+		pstmt.setString(1, exe_status);
+		pstmt.setString(2, exe_result);
+		pstmt.setString(3, exe_result_description);
+		pstmt.setTimestamp(4, (end_datetime==null)?null:(new Timestamp(end_datetime.getTime())));
+		pstmt.setString(5, batch_no);
+		pstmt.setString(6, central_no);
+		pstmt.setDate(7, (record_date==null)?null:(new java.sql.Date(record_date.getTime())));
+		pstmt.setString(8, upload_no);
+		pstmt.setString(9, step_type);
+		pstmt.setString(10, program_no);
 
 		pstmt.executeUpdate();
 
@@ -372,6 +373,70 @@ public class ETL_P_Log {
 		if (con != null) {
 			con.close();
 		}
+	}
+	
+	// 查詢ETL_Detail_Log  是否有寫入紀錄
+	/**
+	 * 
+	 * @param batch_no 批次編號(條件)
+	 * @param central_no 報送單位(條件)
+	 * @param record_date 檔案日期(條件)
+	 * @param upload_no 上傳批號(條件)
+	 * @param step_type 步驟(條件)
+	 * @param program_no 程式代號(更新)
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public static boolean query_ETL_Detail_Log_Done (
+			// 搜尋項目參數
+			String batch_no, String central_no, java.util.Date record_date, String upload_no, String step_type, String program_no
+			) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		int resultCount = 0;
+		
+		String sql_statement = 
+				" SELECT COUNT(*) FROM  " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG " +
+				" WHERE " +
+					" BATCH_NO = ? " +
+					" AND CENTRAL_NO = ? " +
+					" AND RECORD_DATE = ? " +
+					" AND UPLOAD_NO = ? " +
+					" AND STEP_TYPE = ? " +
+					" AND PROGRAM_NO = ? ";
+
+		Connection con = ConnectionHelper.getDB2Connection();
+		PreparedStatement pstmt = con.prepareStatement(sql_statement);
+
+		pstmt.setString(1, batch_no);
+		pstmt.setString(2, central_no);
+		pstmt.setDate(3, (record_date==null)?null:(new java.sql.Date(record_date.getTime())));
+		pstmt.setString(4, upload_no);
+		pstmt.setString(5, step_type);
+		pstmt.setString(6, program_no);
+
+		java.sql.ResultSet rs = pstmt.executeQuery();
+		
+		if (rs.next()) {
+			resultCount = rs.getInt(1);
+		}
+
+		if (pstmt != null) {
+			pstmt.close();
+		}
+		if (con != null) {
+			con.close();
+		}
+		
+		if (resultCount > 0) {
+			// 若有紀錄則回傳true
+			return true;
+		} else {
+			// 若無紀錄則回傳false
+			return false;
+		}
+		
 	}
 
 }
