@@ -79,7 +79,7 @@ public class ETL_E_PARTY_PHONE {
 		
 		try {
 			// TODO V4  Start
-			// 批次不重複執
+			// 批次不重複執行
 			if (ETL_P_Log.query_ETL_Detail_Log_Done(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no)) {
 				String inforMation = 
 						"batch_no = " + batch_no + ", " +
@@ -168,8 +168,6 @@ public class ETL_E_PARTY_PHONE {
 				
 //				System.out.println(parseFile.getAbsoluteFile()); // test
 				// TODO V4
-				// 設定批次編號 已搬家
-				//pfn.setBatch_no(batch_no);
 //				FileInputStream fis = new FileInputStream(parseFile);
 //				BufferedReader br = new BufferedReader(new InputStreamReader(fis,"BIG5"));
 				
@@ -193,8 +191,8 @@ public class ETL_E_PARTY_PHONE {
 					
 					String lineStr = ""; // 行字串暫存區
 					
-					// ETL_字串處理Queue // TODO V4
-					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no); 
+					// ETL_字串處理Queue
+					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no); // TODO V4
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
 					// TODO V4  Start
@@ -225,7 +223,7 @@ public class ETL_E_PARTY_PHONE {
 						// 區別瑪檢核(1)
 						String typeCode = strQueue.popBytesString(1);
 						if (!"1".equals(typeCode)) { // 首錄區別碼檢查, 嚴重錯誤, 不進行迴圈並記錄錯誤訊息
-							fileFmtErrMsg = "首錄區別碼有誤:"+typeCode;
+							fileFmtErrMsg = "首錄區別碼有誤:" + typeCode;
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
 						}
@@ -233,7 +231,7 @@ public class ETL_E_PARTY_PHONE {
 						// 報送單位檢核(7)   
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) { // 報送單位一致性檢查, 嚴重錯誤, 不進行迴圈並記錄錯誤訊息 
-							fileFmtErrMsg = "首錄報送單位代碼與檔名不符:" + central_no;  
+							fileFmtErrMsg = "首錄報送單位代碼與檔名不符:" + central_no;  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -245,11 +243,11 @@ public class ETL_E_PARTY_PHONE {
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "首錄檔案日期與檔名不符:" + record_date;  
+							fileFmtErrMsg = "首錄檔案日期與檔名不符:" + record_date;  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "首錄檔案日期格式錯誤:" + record_date; 
+							fileFmtErrMsg = "首錄檔案日期格式錯誤:" + record_date;  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -261,107 +259,106 @@ public class ETL_E_PARTY_PHONE {
 					}
 					
 					// 逐行讀取檔案
-					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行  // TODO V4
-						while (strQueue.setTargetString() < strQueue.getByteListSize()) { // TODO V4
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) // 沒有嚴重錯誤時進行  // TODO V4
+					while (strQueue.setTargetString() < strQueue.getByteListSize()) { // TODO V4
+						
+//						lineStr = br.readLine();  // TODO V4
+	//					System.out.println(lineStr); // test
+//						strQueue.setTargetString(lineStr); // queue裝入新String  // TODO V4
+						
+						// 生成一個Data
+						ETL_Bean_PARTY_PHONE_Data data = new ETL_Bean_PARTY_PHONE_Data(pfn);
+						// 寫入資料行數
+						data.setRow_count(rowCount);
+						
+						// 區別碼(1)  // TODO V4
+//						String typeCode = strQueue.popBytesString(1);
+//						if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
+//							break;
+//						}
+	
+						// 整行bytes數檢核(1 + 7 + 11 + 1 + 3 + 20 = 43)
+						if (strQueue.getTotalByteLength() != 43) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期43:" + strQueue.getTotalByteLength()));
 							
-	//						lineStr = br.readLine();  // TODO V4
-		//					System.out.println(lineStr); // test
-	//						strQueue.setTargetString(lineStr); // queue裝入新String  // TODO V4
-							
-							// 生成一個Data
-							ETL_Bean_PARTY_PHONE_Data data = new ETL_Bean_PARTY_PHONE_Data(pfn);
-							// 寫入資料行數
-							data.setRow_count(rowCount);
-							
-							// 區別碼(1)  // TODO V4
-	//						String typeCode = strQueue.popBytesString(1);
-	//						if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
-	//							break;
-	//						}
-		
-							// 整行bytes數檢核(1 + 7 + 11 + 1 + 3 + 20 = 43)
-							if (strQueue.getTotalByteLength() != 43) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "行數bytes檢查", "非預期43:" + strQueue.getTotalByteLength()));
-								
-								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
-								failureCount++;
-								rowCount++;
-								continue;
-							}
-							
-							// 區別碼檢核 c-1*
-							String typeCode = strQueue.popBytesString(1); // TODO V4
-							if (!"2".equals(typeCode)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", "非預期:" + typeCode));
-							}
-							
-							// 本會代號檢核(7) c-2*
-							String domain_id = strQueue.popBytesString(7);
-							data.setDomain_id(domain_id);
-							if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "空值"));
-							} else if (advancedCheck && !checkMaps.get("c-2").containsKey(domain_id)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "非預期:" + domain_id));
-							}
-							
-							// 客戶統編檢核(11) c-3*
-							String party_number = strQueue.popBytesString(11);
-							data.setParty_number(party_number);
-							if (ETL_Tool_FormatCheck.isEmpty(party_number)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "客戶統編", "空值"));
-							}
-							
-							// 異動代號檢核(1) c-4*
-							String change_code = strQueue.popBytesString(1);
-							data.setChange_code(change_code);
-							if (ETL_Tool_FormatCheck.isEmpty(change_code)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "異動代號", "空值"));
-							} else if (advancedCheck && !checkMaps.get("c-4").containsKey(change_code)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "異動代號", "非預期:" + change_code));
-							}
-							
-							// 電話類別檢核(3) c-5
-							String phone_type = strQueue.popBytesString(3);
-							data.setPhone_type(phone_type);
-							if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(phone_type) && !checkMaps.get("c-5").containsKey(phone_type)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "電話類別", "非預期:" + phone_type));
-							}
-							
-							// 電話號碼檢核(20) c-6*
-							String phone_number = strQueue.popBytesString(20);
-							data.setPhone_number(phone_number);
-							if (ETL_Tool_FormatCheck.isEmpty(phone_number)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(
-										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "電話號碼", "空值"));
-							}
-							
-							// data list 加入一個檔案
-							addData(data);
-							
-							if ("Y".equals(data.getError_mark())) {
-								failureCount++;
-							} else {
-								successCount++;
-							}
-							rowCount++; // 處理行數 + 1
+							// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行 
+							failureCount++;
+							rowCount++;
+							continue;
 						}
+						
+						// 區別碼檢核 c-1*
+						String typeCode = strQueue.popBytesString(1); // TODO V4
+						if (!"2".equals(typeCode)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", "非預期:" + typeCode));
+						}
+						
+						// 本會代號檢核(7) c-2*
+						String domain_id = strQueue.popBytesString(7);
+						data.setDomain_id(domain_id);
+						if (ETL_Tool_FormatCheck.isEmpty(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "空值"));
+						} else if (advancedCheck && !checkMaps.get("c-2").containsKey(domain_id)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "本會代號", "非預期:" + domain_id));
+						}
+						
+						// 客戶統編檢核(11) c-3*
+						String party_number = strQueue.popBytesString(11);
+						data.setParty_number(party_number);
+						if (ETL_Tool_FormatCheck.isEmpty(party_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "客戶統編", "空值"));
+						}
+						
+						// 異動代號檢核(1) c-4*
+						String change_code = strQueue.popBytesString(1);
+						data.setChange_code(change_code);
+						if (ETL_Tool_FormatCheck.isEmpty(change_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "異動代號", "空值"));
+						} else if (advancedCheck && !checkMaps.get("c-4").containsKey(change_code)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "異動代號", "非預期:" + change_code));
+						}
+						
+						// 電話類別檢核(3) c-5
+						String phone_type = strQueue.popBytesString(3);
+						data.setPhone_type(phone_type);
+						if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(phone_type) && !checkMaps.get("c-5").containsKey(phone_type)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "電話類別", "非預期:" + phone_type));
+						}
+						
+						// 電話號碼檢核(20) c-6*
+						String phone_number = strQueue.popBytesString(20);
+						data.setPhone_number(phone_number);
+						if (ETL_Tool_FormatCheck.isEmpty(phone_number)) {
+							data.setError_mark("Y");
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "電話號碼", "空值"));
+						}
+						
+						// data list 加入一個檔案
+						addData(data);
+						
+						if ("Y".equals(data.getError_mark())) {
+							failureCount++;
+						} else {
+							successCount++;
+						}
+						rowCount++; // 處理行數 + 1
 					}
 					
 					System.out.println("this.dataList size = " + this.dataList.size());// test  temp
@@ -390,7 +387,7 @@ public class ETL_E_PARTY_PHONE {
 						// 報送單位檢核(7)
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) { // 報送單位一致性檢查, 嚴重錯誤, 不進行迴圈並記錄錯誤訊息
-							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符:" + central_no;  
+							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符:" + central_no;  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -402,11 +399,11 @@ public class ETL_E_PARTY_PHONE {
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "尾錄檔案日期與檔名不符:" + record_date;  
+							fileFmtErrMsg = "尾錄檔案日期與檔名不符:" + record_date;  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "尾錄檔案日期格式錯誤:" + record_date;  
+							fileFmtErrMsg = "尾錄檔案日期格式錯誤:" + record_date;  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -415,11 +412,11 @@ public class ETL_E_PARTY_PHONE {
 						String totalCount = strQueue.popBytesString(7);
 						iTotalCount = ETL_Tool_StringX.toInt(totalCount);
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
-							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;  
+							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
-							fileFmtErrMsg = "尾錄總筆數與統計不符:" + totalCount;  
+							fileFmtErrMsg = "尾錄總筆數與統計不符:" + totalCount + " != " + (rowCount - 2);  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						}
@@ -486,6 +483,11 @@ public class ETL_E_PARTY_PHONE {
 							"E", parseEndDate, iTotalCount , successCount, failureCount, file_exe_result, file_exe_result_description);
 					
 				} catch (Exception ex) {
+					// TODO V4 NEW
+					// 寫入Error_Log
+					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+							upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", ex.getMessage(), null); // TODO V4 NEW
+					
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", new Date(), 0, 0, 0, "S", ex.getMessage()); // TODO V4  (0, 0, 0)<=(iTotalCount, successCount, failureCount)
@@ -507,14 +509,10 @@ public class ETL_E_PARTY_PHONE {
 				detail_exe_result = "S";
 				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
 				
-				// ETL_Error Log寫入輔助工具
-				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-				// 寫入一筆Error Log
-				errWriter.addErrLog(
-						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
-								upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", detail_exe_result_description, null)); // TODO V4
-				// Error_Log寫入DB
-				errWriter.insert_Error_Log();
+				// TODO V4 NEW
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+						upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", detail_exe_result_description, null); // TODO V4 NEW
 				
 			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
@@ -531,8 +529,13 @@ public class ETL_E_PARTY_PHONE {
 			ETL_P_Log.update_End_ETL_Detail_Log(
 					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
 					"E", detail_exe_result, detail_exe_result_description, new Date());
-		
+			
 		} catch (Exception ex) {
+			// TODO V4 NEW
+			// 寫入Error_Log
+			ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+					upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", ex.getMessage(), null); // TODO V4 NEW
+			
 			// 處理後更新ETL_Detail_Log
 			ETL_P_Log.update_End_ETL_Detail_Log (
 					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,

@@ -281,11 +281,12 @@ public class ETL_P_Log {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static void write_Error_Log(String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE,
+	public static void write_Error_Log(String BATCH_NO, String CENTRAL_NO, java.util.Date RECORD_DATE, String FILE_TYPE,
 			String FILE_NAME, String UPLOAD_NO, String STEP_TYPE, String ROW_COUNT, String FIELD_NAME,
 			String ERROR_DESCRIPTION, String SRC_FILE) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		String sql_statement = " INSERT INTO ETL_LOG (" +
+		String sql_statement = " INSERT INTO " + ETL_Profile.db2TableSchema + ".Error_Log (" +
+				"BATCH_NO," +
 				"CENTRAL_NO," +
 				"RECORD_DATE," +
 				"FILE_TYPE," +
@@ -296,21 +297,22 @@ public class ETL_P_Log {
 				"FIELD_NAME," +
 				"ERROR_DESCRIPTION," +
 				"SRC_FILE" +
-				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Connection con = ConnectionHelper.getDB2Connection();
 		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
-		pstmt.setString(1, CENTRAL_NO);
-		pstmt.setDate(2, new Date(RECORD_DATE.getTime()));
-		pstmt.setString(3, FILE_TYPE);
-		pstmt.setString(4, FILE_NAME);
-		pstmt.setString(5, UPLOAD_NO);
-		pstmt.setString(6, STEP_TYPE);
-		pstmt.setString(7, ROW_COUNT);
-		pstmt.setString(8, FIELD_NAME);
-		pstmt.setString(9, ERROR_DESCRIPTION);
-		pstmt.setString(10, SRC_FILE);
+		pstmt.setString(1, BATCH_NO);
+		pstmt.setString(2, CENTRAL_NO);
+		pstmt.setDate(3, new Date(RECORD_DATE.getTime()));
+		pstmt.setString(4, FILE_TYPE);
+		pstmt.setString(5, FILE_NAME);
+		pstmt.setString(6, UPLOAD_NO);
+		pstmt.setString(7, STEP_TYPE);
+		pstmt.setString(8, ROW_COUNT);
+		pstmt.setString(9, FIELD_NAME);
+		pstmt.setString(10, ERROR_DESCRIPTION);
+		pstmt.setString(11, SRC_FILE);
 
 		pstmt.executeUpdate();
 
