@@ -1,9 +1,6 @@
 package Extract;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -332,11 +329,11 @@ public class ETL_E_PARTY_PARTY_REL {
 						}
 						
 						// 關係人-姓氏 c-8(40)
-						String party_first_name_1 = strQueue.popBytesString(40);
+						String party_first_name_1 = strQueue.popBytesDiffString(40);
 						data.setParty_first_name_1(party_first_name_1);
 						
 						// 關係人-名字 c-9(80)
-						String party_last_name_1 = strQueue.popBytesString(80);
+						String party_last_name_1 = strQueue.popBytesDiffString(80);
 						data.setParty_last_name_1(party_last_name_1);
 						
 						// 關係人-出生年月日 c-10(8)
@@ -475,6 +472,10 @@ public class ETL_E_PARTY_PARTY_REL {
 							"E", parseEndDate, iTotalCount , successCount, failureCount, file_exe_result, file_exe_result_description);
 				
 				} catch (Exception ex) {
+					// 寫入Error_Log
+					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+							upload_no, "E", "0", "ETL_E_PARTY_PARTY_REL程式處理", ex.getMessage(), null);
+					
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", new Date(), 0, 0, 0, "S", ex.getMessage());
@@ -496,14 +497,9 @@ public class ETL_E_PARTY_PARTY_REL {
 				detail_exe_result = "S";
 				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
 				
-				// ETL_Error Log寫入輔助工具
-				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-				// 寫入一筆Error Log
-				errWriter.addErrLog(
-						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
-								upload_no, "E", "0", "ETL_E_PARTY_PARTY_REL程式處理", detail_exe_result_description, null));
-				// Error_Log寫入DB
-				errWriter.insert_Error_Log();
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+						upload_no, "E", "0", "ETL_E_PARTY_PARTY_REL程式處理", detail_exe_result_description, null);
 				
 			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
@@ -522,6 +518,10 @@ public class ETL_E_PARTY_PARTY_REL {
 					"E", detail_exe_result, detail_exe_result_description, new Date());
 		
 		} catch (Exception ex) {
+			// 寫入Error_Log
+			ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+					upload_no, "E", "0", "ETL_E_PARTY_PARTY_REL程式處理", ex.getMessage(), null);
+			
 			// 處理後更新ETL_Detail_Log
 			ETL_P_Log.update_End_ETL_Detail_Log (
 					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
