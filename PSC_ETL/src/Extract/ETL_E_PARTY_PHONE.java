@@ -223,7 +223,7 @@ public class ETL_E_PARTY_PHONE {
 						// 區別瑪檢核(1)
 						String typeCode = strQueue.popBytesString(1);
 						if (!"1".equals(typeCode)) { // 首錄區別碼檢查, 嚴重錯誤, 不進行迴圈並記錄錯誤訊息
-							fileFmtErrMsg = "首錄區別碼有誤";
+							fileFmtErrMsg = "首錄區別碼有誤:" + typeCode;
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
 						}
@@ -416,7 +416,7 @@ public class ETL_E_PARTY_PHONE {
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
-							fileFmtErrMsg = "尾錄總筆數與統計不符:" + totalCount;  // TODO V4
+							fileFmtErrMsg = "尾錄總筆數與統計不符:" + totalCount + " != " + (rowCount - 2);  // TODO V4
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						}
@@ -483,6 +483,11 @@ public class ETL_E_PARTY_PHONE {
 							"E", parseEndDate, iTotalCount , successCount, failureCount, file_exe_result, file_exe_result_description);
 					
 				} catch (Exception ex) {
+					// TODO V4 NEW
+					// 寫入Error_Log
+					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+							upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", ex.getMessage(), null); // TODO V4 NEW
+					
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", new Date(), 0, 0, 0, "S", ex.getMessage()); // TODO V4  (0, 0, 0)<=(iTotalCount, successCount, failureCount)
@@ -504,14 +509,10 @@ public class ETL_E_PARTY_PHONE {
 				detail_exe_result = "S";
 				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
 				
-				// ETL_Error Log寫入輔助工具
-				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-				// 寫入一筆Error Log
-				errWriter.addErrLog(
-						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
-								upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", detail_exe_result_description, null)); // TODO V4
-				// Error_Log寫入DB
-				errWriter.insert_Error_Log();
+				// TODO V4 NEW
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+						upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", detail_exe_result_description, null); // TODO V4 NEW
 				
 			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
@@ -528,8 +529,13 @@ public class ETL_E_PARTY_PHONE {
 			ETL_P_Log.update_End_ETL_Detail_Log(
 					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
 					"E", detail_exe_result, detail_exe_result_description, new Date());
-		
+			
 		} catch (Exception ex) {
+			// TODO V4 NEW
+			// 寫入Error_Log
+			ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+					upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", ex.getMessage(), null); // TODO V4 NEW
+			
 			// 處理後更新ETL_Detail_Log
 			ETL_P_Log.update_End_ETL_Detail_Log (
 					batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,

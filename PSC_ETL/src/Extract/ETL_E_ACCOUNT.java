@@ -649,6 +649,10 @@ public class ETL_E_ACCOUNT {
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
 							successCount, failureCount, file_exe_result, file_exe_result_description);
 				} catch (Exception ex) {
+					// 寫入Error_Log
+					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+							upload_no, "E", "0", "ETL_E_ACCOUNT程式處理", ex.getMessage(), null); // TODO V4 NEW
+					
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
 							"E", new Date(), 0, 0, 0, "S", ex.getMessage());
@@ -656,7 +660,7 @@ public class ETL_E_ACCOUNT {
 					
 					ex.printStackTrace();
 				}
-				// 累加PARTY_PHONE處理錯誤筆數
+				// 累加處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
 			// 執行結果
@@ -667,16 +671,10 @@ public class ETL_E_ACCOUNT {
 			if (fileList.size() == 0) {
 				detail_exe_result = "S";
 				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
-				
-				// ETL_Error Log寫入輔助工具
-				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-				
-				// 寫入一筆Error Log
-				errWriter.addErrLog(
-						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
-								upload_no, "E", "0", "ETL_E_ACCOUNT程式處理", detail_exe_result_description, null));
-				// Error_Log寫入DB
-				errWriter.insert_Error_Log();
+
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+						upload_no, "E", "0", "ETL_E_ACCOUNT程式處理", detail_exe_result_description, null);
 				
 			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
@@ -694,6 +692,10 @@ public class ETL_E_ACCOUNT {
 					"E", detail_exe_result, detail_exe_result_description, new Date());
 
 		} catch (Exception ex) {
+			// 寫入Error_Log
+			ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+					upload_no, "E", "0", "ETL_E_ACCOUNT程式處理", ex.getMessage(), null); // TODO V4 NEW
+			
 			// 處理後更新ETL_Detail_Log
 			ETL_P_Log.update_End_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
 					"E", "S", ex.getMessage(), new Date());

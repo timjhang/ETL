@@ -80,6 +80,21 @@ public class ETL_E_LOAN_DETAIL {
 		System.out.println("#######Extrace - ETL_E_LOAN_DETAIL - Start");
 
 		try {
+			// 批次不重複執行
+			if (ETL_P_Log.query_ETL_Detail_Log_Done(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no)) {
+				String inforMation = 
+						"batch_no = " + batch_no + ", " +
+						"exc_central_no = " + exc_central_no + ", " +
+						"exc_record_date = " + exc_record_date + ", " +
+						"upload_no = " + upload_no + ", " +
+						"step_type = E, " +
+						"program_no = " + program_no;
+				
+				System.out.println("#######Extrace - ETL_E_LOAN - 不重複執行\n" + inforMation); // TODO V4
+				System.out.println("#######Extrace - ETL_E_LOAN - End"); 
+				
+				return;
+			}
 			// 處理前寫入ETL_Detail_Log
 			ETL_P_Log.write_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no, "S",
 					"", "", new Date(), null);

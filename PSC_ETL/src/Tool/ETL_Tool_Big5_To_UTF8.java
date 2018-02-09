@@ -153,7 +153,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 
 		Map<String, String> map = new HashMap<String, String>();
 
-		try {
+//		try {
 			String XLSXPath = getXLSXPath(central_no);
 
 			FileInputStream excelFile = new FileInputStream(new File(XLSXPath));
@@ -183,11 +183,11 @@ public class ETL_Tool_Big5_To_UTF8 {
 					map.put(big5_cell.getStringCellValue(), uniCode_cell_val);
 				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		return map;
 	}
 
@@ -203,7 +203,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 
 		Map<String, String> map = new HashMap<String, String>();
 
-		try {
+//		try {
 			String XLSXPath = getXLSXPath(central_no);
 
 			FileInputStream excelFile = new FileInputStream(new File(XLSXPath));
@@ -233,11 +233,11 @@ public class ETL_Tool_Big5_To_UTF8 {
 					map.put(big5_cell.getStringCellValue(), uniCode_cell_val);
 				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		return map;
 	}
 
