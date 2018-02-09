@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ETL_Tool_FileByteUtil {
+<<<<<<< HEAD
 	
 	public static List<byte[]> getFilesBytes(String path) throws IOException{
 		List<byte[]> list = new ArrayList<byte[]>();
@@ -25,6 +26,28 @@ public class ETL_Tool_FileByteUtil {
 		return list;
 	}
 	
+=======
+
+	public static List<byte[]> getFilesBytes(String path) throws IOException {
+		List<byte[]> list = new ArrayList<byte[]>();
+
+		byte[] bytes = Files.readAllBytes(Paths.get(path));
+
+		StringBuffer hexStr = new StringBuffer(bytes.length * 2);
+
+		for (byte b : bytes) {
+			hexStr.append(String.format("%02X", b));
+
+		}
+		String[] linesHexStr = hexStr.toString().split("0D0A");
+
+		for (String s : linesHexStr) {
+			list.add(hexStrToByteArray(s));
+		}
+		return list;
+	}
+
+>>>>>>> refs/remotes/origin/develop
 	private static byte[] hexStrToByteArray(String str) {
 		if (str == null) {
 			return null;
