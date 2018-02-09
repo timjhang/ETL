@@ -114,7 +114,7 @@ public class ETL_E_FCX {
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName, true);
 				// 設定批次編號
 				pfn.setBatch_no(batch_no);
-				// 設定上船批號
+				// 設定上傳批號
 				pfn.setUpload_no(upload_no);
 
 				// 報送單位非預期, 不進行解析
@@ -274,7 +274,7 @@ public class ETL_E_FCX {
 							}
 
 							// 顧客姓名 X(80)
-							String party_last_name_1 = strQueue.popBytesString(80);
+							String party_last_name_1 = strQueue.popBytesDiffString(80);
 							data.setParty_last_name_1(party_last_name_1);
 
 							// 顧客生日 X(08)
@@ -529,11 +529,15 @@ public class ETL_E_FCX {
 							exc_record_date /* TODO V3 */, pfn.getFile_Name(), upload_no, "E", parseEndDate,
 							iTotalCount, successCount, failureCount, file_exe_result, file_exe_result_description);
 				} catch (Exception ex) { // TODO V3
+					// TODO V4 NEW
+					// 寫入Error_Log
+					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
+							"E", "0", "ETL_E_FCX程式處理", ex.getMessage(), null); // TODO V4 NEW
+
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", new Date(), 0, 0, 0, "S",
 							ex.getMessage()); // TODO V4 (0, 0, 0)<=(iTotalCount, successCount, failureCount)
-
 					processErrMsg = processErrMsg + ex.getMessage() + "\n";
 
 					ex.printStackTrace();
@@ -552,15 +556,9 @@ public class ETL_E_FCX {
 				detail_exe_result = "S";
 				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
 
-				// ETL_Error Log寫入輔助工具
-				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-				// 寫入一筆Error Log
-				errWriter.addErrLog(
-						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName,
-								upload_no, "E", "0", "ETL_E_FCX程式處理", detail_exe_result_description, null)); // TODO
-																														// V4
-				// Error_Log寫入DB
-				errWriter.insert_Error_Log();
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no, "E",
+						"0", "ETL_E_FCX程式處理", detail_exe_result_description, null); // TODO V4 NEW
 
 			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
@@ -578,9 +576,14 @@ public class ETL_E_FCX {
 					"E", detail_exe_result, detail_exe_result_description, new Date());
 
 		} catch (Exception ex) {
+			// 寫入Error_Log
+			ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no, "E",
+					"0", "ETL_E_FCX程式處理", ex.getMessage(), null); // TODO V4 NEW
+
 			// 處理後更新ETL_Detail_Log
 			ETL_P_Log.update_End_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
 					"E", "S", ex.getMessage(), new Date());
+
 			ex.printStackTrace();
 		}
 		System.out.println("#######Extrace - ETL_E_FCX - End"); // TODO

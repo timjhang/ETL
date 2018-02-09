@@ -1,9 +1,6 @@
 package Extract;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -77,8 +74,8 @@ public class ETL_E_TRANSFER {
 						+ "exc_record_date = " + exc_record_date + ", " + "upload_no = " + upload_no + ", "
 						+ "step_type = E, " + "program_no = " + program_no;
 
-				System.out.println("#######Extrace - ETL_E_PARTY_PHONE - 不重複執行\n" + inforMation); // TODO V4
-				System.out.println("#######Extrace - ETL_E_PARTY_PHONE - End"); // TODO V4
+				System.out.println("#######Extrace - ETL_E_TRANSFER - 不重複執行\n" + inforMation); // TODO V4
+				System.out.println("#######Extrace - ETL_E_TRANSFER - End"); // TODO V4
 
 				return;
 			}
@@ -373,7 +370,7 @@ public class ETL_E_TRANSFER {
 							data.setOrdering_customer_party_id(ordering_customer_party_id);
 
 							// 匯款人顧客姓名 X(80) *
-							String ordering_customer_party_name = strQueue.popBytesString(80);
+							String ordering_customer_party_name = strQueue.popBytesDiffString(80);
 							data.setOrdering_customer_party_name(ordering_customer_party_name);
 							if (ETL_Tool_FormatCheck.isEmpty(ordering_customer_party_name)) {
 								data.setError_mark("Y");
@@ -413,7 +410,7 @@ public class ETL_E_TRANSFER {
 							}
 
 							// 受款人姓名 X(80) *
-							String beneficiary_customer_party_name = strQueue.popBytesString(80);
+							String beneficiary_customer_party_name = strQueue.popBytesDiffString(80);
 							data.setBeneficiary_customer_party_name(beneficiary_customer_party_name);
 							if (ETL_Tool_FormatCheck.isEmpty(beneficiary_customer_party_name)) {
 								data.setError_mark("Y");
@@ -592,7 +589,11 @@ public class ETL_E_TRANSFER {
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
 							successCount, failureCount, file_exe_result, file_exe_result_description);
-				} catch (Exception ex) { // TODO V3
+				} catch (Exception ex) {
+					// 寫入Error_Log
+					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
+							"E", "0", "ETL_E_TRANSFER程式處理", ex.getMessage(), null); // TODO V4 NEW
+
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", new Date(), 0, 0, 0, "S",
@@ -616,15 +617,9 @@ public class ETL_E_TRANSFER {
 				detail_exe_result = "S";
 				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
 
-				// ETL_Error Log寫入輔助工具
-				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-				// 寫入一筆Error Log
-				errWriter.addErrLog(
-						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName,
-								upload_no, "E", "0", "ETL_E_PARTY_PHONE程式處理", detail_exe_result_description, null)); // TODO
-																														// V4
-				// Error_Log寫入DB
-				errWriter.insert_Error_Log();
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no, "E",
+						"0", "ETL_E_TRANSFER程式處理", detail_exe_result_description, null); // TODO V4 NEW
 
 			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
@@ -641,6 +636,11 @@ public class ETL_E_TRANSFER {
 			ETL_P_Log.update_End_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
 					"E", detail_exe_result, detail_exe_result_description, new Date());
 		} catch (Exception ex) {
+			// 寫入Error_Log
+			ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no, "E",
+					"0", "ETL_E_TRANSFER程式處理", ex.getMessage(), null); // TODO V4 NEW
+
+			// 處理後更新ETL_Detail_Log
 			ETL_P_Log.update_End_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
 					"E", "S", ex.getMessage(), new Date());
 

@@ -231,7 +231,7 @@ public class ETL_E_PARTY_PHONE {
 						// 報送單位檢核(7)   
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) { // 報送單位一致性檢查, 嚴重錯誤, 不進行迴圈並記錄錯誤訊息 
-							fileFmtErrMsg = "首錄報送單位代碼與檔名不符:" + central_no;  // TODO V4
+							fileFmtErrMsg = "首錄報送單位代碼與檔名不符:" + central_no;  
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
