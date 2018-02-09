@@ -17,6 +17,8 @@ import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
+import Tool.ETL_Tool_FileByteUtil;
+import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
@@ -69,6 +71,22 @@ public class ETL_E_GUARANTOR {
 		System.out.println("#######Extrace - ETL_E_GUARANTOR - Start");
 
 		try {
+			// TODO V4  Start
+						// 批次不重複執
+						if (ETL_P_Log.query_ETL_Detail_Log_Done(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no)) {
+							String inforMation = 
+									"batch_no = " + batch_no + ", " +
+									"exc_central_no = " + exc_central_no + ", " +
+									"exc_record_date = " + exc_record_date + ", " +
+									"upload_no = " + upload_no + ", " +
+									"step_type = E, " +
+									"program_no = " + program_no;
+							
+							System.out.println("#######Extrace - ETL_E_Guarantor - 不重複執行\n" + inforMation); // TODO V4
+							System.out.println("#######Extrace - ETL_E_Guarantor - End");  // TODO V4
+							
+							return;
+						}			
 
 			// 處理前寫入ETL_Detail_Log
 			ETL_P_Log.write_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no, "S",
@@ -101,7 +119,11 @@ public class ETL_E_GUARANTOR {
 
 				// 解析fileName物件
 				ETL_Tool_ParseFileName pfn = new ETL_Tool_ParseFileName(fileName);
-
+				// 設定批次編號  // TODO V4  搬家
+				pfn.setBatch_no(batch_no);
+				// 設定上傳批號  // TODO V4
+				pfn.setUpload_no(upload_no);
+				
 				// 報送單位非預期, 不進行解析
 				if (exc_central_no == null || "".equals(exc_central_no.trim())) {
 					System.out.println("## ETL_E_GUARANTOR - read_GUARANTOR_File - 控制程式無提供報送單位，不進行解析！"); // TODO V3
@@ -133,12 +155,6 @@ public class ETL_E_GUARANTOR {
 					continue;
 				}
 
-				// 設定批次編號
-				pfn.setBatch_no(batch_no);
-
-				FileInputStream fis = new FileInputStream(parseFile);
-				BufferedReader br = new BufferedReader(new InputStreamReader(fis, "BIG5"));
-
 				// rowCount == 處理行數
 				int rowCount = 1; // 從1開始
 				// 成功計數
@@ -161,20 +177,25 @@ public class ETL_E_GUARANTOR {
 					String lineStr = ""; // 行字串暫存區
 
 					// ETL_字串處理Queue
-					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue();
+					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no); // TODO V4
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-
+					// 讀檔並將結果注入ETL_字串處理Queue
+					strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
+					// 首、明細、尾錄, 基本組成檢查
+					boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
+				
+					
+					
 					// 首錄檢查
-					if (br.ready()) {
-						lineStr = br.readLine();
-
-						// 注入首錄字串
-						strQueue.setTargetString(lineStr);
-
+					if (isFileFormatOK) {
+						
+						// strQueue工具注入第一筆資料  // TODO V4
+						strQueue.setTargetString();
+						
 						// 檢查整行bytes數(1 + 7 + 8 + 108 = 124)
 						if (strQueue.getTotalByteLength() != 124) {
-							fileFmtErrMsg = "首錄位元數非預期124";
+							fileFmtErrMsg = "首錄位元數非預期124:" + strQueue.getTotalByteLength();// TODO V4
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
@@ -217,29 +238,20 @@ public class ETL_E_GUARANTOR {
 						rowCount++; // 處理行數 + 1
 					}
 
-					if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 						// 逐行讀取明細資料
-						while (br.ready()) {
-							lineStr = br.readLine();
-
-							strQueue.setTargetString(lineStr); // queue裝入新String
-
+						while (strQueue.setTargetString() < strQueue.getByteListSize()) {
+					
 							// 生成一個Data
 							ETL_Bean_GUARANTOR_TEMP_Data data = new ETL_Bean_GUARANTOR_TEMP_Data(pfn);
 							data.setRow_count(rowCount);
-
-							// 區別碼(1)
-							String typeCode = strQueue.popBytesString(1);
-							if ("3".equals(typeCode)) { // 區別碼為3, 跳出迴圈處理尾錄
-								break;
-							}
 
 							// 整行bytes數檢核(1+7+20+1+20+1+40+11+8+2+2+11= 124)
 							if (strQueue.getTotalByteLength() != 124) {
 								data.setError_mark("Y");
 
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "行數bytes檢查", "非預期124"));
+										String.valueOf(rowCount), "行數bytes檢查", "非預期124:" + strQueue.getTotalByteLength()));
 
 								failureCount++;
 								rowCount++; // 處理行數 ++
@@ -249,6 +261,7 @@ public class ETL_E_GUARANTOR {
 							}
 
 							// 區別碼檢核
+							String typeCode = strQueue.popBytesString(1); // TODO V4
 							if (!"2".equals(typeCode)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -392,17 +405,23 @@ public class ETL_E_GUARANTOR {
 					insert_GUARANTOR_TEMP_Datas();
 
 					// 尾錄檢查
-					if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
-
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行  // TODO V4
+						
 						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 101 = 124)
 						if (strQueue.getTotalByteLength() != 124) {
-							fileFmtErrMsg = "尾錄位元數非預期124";
+							fileFmtErrMsg = "尾錄位元數非預期124:"+ strQueue.getTotalByteLength();;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
 
-						// 區別碼檢核(1) 經"逐行讀取檔案"區塊, 若無嚴重錯誤應為3, 此處無檢核
-
+						// 區別碼檢核(1) 
+						String typeCode = strQueue.popBytesString(1);
+						if (!"3".equals(typeCode)) {
+							fileFmtErrMsg = "尾錄區別碼有誤:" + typeCode;
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
+						}
+						
 						// 報送單位檢核(7)
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) { // 報送單位一致性檢查, 嚴重錯誤, 不進行迴圈並記錄錯誤訊息
@@ -450,28 +469,26 @@ public class ETL_E_GUARANTOR {
 									String.valueOf(rowCount), "程式檢核", fileFmtErrMsg));
 						}
 
-						// 多餘行數檢查
-						if (br.ready()) {
-							fileFmtErrMsg = "出現多餘行數";
-							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-									String.valueOf(rowCount), "檔案總行數", fileFmtErrMsg));
-							rowCount++;
-						}
 					}
 
-					fis.close();
 					Date parseEndDate = new Date(); // 開始執行時間
 					System.out.println("解析檔案： " + fileName + " End " + parseEndDate);
-
-					// Error_Log寫入DB
-					errWriter.insert_Error_Log();
 
 					// 執行結果
 					String file_exe_result;
 					// 執行結果說明
 					String file_exe_result_description;
 
-					if (!"".equals(fileFmtErrMsg)) {
+					if (!isFileFormatOK) {  // TODO V4
+						file_exe_result = "S";
+						file_exe_result_description = "解析檔案出現嚴重錯誤-區別碼錯誤";
+						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤-區別碼錯誤\n";
+						
+						// 寫入Error Log
+						errWriter.addErrLog(
+								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0", "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
+						
+					} else if (!"".equals(fileFmtErrMsg)) {
 						file_exe_result = "S";
 						file_exe_result_description = "解析檔案出現嚴重錯誤";
 						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤\n";
@@ -480,8 +497,12 @@ public class ETL_E_GUARANTOR {
 						file_exe_result_description = "執行結果無錯誤資料";
 					} else {
 						file_exe_result = "D";
-						file_exe_result_description = "錯誤資料筆數: " + detail_ErrorCount;
+//						file_exe_result_description = "錯誤資料筆數: " + detail_ErrorCount; // TODO V4
+						file_exe_result_description = "錯誤資料筆數: " + failureCount; // TODO V4
 					}
+					
+					// Error_Log寫入DB  // TODO V4  搬家
+					errWriter.insert_Error_Log();
 
 					// 處理後更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
@@ -489,12 +510,10 @@ public class ETL_E_GUARANTOR {
 							successCount, failureCount, file_exe_result, file_exe_result_description);
 				} catch (Exception ex) {
 					// 執行錯誤更新ETL_FILE_Log
-					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
-							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", new Date(), iTotalCount,
-							successCount, failureCount, "S", ex.getMessage());
-					
+					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no() , pfn.getCentral_No(), exc_record_date, pfn.getFile_Type(), pfn.getFile_Name(), upload_no,
+							"E", new Date(), 0, 0, 0, "S", ex.getMessage()); // TODO V4  (0, 0, 0)<=(iTotalCount, successCount, failureCount)
 					processErrMsg = processErrMsg + ex.getMessage() + "\n";
-
+					
 					ex.printStackTrace();
 				}
 				// 累加處理錯誤筆數
@@ -507,7 +526,20 @@ public class ETL_E_GUARANTOR {
 			// 執行結果說明
 			String detail_exe_result_description;
 
-			if (!"".equals(processErrMsg)) {
+			if (fileList.size() == 0) { // TODO V4
+				detail_exe_result = "S";
+				detail_exe_result_description = "缺檔案類型：" + fileTypeName + " 檔案";
+				
+				// ETL_Error Log寫入輔助工具
+				ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
+				// 寫入一筆Error Log
+				errWriter.addErrLog(
+						new ETL_Bean_ErrorLog_Data(batch_no, exc_central_no, exc_record_date, null, fileTypeName, 
+								upload_no, "E", "0", "ETL_E_GUARANTOR程式處理", detail_exe_result_description, null)); // TODO V4
+				// Error_Log寫入DB
+				errWriter.insert_Error_Log();
+				
+			} else if (!"".equals(processErrMsg)) {
 				detail_exe_result = "S";
 				detail_exe_result_description = processErrMsg;
 			} else if (detail_ErrorCount == 0) {
@@ -542,8 +574,6 @@ public class ETL_E_GUARANTOR {
 
 		if (dataCount == stageLimit) {
 			insert_GUARANTOR_TEMP_Datas();
-			this.dataCount = 0;
-			this.dataList.clear();
 		}
 	}
 
@@ -566,6 +596,9 @@ public class ETL_E_GUARANTOR {
 		} else {
 			throw new Exception("insert_GUARANTOR_TEMP_Datas 發生錯誤");
 		}
+		
+		this.dataCount = 0;
+		this.dataList.clear();
 	}
 
 }

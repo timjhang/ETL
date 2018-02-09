@@ -25,16 +25,29 @@ public class ETL_Bean_FX_RATE_TEMP_Data {
 	private BigDecimal exchange_rate;
 	// 錯誤註記
 	private String error_mark="";
+	//上傳批號
+	private String upload_no="";
 	
 	public ETL_Bean_FX_RATE_TEMP_Data(ETL_Tool_ParseFileName pfn) {
 		if (pfn != null) {
 			this.central_no = pfn.getCentral_No();
 			this.record_date = pfn.getRecord_Date();
 			this.file_type = pfn.getFile_Type();
+			this.upload_no = pfn.getUpload_no();
 		}
 	}
 	
 	
+	public String getUpload_no() {
+		return upload_no;
+	}
+
+
+	public void setUpload_no(String upload_no) {
+		this.upload_no = upload_no;
+	}
+
+
 	public Integer getRow_count() {
 		return row_count;
 	}

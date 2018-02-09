@@ -37,12 +37,15 @@ public class ETL_Bean_GUARANTOR_TEMP_Data {
 	private String party_number;
 	// 錯誤註記
 	private String error_mark="";
+	//上傳批號
+	private String upload_no="";
 	
 	public ETL_Bean_GUARANTOR_TEMP_Data(ETL_Tool_ParseFileName pfn) {
 		if (pfn != null) {
 			this.central_no = pfn.getCentral_No();
 			this.record_date = pfn.getRecord_Date();
 			this.file_type = pfn.getFile_Type();
+			this.upload_no = pfn.getUpload_no();
 		}
 	}
 	
