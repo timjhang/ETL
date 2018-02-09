@@ -31,7 +31,7 @@ import Tool.ETL_Tool_StringX;
 public class ETL_E_LOAN_DETAIL {
 
 	// 進階檢核參數
-	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
+	// private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
 	// 欄位檢核用陣列
 	private String[][] checkMapArray = { { "comm_file_type", "COMM_FILE_TYPE" }, // 業務別
@@ -194,7 +194,7 @@ public class ETL_E_LOAN_DETAIL {
 						String typeCode = strQueue.popBytesString(1);
 						if (!"1".equals(typeCode)) { // 首錄區別碼檢查, 嚴重錯誤,
 														// 不進行迴圈並記錄錯誤訊息
-							fileFmtErrMsg = "首錄區別碼有誤";
+							fileFmtErrMsg = "首錄區別碼有誤:" + typeCode;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
 						}
@@ -204,7 +204,7 @@ public class ETL_E_LOAN_DETAIL {
 						 */
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) {
-							fileFmtErrMsg = "首錄報送單位代碼與檔名不符";
+							fileFmtErrMsg = "首錄報送單位代碼與檔名不符:" + central_no;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -216,11 +216,11 @@ public class ETL_E_LOAN_DETAIL {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "首錄檔案日期與檔名不符";
+							fileFmtErrMsg = "首錄檔案日期與檔名不符:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "首錄檔案日期格式錯誤";
+							fileFmtErrMsg = "首錄檔案日期格式錯誤:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -272,7 +272,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!"2".equals(typeCode)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "區別碼", "非預期"));
+										String.valueOf(rowCount), "區別碼", "非預期:" + typeCode));
 							}
 
 							// 本會代號檢核 R X(07)*
@@ -286,7 +286,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!checkMaps.get("domain_id").containsKey(domain_id.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "本會代號", "非預期"));
+										String.valueOf(rowCount), "本會代號", "非預期:" + domain_id));
 							}
 
 							// 客戶統編檢核 R X(11)*
@@ -310,7 +310,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!checkMaps.get("change_code").containsKey(change_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "異動代號", "非預期"));
+										String.valueOf(rowCount), "異動代號", "非預期:" + change_code));
 							}
 
 							// 批覆書編號 R X(20)*
@@ -346,7 +346,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!ETL_Tool_FormatCheck.checkDate(loan_application_date)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "批覆書申請日期", "格式錯誤"));
+										String.valueOf(rowCount), "批覆書申請日期", "格式錯誤:" + loan_application_date));
 							}
 
 							// 批覆書核准日期 R X(08)*
@@ -360,7 +360,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!ETL_Tool_FormatCheck.checkDate(loan_approval_date)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "批覆書核准日期", "格式錯誤"));
+										String.valueOf(rowCount), "批覆書核准日期", "格式錯誤:" + loan_approval_date));
 							}
 
 							// 額度核准日 R X(08)*
@@ -374,7 +374,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!ETL_Tool_FormatCheck.checkDate(approval_date)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "額度核准日", "格式錯誤"));
+										String.valueOf(rowCount), "額度核准日", "格式錯誤:" + approval_date));
 							}
 
 							// 批准限額 R 9(12)V99*
@@ -388,7 +388,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!ETL_Tool_FormatCheck.checkNum(approval_amount)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "批准限額", "格式錯誤"));
+										String.valueOf(rowCount), "批准限額", "格式錯誤:" + approval_amount));
 							}
 
 							// 可動用限額 R 9(12)V99*
@@ -402,7 +402,7 @@ public class ETL_E_LOAN_DETAIL {
 							} else if (!ETL_Tool_FormatCheck.checkNum(remain_approval_amount)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "可動用限額", "格式錯誤"));
+										String.valueOf(rowCount), "可動用限額", "格式錯誤:" + remain_approval_amount));
 							}
 							// data list 加入一個檔案
 							addData(data);
@@ -435,7 +435,7 @@ public class ETL_E_LOAN_DETAIL {
 						 */
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) {
-							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符";
+							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符:" + central_no;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -447,11 +447,11 @@ public class ETL_E_LOAN_DETAIL {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "尾錄檔案日期與檔名不符";
+							fileFmtErrMsg = "尾錄檔案日期與檔名不符:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "尾錄檔案日期格式錯誤";
+							fileFmtErrMsg = "尾錄檔案日期格式錯誤:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -461,11 +461,11 @@ public class ETL_E_LOAN_DETAIL {
 						iTotalCount = ETL_Tool_StringX.toInt(totalCount);
 
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
-							fileFmtErrMsg = "尾錄總筆數格式錯誤";
+							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
-							fileFmtErrMsg = "尾錄總筆數與統計不符";
+							fileFmtErrMsg = "尾錄總筆數與統計不符:" + totalCount + "!=" + (rowCount - 2);
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						}
@@ -568,8 +568,6 @@ public class ETL_E_LOAN_DETAIL {
 
 		if (dataCount == stageLimit) {
 			insert_Loan_Detail_Datas();
-			this.dataCount = 0;
-			this.dataList.clear();
 		}
 	}
 
@@ -596,6 +594,8 @@ public class ETL_E_LOAN_DETAIL {
 		} else {
 			throw new Exception("insert_Loan_Detail_Datas 發生錯誤");
 		}
+		this.dataCount = 0;
+		this.dataList.clear();
 	}
 
 	public static void main(String[] argv) throws Exception {

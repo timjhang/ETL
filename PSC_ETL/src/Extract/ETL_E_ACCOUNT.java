@@ -178,7 +178,7 @@ public class ETL_E_ACCOUNT {
 					ETL_P_Log.write_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseStartDate, null, 0, 0, 0,
 							pfn.getFileName());
-					
+
 					// 嚴重錯誤訊息變數(讀檔)
 					String fileFmtErrMsg = "";
 
@@ -207,7 +207,7 @@ public class ETL_E_ACCOUNT {
 						String typeCode = strQueue.popBytesString(1);
 						if (!"1".equals(typeCode)) { // 首錄區別碼檢查, 嚴重錯誤,
 														// 不進行迴圈並記錄錯誤訊息
-							fileFmtErrMsg = "首錄區別碼有誤";
+							fileFmtErrMsg = "首錄區別碼有誤:" + typeCode;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
 						}
@@ -217,7 +217,7 @@ public class ETL_E_ACCOUNT {
 						 */
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) {
-							fileFmtErrMsg = "首錄報送單位代碼與檔名不符";
+							fileFmtErrMsg = "首錄報送單位代碼與檔名不符:" + central_no;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -229,11 +229,11 @@ public class ETL_E_ACCOUNT {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "首錄檔案日期與檔名不符";
+							fileFmtErrMsg = "首錄檔案日期與檔名不符:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "首錄檔案日期格式錯誤";
+							fileFmtErrMsg = "首錄檔案日期格式錯誤:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -285,7 +285,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!"2".equals(typeCode)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "區別碼", "非預期"));
+										String.valueOf(rowCount), "區別碼", "非預期:" + typeCode));
 							}
 
 							// 本會代號檢核 R X(07)*
@@ -299,7 +299,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!checkMaps.get("domain_id").containsKey(domain_id.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "本會代號", "非預期"));
+										String.valueOf(rowCount), "本會代號", "非預期:" + domain_id));
 							}
 
 							// 客戶統編檢核 R X(11)*
@@ -323,7 +323,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!checkMaps.get("change_code").containsKey(change_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "異動代號", "非預期"));
+										String.valueOf(rowCount), "異動代號", "非預期:" + change_code));
 							}
 
 							// 帳號 R X(30)*
@@ -344,6 +344,10 @@ public class ETL_E_ACCOUNT {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "帳戶行", "空值"));
+							} else if (!checkMaps.get("domain_id").containsKey(branch_code.trim())) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+										String.valueOf(rowCount), "帳戶行", "非預期:" + branch_code));
 							}
 
 							// 帳戶類別 R X(02)*
@@ -357,7 +361,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!checkMaps.get("account_type_code").containsKey(account_type_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "帳戶類別", "非預期"));
+										String.valueOf(rowCount), "帳戶類別", "非預期:" + account_type_code));
 							}
 
 							// 連結服務 R X(01)*
@@ -371,7 +375,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!checkMaps.get("property_code").containsKey(property_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "連結服務", "非預期"));
+										String.valueOf(rowCount), "連結服務", "非預期:" + property_code));
 							}
 
 							// 幣別 R X(03)*
@@ -385,7 +389,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!checkMaps.get("currency_code").containsKey(currency_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "幣別", "非預期"));
+										String.valueOf(rowCount), "幣別", "非預期:" + currency_code));
 							}
 
 							// 帳戶狀態 R X(01)*
@@ -399,7 +403,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!checkMaps.get("status_code").containsKey(status_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "帳戶狀態", "非預期"));
+										String.valueOf(rowCount), "帳戶狀態", "非預期:" + status_code));
 							}
 
 							// 開戶管道 R X(01)*
@@ -414,7 +418,7 @@ public class ETL_E_ACCOUNT {
 									.containsKey(account_opening_channel.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "開戶管道", "非預期"));
+										String.valueOf(rowCount), "開戶管道", "非預期:" + account_opening_channel));
 							}
 
 							// 開戶日期 R X(08)*
@@ -428,7 +432,7 @@ public class ETL_E_ACCOUNT {
 							} else if (!ETL_Tool_FormatCheck.checkDate(account_open_date)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "開戶日期", "格式錯誤"));
+										String.valueOf(rowCount), "開戶日期", "格式錯誤:" + account_open_date));
 							}
 
 							// 結清(銷戶)日期 O X(08)
@@ -439,9 +443,7 @@ public class ETL_E_ACCOUNT {
 								if (!ETL_Tool_FormatCheck.checkDate(account_close_date)) {
 									data.setError_mark("Y");
 									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-											String.valueOf(rowCount), "結清(銷戶)日期", "格式錯誤"));
-								} else {
-									data.setAccount_close_date(ETL_Tool_StringX.toUtilDate(account_close_date));
+											String.valueOf(rowCount), "結清(銷戶)日期", "格式錯誤:" + account_close_date));
 								}
 							}
 
@@ -457,7 +459,7 @@ public class ETL_E_ACCOUNT {
 									.containsKey(balance_acct_currency_sign.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "帳戶餘額正負號", "非預期"));
+										String.valueOf(rowCount), "帳戶餘額正負號", "非預期:" + balance_acct_currency_sign));
 							}
 
 							// 帳戶餘額 R 9(12)V99*
@@ -472,31 +474,41 @@ public class ETL_E_ACCOUNT {
 							} else if (!ETL_Tool_FormatCheck.checkNum(balance_acct_currency_value)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "帳戶餘額", "格式錯誤"));
+										String.valueOf(rowCount), "帳戶餘額", "格式錯誤:" + balance_acct_currency_value));
 							}
 
-							// 過去一個月平均餘額正負號 R X(01)
+							// 過去一個月平均餘額正負號 R X(01)*
 							String balance_last_month_avg_sign = strQueue.popBytesString(1);
 							data.setBalance_last_month_avg_sign(balance_last_month_avg_sign);
 
-							if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_sign)
+							if (ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_sign)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+										String.valueOf(rowCount), "過去一個月平均餘額正負號", "空值"));
+							} else if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_sign)
 									&& !checkMaps.get("balance_last_month_avg_sign")
 											.containsKey(balance_last_month_avg_sign.trim())) {
 								data.setError_mark("Y");
-								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "過去一個月平均餘額正負號", "非預期"));
+								errWriter.addErrLog(
+										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
+												"過去一個月平均餘額正負號", "非預期:" + balance_last_month_avg_sign));
 							}
 
-							// 過去一個月平均餘額 R 9(12)V99
+							// 過去一個月平均餘額 R 9(12)V99*
 							String balance_last_month_avg_value = strQueue.popBytesString(14);
 							data.setBalance_last_month_avg_value(
 									ETL_Tool_StringX.strToBigDecimal(balance_last_month_avg_value, 2));
 
-							if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
+							if (ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
+								data.setError_mark("Y");
+								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+										String.valueOf(rowCount), "過去一個月平均餘額", "空值"));
+							} else if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(balance_last_month_avg_value)) {
 								if (!ETL_Tool_FormatCheck.checkNum(balance_last_month_avg_value)) {
 									data.setError_mark("Y");
-									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-											String.valueOf(rowCount), "過去一個月平均餘額", "格式錯誤"));
+									errWriter.addErrLog(
+											new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
+													"過去一個月平均餘額", "格式錯誤:" + balance_last_month_avg_value));
 								}
 							}
 
@@ -508,7 +520,7 @@ public class ETL_E_ACCOUNT {
 									&& !checkMaps.get("caution_note").containsKey(caution_note.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "警示註記", "非預期"));
+										String.valueOf(rowCount), "警示註記", "非預期:" + caution_note));
 							}
 
 							// data list 加入一個檔案
@@ -542,7 +554,7 @@ public class ETL_E_ACCOUNT {
 						 */
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) {
-							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符";
+							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符:" + central_no;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -554,11 +566,11 @@ public class ETL_E_ACCOUNT {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "尾錄檔案日期與檔名不符";
+							fileFmtErrMsg = "尾錄檔案日期與檔名不符:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "尾錄檔案日期格式錯誤";
+							fileFmtErrMsg = "尾錄檔案日期格式錯誤:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -568,11 +580,11 @@ public class ETL_E_ACCOUNT {
 						iTotalCount = ETL_Tool_StringX.toInt(totalCount);
 
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
-							fileFmtErrMsg = "尾錄總筆數格式錯誤";
+							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
-							fileFmtErrMsg = "尾錄總筆數與統計不符";
+							fileFmtErrMsg = "尾錄總筆數與統計不符:" + totalCount + "!=" + (rowCount - 2);
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						}
@@ -672,8 +684,6 @@ public class ETL_E_ACCOUNT {
 
 		if (dataCount == stageLimit) {
 			insert_Account_Datas();
-			this.dataCount = 0;
-			this.dataList.clear();
 		}
 	}
 
@@ -700,72 +710,58 @@ public class ETL_E_ACCOUNT {
 		} else {
 			throw new Exception("insert_Account_Datas 發生錯誤");
 		}
+		this.dataCount = 0;
+		this.dataList.clear();
 	}
 
 	public static void main(String[] argv) throws Exception {
 
 		// 讀取測試資料，並只列出明細錄欄位
-		// Charset charset = Charset.forName("Big5");
-		// List<String> lines =
-		// Files.readAllLines(Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\600_P_ACCOUNT_20171206.txt"),
-		// charset);
-		//
-		// if ( lines.size() > 2 ){
-		//
-		// lines.remove(0);
-		// lines.remove(lines.size()-1);
-		//
-		// System.out.println("============================================================================================");
-		// for (String line : lines) {
-		// byte[] tmp = line.getBytes(charset);
-		// System.out.println("第"+ ( lines.indexOf(line) + 1 ) + "行");
-		// System.out.println("位元組長度: "+ tmp.length);
-		// System.out.println("區別碼X(01): "+ new String(Arrays.copyOfRange(tmp,
-		// 0, 1), "Big5"));
-		// System.out.println("本會代號X(07): "+ new String(Arrays.copyOfRange(tmp,
-		// 1, 8), "Big5"));
-		// System.out.println("客戶統編X(11): "+ new String(Arrays.copyOfRange(tmp,
-		// 8, 19), "Big5"));
-		// System.out.println("異動代號X(01): "+ new String(Arrays.copyOfRange(tmp,
-		// 19, 20), "Big5"));
-		// System.out.println("帳號X(30): "+ new String(Arrays.copyOfRange(tmp,
-		// 20, 50), "Big5"));
-		// System.out.println("帳戶行X(07): "+ new String(Arrays.copyOfRange(tmp,
-		// 50, 57), "Big5"));
-		// System.out.println("帳戶類別X(02): "+ new String(Arrays.copyOfRange(tmp,
-		// 57, 59), "Big5"));
-		// System.out.println("連結服務X(01): "+ new String(Arrays.copyOfRange(tmp,
-		// 59, 60), "Big5"));
-		// System.out.println("幣別X(03): "+ new String(Arrays.copyOfRange(tmp,
-		// 60, 63), "Big5"));
-		// System.out.println("帳戶狀態X(01): "+ new String(Arrays.copyOfRange(tmp,
-		// 63, 64), "Big5"));
-		// System.out.println("開戶管道X(01): "+ new String(Arrays.copyOfRange(tmp,
-		// 64, 65), "Big5"));
-		// System.out.println("開戶日期X(08): "+ new String(Arrays.copyOfRange(tmp,
-		// 65, 73), "Big5"));
-		// System.out.println("結清(銷戶)日期X(08): "+ new
-		// String(Arrays.copyOfRange(tmp, 73, 81), "Big5"));
-		// System.out.println("帳戶餘額正負號X(01): "+ new
-		// String(Arrays.copyOfRange(tmp, 81, 82), "Big5"));
-		// System.out.println("帳戶餘額9(12)V99: "+ new
-		// String(Arrays.copyOfRange(tmp, 82, 96), "Big5"));
-		// System.out.println("過去一個月平均餘額正負號X(01): "+ new
-		// String(Arrays.copyOfRange(tmp, 96, 97), "Big5"));
-		// System.out.println("過去一個月平均餘額9(12)V99: "+ new
-		// String(Arrays.copyOfRange(tmp, 97, 111), "Big5"));
-		// System.out.println("警示註記X(02): "+ new String(Arrays.copyOfRange(tmp,
-		// 111, 113), "Big5"));
-		// System.out.println("============================================================================================");
-		// }
-		// }
+		Charset charset = Charset.forName("Big5");
+		List<String> lines = Files
+				.readAllLines(Paths.get("D:\\PSC\\Projects\\AgriBank\\單元測試報告\\018_FR_ACCOUNT_20180116.txt"), charset);
+
+		if (lines.size() > 2) {
+
+			lines.remove(0);
+			lines.remove(lines.size() - 1);
+
+			System.out.println(
+					"============================================================================================");
+			for (String line : lines) {
+				byte[] tmp = line.getBytes(charset);
+				System.out.println("第" + (lines.indexOf(line) + 1) + "行");
+				System.out.println("位元組長度: " + tmp.length);
+				System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+				System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+				System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+				System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+				System.out.println("帳號X(30): " + new String(Arrays.copyOfRange(tmp, 20, 50), "Big5"));
+				System.out.println("帳戶行X(07): " + new String(Arrays.copyOfRange(tmp, 50, 57), "Big5"));
+				System.out.println("帳戶類別X(02): " + new String(Arrays.copyOfRange(tmp, 57, 59), "Big5"));
+				System.out.println("連結服務X(01): " + new String(Arrays.copyOfRange(tmp, 59, 60), "Big5"));
+				System.out.println("幣別X(03): " + new String(Arrays.copyOfRange(tmp, 60, 63), "Big5"));
+				System.out.println("帳戶狀態X(01): " + new String(Arrays.copyOfRange(tmp, 63, 64), "Big5"));
+				System.out.println("開戶管道X(01): " + new String(Arrays.copyOfRange(tmp, 64, 65), "Big5"));
+				System.out.println("開戶日期X(08): " + new String(Arrays.copyOfRange(tmp, 65, 73), "Big5"));
+				System.out.println("結清(銷戶)日期X(08): " + new String(Arrays.copyOfRange(tmp, 73, 81), "Big5"));
+				System.out.println("帳戶餘額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 81, 82), "Big5"));
+				System.out.println("帳戶餘額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 82, 96), "Big5"));
+				System.out.println("過去一個月平均餘額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 96, 97), "Big5"));
+				System.out.println("過去一個月平均餘額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 97, 111), "Big5"));
+				System.out.println("警示註記X(02): " + new String(Arrays.copyOfRange(tmp, 111, 113), "Big5"));
+				System.out.println(
+						"============================================================================================");
+			}
+		}
 
 		// 讀取測試資料，並運行程式
-		ETL_E_ACCOUNT one = new ETL_E_ACCOUNT();
-		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
-		String fileTypeName = "ACCOUNT";
-		one.read_Account_File(filePath, fileTypeName, "ETL00001", "951",
-				new SimpleDateFormat("yyyyMMdd").parse("20180124"), "001", "ETL_E_ACCOUNT");
+		// ETL_E_ACCOUNT one = new ETL_E_ACCOUNT();
+		// String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+		// String fileTypeName = "ACCOUNT";
+		// one.read_Account_File(filePath, fileTypeName, "ETL00001", "951",
+		// new SimpleDateFormat("yyyyMMdd").parse("20180124"), "001",
+		// "ETL_E_ACCOUNT");
 	}
 
 }

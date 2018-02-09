@@ -31,7 +31,7 @@ import Tool.ETL_Tool_StringX;
 public class ETL_E_COLLATERAL {
 
 	// 進階檢核參數
-	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
+	// private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
 	// 欄位檢核用陣列
 	private String[][] checkMapArray = { { "comm_file_type", "COMM_FILE_TYPE" }, // 業務別
@@ -196,7 +196,7 @@ public class ETL_E_COLLATERAL {
 						String typeCode = strQueue.popBytesString(1);
 						if (!"1".equals(typeCode)) { // 首錄區別碼檢查, 嚴重錯誤,
 														// 不進行迴圈並記錄錯誤訊息
-							fileFmtErrMsg = "首錄區別碼有誤";
+							fileFmtErrMsg = "首錄區別碼有誤:" + typeCode;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
 						}
@@ -207,7 +207,7 @@ public class ETL_E_COLLATERAL {
 						String central_no = strQueue.popBytesString(7);
 
 						if (!central_no.equals(pfn.getCentral_No())) {
-							fileFmtErrMsg = "首錄報送單位代碼與檔名不符";
+							fileFmtErrMsg = "首錄報送單位代碼與檔名不符:" + central_no;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -219,11 +219,11 @@ public class ETL_E_COLLATERAL {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "首錄檔案日期與檔名不符";
+							fileFmtErrMsg = "首錄檔案日期與檔名不符:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "首錄檔案日期格式錯誤";
+							fileFmtErrMsg = "首錄檔案日期格式錯誤:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -275,7 +275,7 @@ public class ETL_E_COLLATERAL {
 							} else if (!"2".equals(typeCode)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "區別碼", "非預期"));
+										String.valueOf(rowCount), "區別碼", "非預期:" + typeCode));
 							}
 
 							// 本會代號檢核 R X(07)*
@@ -289,7 +289,7 @@ public class ETL_E_COLLATERAL {
 							} else if (!checkMaps.get("domain_id").containsKey(domain_id.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "本會代號", "非預期"));
+										String.valueOf(rowCount), "本會代號", "非預期:" + domain_id));
 							}
 
 							// 擔保品編號 R X(20)*
@@ -313,7 +313,7 @@ public class ETL_E_COLLATERAL {
 							} else if (!checkMaps.get("change_code").containsKey(change_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "異動代號", "非預期"));
+										String.valueOf(rowCount), "異動代號", "非預期:" + change_code));
 							}
 
 							// 批覆書編號/申請書編號 R X(20)*
@@ -338,7 +338,7 @@ public class ETL_E_COLLATERAL {
 
 							// 擔保品類別 R X(02)*
 							String collateral_type = strQueue.popBytesString(2);
-							data.setCollateral_desc(collateral_type);
+							data.setCollateral_type(collateral_type);
 
 							if (ETL_Tool_FormatCheck.isEmpty(collateral_type)) {
 								data.setError_mark("Y");
@@ -347,7 +347,7 @@ public class ETL_E_COLLATERAL {
 							} else if (!checkMaps.get("collateral_type").containsKey(collateral_type.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "擔保品類別", "非預期"));
+										String.valueOf(rowCount), "擔保品類別", "非預期:" + collateral_type));
 							}
 
 							// 鑑價金額 R 9(12)V99*
@@ -361,7 +361,7 @@ public class ETL_E_COLLATERAL {
 							} else if (!ETL_Tool_FormatCheck.checkNum(collateral_value)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "鑑價金額 ", "格式錯誤"));
+										String.valueOf(rowCount), "鑑價金額 ", "格式錯誤:" + collateral_value));
 							}
 
 							// 擔保金額 R 9(12)V99*
@@ -375,18 +375,20 @@ public class ETL_E_COLLATERAL {
 							} else if (!ETL_Tool_FormatCheck.checkNum(guarantee_amount)) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "擔保金額 ", "格式錯誤"));
+										String.valueOf(rowCount), "擔保金額 ", "格式錯誤:" + guarantee_amount));
 							}
 
 							// 擔保品描述 O X(40)
 							String collateral_desc = strQueue.popBytesString(40);
 							data.setCollateral_desc(collateral_desc);
 
-							if (advancedCheck && ETL_Tool_FormatCheck.isEmpty(collateral_desc)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "擔保品描述 ", "空值"));
-							}
+							// if (advancedCheck &&
+							// ETL_Tool_FormatCheck.isEmpty(collateral_desc)) {
+							// data.setError_mark("Y");
+							// errWriter.addErrLog(new
+							// ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+							// String.valueOf(rowCount), "擔保品描述 ", "空值"));
+							// }
 
 							// 所有權人統編 R X(11)*
 							String relation_id = strQueue.popBytesString(11);
@@ -402,11 +404,13 @@ public class ETL_E_COLLATERAL {
 							String relation_name = strQueue.popBytesString(40);
 							data.setRelation_name(relation_name);
 
-							if (advancedCheck && ETL_Tool_FormatCheck.isEmpty(relation_name)) {
-								data.setError_mark("Y");
-								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "所有權人姓名 ", "空值"));
-							}
+							// if (advancedCheck &&
+							// ETL_Tool_FormatCheck.isEmpty(relation_name)) {
+							// data.setError_mark("Y");
+							// errWriter.addErrLog(new
+							// ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+							// String.valueOf(rowCount), "所有權人姓名 ", "空值"));
+							// }
 
 							// 與主債務人關係 R X(02)*
 							String relation_type_code = strQueue.popBytesString(2);
@@ -419,7 +423,7 @@ public class ETL_E_COLLATERAL {
 							} else if (!checkMaps.get("relation_type_code").containsKey(relation_type_code.trim())) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "與主債務人關係", "非預期"));
+										String.valueOf(rowCount), "與主債務人關係", "非預期:" + relation_type_code));
 							}
 
 							// 客戶(主債務人)統編 R X(11)*
@@ -463,7 +467,7 @@ public class ETL_E_COLLATERAL {
 						 */
 						String central_no = strQueue.popBytesString(7);
 						if (!central_no.equals(pfn.getCentral_No())) {
-							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符";
+							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符:" + central_no;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "報送單位", fileFmtErrMsg));
 						}
@@ -475,11 +479,11 @@ public class ETL_E_COLLATERAL {
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!record_date.equals(pfn.getRecord_Date_String())) {
-							fileFmtErrMsg = "尾錄檔案日期與檔名不符";
+							fileFmtErrMsg = "尾錄檔案日期與檔名不符:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						} else if (!ETL_Tool_FormatCheck.checkDate(record_date)) {
-							fileFmtErrMsg = "尾錄檔案日期格式錯誤";
+							fileFmtErrMsg = "尾錄檔案日期格式錯誤:" + record_date;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "檔案日期", fileFmtErrMsg));
 						}
@@ -489,11 +493,11 @@ public class ETL_E_COLLATERAL {
 						iTotalCount = ETL_Tool_StringX.toInt(totalCount);
 
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
-							fileFmtErrMsg = "尾錄總筆數格式錯誤";
+							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						} else if (Integer.valueOf(totalCount) != (rowCount - 2)) {
-							fileFmtErrMsg = "尾錄總筆數與統計不符";
+							fileFmtErrMsg = "尾錄總筆數與統計不符:" + totalCount + "!=" + (rowCount - 2);
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "總筆數", fileFmtErrMsg));
 						}
@@ -595,8 +599,6 @@ public class ETL_E_COLLATERAL {
 
 		if (dataCount == stageLimit) {
 			insert_Collateral_Datas();
-			this.dataCount = 0;
-			this.dataList.clear();
 		}
 	}
 
@@ -623,51 +625,68 @@ public class ETL_E_COLLATERAL {
 		} else {
 			throw new Exception("insert_Collateral_Datas 發生錯誤");
 		}
+		this.dataCount = 0;
+		this.dataList.clear();
 	}
 
 	public static void main(String[] argv) throws Exception {
 
 		// 讀取測試資料，並只列出明細錄欄位
-		Charset charset = Charset.forName("Big5");
-		List<String> lines = Files.readAllLines(
-				Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\952_FR_COLLATERAL_20130807.txt"), charset);
-
-		if (lines.size() > 2) {
-
-			lines.remove(0);
-			lines.remove(lines.size() - 1);
-
-			System.out.println(
-					"============================================================================================");
-			for (String line : lines) {
-				byte[] tmp = line.getBytes(charset);
-				System.out.println("第" + (lines.indexOf(line) + 1) + "行");
-				System.out.println("位元組長度: " + tmp.length);
-				System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
-				System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
-				System.out.println("擔保品編號X(20): " + new String(Arrays.copyOfRange(tmp, 8, 28), "Big5"));
-				System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp, 28, 29), "Big5"));
-				System.out.println("批覆書編號/申請書編號X(20): " + new String(Arrays.copyOfRange(tmp, 29, 49), "Big5"));
-				System.out.println("額度編號X(20): " + new String(Arrays.copyOfRange(tmp, 49, 69), "Big5"));
-				System.out.println("擔保品類別X(02): " + new String(Arrays.copyOfRange(tmp, 69, 71), "Big5"));
-				System.out.println("鑑價金額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 71, 85), "Big5"));
-				System.out.println("擔保金額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 85, 99), "Big5"));
-				System.out.println("擔保品描述X(40): " + new String(Arrays.copyOfRange(tmp, 99, 139), "Big5"));
-				System.out.println("所有權人統編X(11): " + new String(Arrays.copyOfRange(tmp, 139, 150), "Big5"));
-				System.out.println("所有權人姓名X(40): " + new String(Arrays.copyOfRange(tmp, 150, 190), "Big5"));
-				System.out.println("與主債務人關係X(02): " + new String(Arrays.copyOfRange(tmp, 190, 192), "Big5"));
-				System.out.println("客戶(主債務人)統編X(11): " + new String(Arrays.copyOfRange(tmp, 192, 203), "Big5"));
-				System.out.println(
-						"============================================================================================");
-			}
-		}
+		// Charset charset = Charset.forName("Big5");
+		// List<String> lines = Files.readAllLines(
+		// Paths.get("D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST\\952_FR_COLLATERAL_20130807.txt"),
+		// charset);
+		//
+		// if (lines.size() > 2) {
+		//
+		// lines.remove(0);
+		// lines.remove(lines.size() - 1);
+		//
+		// System.out.println(
+		// "============================================================================================");
+		// for (String line : lines) {
+		// byte[] tmp = line.getBytes(charset);
+		// System.out.println("第" + (lines.indexOf(line) + 1) + "行");
+		// System.out.println("位元組長度: " + tmp.length);
+		// System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp,
+		// 0, 1), "Big5"));
+		// System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp,
+		// 1, 8), "Big5"));
+		// System.out.println("擔保品編號X(20): " + new
+		// String(Arrays.copyOfRange(tmp, 8, 28), "Big5"));
+		// System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp,
+		// 28, 29), "Big5"));
+		// System.out.println("批覆書編號/申請書編號X(20): " + new
+		// String(Arrays.copyOfRange(tmp, 29, 49), "Big5"));
+		// System.out.println("額度編號X(20): " + new String(Arrays.copyOfRange(tmp,
+		// 49, 69), "Big5"));
+		// System.out.println("擔保品類別X(02): " + new
+		// String(Arrays.copyOfRange(tmp, 69, 71), "Big5"));
+		// System.out.println("鑑價金額9(12)V99: " + new
+		// String(Arrays.copyOfRange(tmp, 71, 85), "Big5"));
+		// System.out.println("擔保金額9(12)V99: " + new
+		// String(Arrays.copyOfRange(tmp, 85, 99), "Big5"));
+		// System.out.println("擔保品描述X(40): " + new
+		// String(Arrays.copyOfRange(tmp, 99, 139), "Big5"));
+		// System.out.println("所有權人統編X(11): " + new
+		// String(Arrays.copyOfRange(tmp, 139, 150), "Big5"));
+		// System.out.println("所有權人姓名X(40): " + new
+		// String(Arrays.copyOfRange(tmp, 150, 190), "Big5"));
+		// System.out.println("與主債務人關係X(02): " + new
+		// String(Arrays.copyOfRange(tmp, 190, 192), "Big5"));
+		// System.out.println("客戶(主債務人)統編X(11): " + new
+		// String(Arrays.copyOfRange(tmp, 192, 203), "Big5"));
+		// System.out.println(
+		// "============================================================================================");
+		// }
+		// }
 
 		// 讀取測試資料，並運行程式
 		ETL_E_COLLATERAL one = new ETL_E_COLLATERAL();
-		String filePath = "D:\\PSC\\Projects\\全國農業金庫洗錢防制系統案\\UNIT_TEST";
+		String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
 		String fileTypeName = "COLLATERAL";
-		one.read_Collateral_File(filePath, fileTypeName, "ETL00001", "951",
-				new SimpleDateFormat("yyyyMMdd").parse("20180125"), "001", "ETL_E_COLLATERAL");
+		one.read_Collateral_File(filePath, fileTypeName, "ETL00001", "600",
+				new SimpleDateFormat("yyyyMMdd").parse("20171031"), "001", "ETL_E_COLLATERAL");
 	}
 
 }
