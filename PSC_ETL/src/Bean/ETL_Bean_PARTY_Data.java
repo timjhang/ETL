@@ -91,12 +91,15 @@ public class ETL_Bean_PARTY_Data {
 	private BigDecimal trust_total_asset;
 	// 錯誤註記
 	private String error_mark = ""; // 預設無錯誤
+	// 上傳批號(測試用)
+	private String upload_no;
 	
 	// Constructor
 	public ETL_Bean_PARTY_Data(ETL_Tool_ParseFileName pfn) {
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
+		this.upload_no = pfn.getUpload_no();
 	}
 
 	public String getCentral_no() {
@@ -435,4 +438,12 @@ public class ETL_Bean_PARTY_Data {
 		this.error_mark = error_mark;
 	}
 
+	public String getUpload_no() {
+		return upload_no;
+	}
+
+	public void setUpload_no(String upload_no) {
+		this.upload_no = upload_no;
+	}
+	
 }
