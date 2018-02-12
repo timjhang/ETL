@@ -22,12 +22,14 @@ public class ETL_Bean_LOAN_DETAIL_Data {
 	private BigDecimal approval_amount;// 批准限額
 	private BigDecimal remain_approval_amount;// 可動用限額
 	private String error_mark = "";// 錯誤註記
+	private String upload_no;// 上傳批號(測試用)
 
 	public ETL_Bean_LOAN_DETAIL_Data(ETL_Tool_ParseFileName pfn) {
 
 		this.central_no = pfn.getCentral_No();// 報送單位
 		this.record_date = pfn.getRecord_Date();// 檔案日期
 		this.file_type = pfn.getFile_Type();// 檔名業務別
+		this.upload_no = pfn.getUpload_no(); 
 	}
 
 	public String getCentral_no() {
@@ -148,6 +150,14 @@ public class ETL_Bean_LOAN_DETAIL_Data {
 
 	public void setError_mark(String error_mark) {
 		this.error_mark = error_mark;
+	}
+	
+	public String getUpload_no() {
+		return upload_no;
+	}
+
+	public void setUpload_no(String upload_no) {
+		this.upload_no = upload_no;
 	}
 
 }

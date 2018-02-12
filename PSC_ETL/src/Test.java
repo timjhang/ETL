@@ -12,6 +12,7 @@ import Extract.ETL_E_LOAN;
 import Extract.ETL_E_LOAN_DETAIL;
 import Extract.ETL_E_PARTY_ADDRESS;
 import Extract.ETL_E_TRANSACTION;
+import Tool.ETL_Tool_FileByteUtil;
 
 public class Test {
 

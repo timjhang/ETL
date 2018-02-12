@@ -114,7 +114,7 @@ public class ETL_E_ACCOUNT {
 			ETL_P_Log.write_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no, "S",
 					"", "", new Date(), null);
 
-			// 處理Party_Phone錯誤計數
+			// 處理ACCOUNT錯誤計數
 			int detail_ErrorCount = 0;
 
 			// 程式執行錯誤訊息

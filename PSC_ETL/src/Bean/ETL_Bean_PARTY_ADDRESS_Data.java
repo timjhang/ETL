@@ -18,12 +18,14 @@ public class ETL_Bean_PARTY_ADDRESS_Data {
 	private String po_box;// 郵遞區號
 	private String address_line_1;// 地址
 	private String error_mark = "";// 錯誤註記
+	private String upload_no;// 上傳批號(測試用) 
 
 	public ETL_Bean_PARTY_ADDRESS_Data(ETL_Tool_ParseFileName pfn) {
 
 		this.central_no = pfn.getCentral_No();
 		this.record_date = pfn.getRecord_Date();
 		this.file_type = pfn.getFile_Type();
+		this.upload_no = pfn.getUpload_no();
 	}
 
 	public int getRow_count() {
@@ -122,4 +124,11 @@ public class ETL_Bean_PARTY_ADDRESS_Data {
 		this.error_mark = error_mark;
 	}
 
+	public String getUpload_no() {
+		return upload_no;
+	}
+
+	public void setUpload_no(String upload_no) {
+		this.upload_no = upload_no;
+	}
 }
