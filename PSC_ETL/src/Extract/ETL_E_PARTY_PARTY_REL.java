@@ -176,7 +176,7 @@ public class ETL_E_PARTY_PARTY_REL {
 					// 嚴重錯誤訊息變數
 					String fileFmtErrMsg = ""; 
 					
-					String lineStr = ""; // 行字串暫存區
+//					String lineStr = ""; // 行字串暫存區  // TODO V4 NEW
 					
 					// ETL_字串處理Queue
 					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
@@ -309,7 +309,7 @@ public class ETL_E_PARTY_PARTY_REL {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "顧客關係種類", "空值"));
-						} else if (advancedCheck && !checkMaps.get("c-5").containsKey(relation_type_code)) {
+						} else if (advancedCheck && !checkMaps.get("c-5").containsKey(relation_type_code.trim())) {
 							data.setError_mark("Y");
 							errWriter.addErrLog(
 									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "顧客關係種類", "非預期:" + relation_type_code));

@@ -26,8 +26,8 @@ public class ETL_Profile {
 //			"jdbc:db2://localhost:50000/sample:" +
 //			"currentschema=" + db2SPSchema + ";" +
 //			"currentFunctionPath=" + db2SPSchema + ";";
-//	public final static String db2User = "db2admin";
-//	public final static String db2Password = "timPSC2017";
+//	public final static String db2User = "administrator";
+//	public final static String db2Password = "1qaz@WSX";
 	
 	// Error Log寫入域值
 	public final static int ErrorLog_Stage = 10000;
