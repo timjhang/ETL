@@ -465,7 +465,7 @@ public class ETL_E_TRANSACTION {
 							if (!specialRequired(channel_type, execution_branch_code, "C02")) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-										String.valueOf(rowCount), "操作行", "當交易管道為C02需提供登入行"));
+										String.valueOf(rowCount), "操作行", "當交易管道為C02才提供登入行"));
 							}
 
 							// 操作櫃員代號或姓名 O X(20)

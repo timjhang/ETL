@@ -17,7 +17,7 @@ import Tool.ETL_Tool_FileByteUtil;
 public class Test {
 
 	public static void main(String[] argv) throws IOException {
-		PARTY_ADDRESS();
+		TRANSACTION();
 	}
 
 	public static void PARTY_ADDRESS() throws IOException {
