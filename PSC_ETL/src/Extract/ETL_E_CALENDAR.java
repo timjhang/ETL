@@ -156,8 +156,6 @@ public class ETL_E_CALENDAR {
 					// 嚴重錯誤訊息變數
 					String fileFmtErrMsg = "";
 
-					String lineStr = ""; // 行字串暫存區
-
 					// ETL_字串處理Queue
 					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 

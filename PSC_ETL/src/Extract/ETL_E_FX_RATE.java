@@ -164,8 +164,6 @@ public class ETL_E_FX_RATE {
 					// 嚴重錯誤訊息變數
 					String fileFmtErrMsg = "";
 
-					String lineStr = ""; // 行字串暫存區
-
 					// ETL_字串處理Queue
 					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no); // TODO V4
 					// ETL_Error Log寫入輔助工具
@@ -326,7 +324,12 @@ public class ETL_E_FX_RATE {
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
 
-						// 區別碼檢核(1) 經"逐行讀取檔案"區塊, 若無嚴重錯誤應為3, 此處無檢核
+						String typeCode = strQueue.popBytesString(1);
+						if (!"3".equals(typeCode)) {
+							fileFmtErrMsg = "尾錄區別碼有誤:" + typeCode;
+							errWriter.addErrLog(
+									new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount), "區別碼", fileFmtErrMsg));
+						}
 
 						// 報送單位檢核(7)
 						String central_no = strQueue.popBytesString(7);

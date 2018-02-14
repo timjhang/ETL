@@ -167,8 +167,6 @@ public class ETL_E_TRANSFER {
 					// 嚴重錯誤訊息變數
 					String fileFmtErrMsg = "";
 
-					String lineStr = ""; // 行字串暫存區
-
 					// ETL_字串處理Queue // TODO V4
 					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 					// ETL_Error Log寫入輔助工具

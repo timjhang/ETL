@@ -14,11 +14,12 @@ import Extract.ETL_E_FX_RATE;
 import Extract.ETL_E_GUARANTOR;
 import Extract.ETL_E_SERVICE;
 import Extract.ETL_E_TRANSFER;
+import Tool.ETL_Tool_FileByteUtil;
 
 public class Jar_Test {
 
 	public static void main(String[] argv) throws IOException {
-		ETL_E_CALENDAR();
+		ETL_E_FX_RATE();
 	}
 
 	public static void ETL_E_FCX() throws IOException {

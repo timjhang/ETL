@@ -50,6 +50,19 @@ public class ETL_Bean_GUARANTOR_TEMP_Data {
 	}
 	
 	
+	
+	public String getUpload_no() {
+		return upload_no;
+	}
+
+
+
+	public void setUpload_no(String upload_no) {
+		this.upload_no = upload_no;
+	}
+
+
+
 	public Integer getRow_count() {
 		return row_count;
 	}
