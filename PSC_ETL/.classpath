@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/poi/poi-scratchpad-3.17.jar"/>
 	<classpathentry kind="lib" path="lib/poi/ooxml-lib/curvesapi-1.04.jar"/>
 	<classpathentry kind="lib" path="lib/poi/ooxml-lib/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/10404003/git/ETL/PSC_ETL/lib/zip4j_1.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
