@@ -29,7 +29,7 @@ public class ETL_Bean_TRANSACTION_Data {
 	private String transaction_summary;// 交易摘要
 	private String transaction_description;// 備註
 	private String execution_branch_code;// 操作行
-	private String execution_id;// 操作櫃員代號或姓名
+	private String executer_id;// 操作櫃員代號或姓名
 	private String ordering_customer_party_name;// 匯款人姓名
 	private String beneficiary_customer_party_name;// 受款人姓名
 	private String beneficiary_customer_bank_bic;// 受款人銀行
@@ -217,11 +217,11 @@ public class ETL_Bean_TRANSACTION_Data {
 	}
 
 	public String getExecution_id() {
-		return execution_id;
+		return executer_id;
 	}
 
-	public void setExecution_id(String execution_id) {
-		this.execution_id = execution_id;
+	public void setExecution_id(String executer_id) {
+		this.executer_id = executer_id;
 	}
 
 	public String getOrdering_customer_party_name() {
