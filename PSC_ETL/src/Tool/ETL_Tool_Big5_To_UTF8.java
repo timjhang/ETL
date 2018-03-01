@@ -2,11 +2,9 @@ package Tool;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,7 +94,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 					String mapped_code = ps_map.get(code);
 
 					// 判斷系統字區是否有對應的字碼
-					if (mapped_code == null || "".equals(mapped_code.trim())) {
+					if (ETL_Tool_FormatCheck.isEmpty(mapped_code)) {
 
 						// 查找UniCode造字區
 						mapped_code = pp_map.get(code);
