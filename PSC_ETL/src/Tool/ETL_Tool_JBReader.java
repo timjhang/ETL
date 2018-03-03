@@ -1,3 +1,4 @@
+package Tool;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,10 +9,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class JBReader {
+public class ETL_Tool_JBReader {
 	public static String ENCODING = "big5";
 	public static String OUT_ENCODING = null;
-	public static int BUFFER_SIZE = 1024;
+	public int buffer_size = 0;
+	public static int DEF_BUFFER_SIZE = 2;
 	public static boolean REMOVE_END_SPECIAL_CHAR = true; // Check '\r' and '\n'
 															// only.
 
@@ -21,15 +23,20 @@ public class JBReader {
 	private int prevLastFrom = -1, prevLastEnd = -1;
 	private List<Byte> strBuf = new ArrayList<Byte>();
 
-	public JBReader() {
+	public ETL_Tool_JBReader() {
 	}
 
-	public JBReader(InputStream is) {
+	public ETL_Tool_JBReader(InputStream is) {
 		this.is = is;
-		buffer = new byte[BUFFER_SIZE];
+		buffer = new byte[DEF_BUFFER_SIZE];
 	}
-
-	public JBReader(InputStream is, String encoding) {
+	
+	public ETL_Tool_JBReader(InputStream is,int buffer_size) {
+		this.is = is;
+		buffer = new byte[buffer_size];
+	}
+	
+	public ETL_Tool_JBReader(InputStream is, String encoding) {
 		this(is);
 		this.ENCODING = encoding;
 	}
@@ -42,7 +49,7 @@ public class JBReader {
 		close();
 		this.is = is;
 		if (reallocBuffer || buffer == null)
-			buffer = new byte[BUFFER_SIZE];
+			buffer = new byte[DEF_BUFFER_SIZE];
 	}
 
 	public void close() throws IOException {
@@ -72,11 +79,7 @@ public class JBReader {
 			while ((rs = is.read(buffer)) > 0) {
 				for (int i = 0; i < rs; i++) {
 					strBuf.add(buffer[i]);
-					// byte[] line = { (byte) 0x0d, (byte) 0x0a };
-
-//					System.out.print(String.format("%02X", buffer[i]));
-
-//					System.out.println();
+					
 					if (prevByte == (byte) 0x0d && buffer[i] == (byte) 0x0a) {
 						isNewLine = true;
 						prevByte = -1;
@@ -96,11 +99,17 @@ public class JBReader {
 				// System.out.printf("\t[Test] EOF!");
 				return null;
 			}
-
+			
+			int split_size = 0;
+			for(byte b : strBuf){
+				if(b != (byte) 0x0d && b != (byte) 0x0a)
+					split_size++;
+			}
 			// Process returned string
-			byte binarys[] = new byte[strBuf.size()];
+			byte binarys[] = new byte[split_size];
 			for (int i = 0; i < binarys.length; i++)
 				binarys[i] = strBuf.get(i);
+			//System.out.println("binarys.length:"+binarys.length);
 			return binarys;
 		}
 		return null;
@@ -213,7 +222,7 @@ public class JBReader {
 		FileInputStream fis = new FileInputStream(testf);
 		// BufferedReader br = new BufferedReader(new InputStreamReader(fis,
 		// ENCODING));
-		JBReader br = new JBReader(fis);
+		ETL_Tool_JBReader br = new ETL_Tool_JBReader(fis);
 		byte[] byte_arr = null;
 		int lc = 0;
 		while ((byte_arr = br.readLineInBinary()) != null) {

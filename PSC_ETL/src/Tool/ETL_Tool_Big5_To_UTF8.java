@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +85,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 				byte[] b = { stream[prevIndex], stream[i] };
 
 				String code = byteArrayToHexStr(b);
-
+				
 				boolean isBig5Code = isBig5Code(code);
 				boolean isBig5DifficultWord = isBig5DifficultWord(code);
 
@@ -94,7 +96,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 					String mapped_code = ps_map.get(code);
 
 					// 判斷系統字區是否有對應的字碼
-					if (ETL_Tool_FormatCheck.isEmpty(mapped_code)) {
+					if (mapped_code == null || "".equals(mapped_code.trim())) {
 
 						// 查找UniCode造字區
 						mapped_code = pp_map.get(code);
@@ -112,6 +114,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 			}
 			prevIndex = i;
 		}
+
 		return sBuffer.toString();
 	}
 
@@ -337,8 +340,8 @@ public class ETL_Tool_Big5_To_UTF8 {
 
 				) {
 
-					if ('4' == code_3 || '5' == code_3 || '6' == code_3 || '7' == code_3 || 'A' == code_2
-							|| 'B' == code_2 || 'C' == code_2 || 'D' == code_2 || 'E' == code_2 || 'F' == code_2) {
+					if ('4' == code_3 || '5' == code_3 || '6' == code_3 || '7' == code_3 || 'A' == code_3
+							|| 'B' == code_3 || 'C' == code_3 || 'D' == code_3 || 'E' == code_3 || 'F' == code_3) {
 
 						if ('0' == code_4 || '1' == code_4 || '2' == code_4 || '3' == code_4 || '4' == code_4
 								|| '5' == code_4 || '6' == code_4 || '7' == code_4 || '8' == code_4 || '9' == code_4
@@ -354,5 +357,14 @@ public class ETL_Tool_Big5_To_UTF8 {
 			}
 		}
 		return is;
+	}
+
+	public static void main(String[] args) throws Exception {
+		ETL_Tool_Big5_To_UTF8 test = new ETL_Tool_Big5_To_UTF8("D:/PSC/Projects/AgriBank/難字/難字轉換表/%s.xlsx");
+		Map<String, Map<String, String>> difficultWordMaps = test.getDifficultWordMaps("952");
+
+		byte[] bytes = Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\600_R_TRANSACTION_20171206.TXT"));
+		
+		System.out.println(ETL_Tool_Big5_To_UTF8.format(bytes, difficultWordMaps));
 	}
 }

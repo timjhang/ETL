@@ -20,6 +20,7 @@ import Extract.ETL_E_LOAN_DETAIL;
 import Extract.ETL_E_PARTY_ADDRESS;
 import Extract.ETL_E_TRANSACTION;
 import Tool.ETL_Tool_FileByteUtil;
+import Tool.ETL_Tool_JBReader;
 
 public class Test {
 	public static boolean isMatch(byte[] pattern, byte[] input, int pos) {
@@ -76,58 +77,61 @@ public class Test {
 			System.out.print(String.format("%02X", b));
 		}
 
-//		byte[] line = null;
-//		while ((line = reader.readLine().getBytes("big5")) != null) {
-//			for (byte b : line) {
-//				System.out.print(String.format("%02X", b));
-//			}
-//			System.out.println();
+		// byte[] line = null;
+		// while ((line = reader.readLine().getBytes("big5")) != null) {
+		// for (byte b : line) {
+		// System.out.print(String.format("%02X", b));
+		// }
+		// System.out.println();
+		// }
+	}
+
+	public static void main2(String[] argv) throws IOException {
+		List<String> lines = getProperties("C:\\ETL\\file_properties.txt");
+		// String file = lines.get(0);
+		String file = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\928_P_TRANSACTION_20180105.TXT";
+		// String file ="D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\b.txt";
+		// String file =
+		// "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\測試讀檔用.TXT";
+		// String file =
+		// "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\928_P_ACCOUNT_20180117.TXT";
+		// String file =
+		// "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\928_P_ACCOUNT.TXT";
+		// String file = "C:\\Users\\Ian\\Desktop\\018\\新文字文件.txt";
+		// byte[] data = ETL_Tool_FileByteUtil.toByteArrayUseMappedByte(file);
+
+		// byte[] line = { (byte) 0x0d, (byte) 0x0a };
+		long time1, time2;
+		time1 = System.currentTimeMillis();
+
+		ETL_Tool_FileByteUtil fileByteUtil = new ETL_Tool_FileByteUtil(file, ETL_E_ACCOUNT.class);
+
+//		int status = fileByteUtil.isFileOK(file);
+//		System.out.println("status:" + status);
+
+		List<byte[]> list = null;
+		while ((list = fileByteUtil.getFilesBytes()).size() != 0) {
+			System.out.println("list:" + list.size());
+			
+		}
+		
+//		List<byte[]> list = fileByteUtil.getFilesBytes();
+//		System.out.println("list:" + list.size());
+//		for (byte[] b : list) {
+//			System.out.println(new String(b));
 //		}
+//
+//		List<byte[]> list2 = fileByteUtil.getFilesBytes();
+//		System.out.println("list2:" + list2.size());
+//		for (byte[] b : list2) {
+//			System.out.println(new String(b));
+//		}
+
+		time2 = System.currentTimeMillis();
+		System.out.println("花了：" + (time2 - time1) + "豪秒");
 	}
 
 	public static void main(String[] argv) throws IOException {
-		List<String> lines = getProperties("C:\\ETL\\file_properties.txt");
-		// String file = lines.get(0);
-//		 String file ="D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\928_P_TRANSACTION_20180105.TXT";
-		 String file ="D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\b.txt";
-//		String file = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\data\\b.TXT";
-//		 String file = "C:\\Users\\Ian\\Desktop\\018\\新文字文件.txt";
-//		byte[] data = ETL_Tool_FileByteUtil.toByteArrayUseMappedByte(file);
-
-//		byte[] line = { (byte) 0x0d, (byte) 0x0a };
-		long time1, time2;
-		time1 = System.currentTimeMillis();
-//
-//		List<byte[]> split = split(line, data);
-
-		// for (byte[] a : split) {
-		// System.out.println(new String(a, "big5"));
-		// }
-
-
-		// System.out.println(split.size());
-
-//		 readLines(data);
-
-		FileInputStream fileInputStream = new FileInputStream(file);
-//		InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, Charset.forName("Big5"));
-		JBReader bufferedReader = new JBReader(fileInputStream);
-		byte[] lineStr = null;
-		int i =0;
-		while ((lineStr = bufferedReader.readLineInBinary()) != null) {
-			i++;
-//			for (byte b : lineStr) {
-//				System.out.print(String.format("%02X", b));
-//			}
-//			System.out.println();
-		}
-		System.out.println(i);
-		time2 = System.currentTimeMillis();
-		System.out.println("花了：" + (time2 - time1) + "豪秒");
-//		System.out.println(i);
-	}
-
-	public static void main1(String[] argv) throws IOException {
 
 		long time1, time2;
 		time1 = System.currentTimeMillis();

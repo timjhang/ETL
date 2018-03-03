@@ -216,11 +216,11 @@ public class ETL_Bean_TRANSACTION_Data {
 		this.execution_branch_code = execution_branch_code;
 	}
 
-	public String getExecution_id() {
+	public String getExecuter_id() {
 		return executer_id;
 	}
 
-	public void setExecution_id(String executer_id) {
+	public void setExecuter_id(String executer_id) {
 		this.executer_id = executer_id;
 	}
 
