@@ -19,7 +19,7 @@ import Tool.ETL_Tool_FileByteUtil;
 public class Jar_Test {
 
 	public static void main(String[] argv) throws IOException {
-		ETL_E_FX_RATE();
+		ETL_E_TRANSFER();
 	}
 
 	public static void ETL_E_FCX() throws IOException {

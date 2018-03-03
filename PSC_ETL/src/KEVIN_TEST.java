@@ -47,6 +47,9 @@ public class KEVIN_TEST {
 		System.out.println("#######Transform - ETL_T_CALENDAR_LOAD - End"); // TODO
 
 	}
+	
+	
+	
 	public static void main(String[] argv) throws Exception {
 		ETL_Bean_LogData ETL = new ETL_Bean_LogData();
 	

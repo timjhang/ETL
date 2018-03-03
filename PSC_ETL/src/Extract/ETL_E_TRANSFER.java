@@ -178,11 +178,13 @@ public class ETL_E_TRANSFER {
 
 					// 首錄檢查
 					if (isFileFormatOK) {
+						
+						// strQueue工具注入第一筆資料  // TODO V4
+						strQueue.setTargetString();
 
 						// 檢查整行bytes數(1 + 7 + 8 + 707 = 723)
 						if (strQueue.getTotalByteLength() != 723) {
 							fileFmtErrMsg = "首錄位元數非預期723:" + strQueue.getTotalByteLength();
-							;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
@@ -483,8 +485,9 @@ public class ETL_E_TRANSFER {
 					insert_TRANSFER_TEMP_Datas();
 
 					// 尾錄檢查
-					if ("".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
+						
 						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 700 = 723)
 						if (strQueue.getTotalByteLength() != 723) {
 							fileFmtErrMsg = "尾錄位元數非預期723:" + strQueue.getTotalByteLength();

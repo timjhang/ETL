@@ -176,6 +176,9 @@ public class ETL_E_SERVICE {
 
 					// 首錄檢查
 					if (isFileFormatOK) {
+						
+						// strQueue工具注入第一筆資料  // TODO V4
+						strQueue.setTargetString();
 
 						// 檢查整行bytes數(1 + 7 + 8 + 1418 = 1434)
 						if (strQueue.getTotalByteLength() != 1434) {
