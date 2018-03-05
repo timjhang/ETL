@@ -10,17 +10,17 @@ import DB.ConnectionHelper;
 import Profile.ETL_Profile;
 import Tool.ETL_Tool_CastObjUtil;
 
-public class ETL_L_PARTY_PHONE {
+public class ETL_L_CALENDAR {
 	
-	// 觸發DB2載入Procedure, 資料載入PARTY_PHONE_LOAD_TEMP  // TODO
-	public void trans_to_PARTY_PHONE_LOAD(ETL_Bean_LogData logData, String fedServer, String runTable) {
+	// 觸發DB2載入Procedure, 資料載入CALENDAR_LOAD_TEMP  // TODO
+	public void trans_to_CALENDAR_LOAD(ETL_Bean_LogData logData, String fedServer, String runTable) {
 		
-		System.out.println("#######Transform - ETL_L_PARTY_PHONE - Start"); // TODO
+		System.out.println("#######Transform - ETL_L_CALENDAR - Start"); // TODO
 		
 		try {
 			
 			// TODO
-			String sql = "{call " + ETL_Profile.db2TableSchema + ".Load.loadETL_PARTY_PHONE_LOAD(?,?,?,?,?)}";
+			String sql = "{call " + ETL_Profile.db2TableSchema + ".Load.loadETL_CALENDAR_LOAD(?,?,?,?,?)}";
 			
 			Connection con = ConnectionHelper.getDB2Connection();
 			CallableStatement cstmt = con.prepareCall(sql);
@@ -46,8 +46,10 @@ public class ETL_L_PARTY_PHONE {
 			ex.printStackTrace();
 		}
 		
-		System.out.println("#######Transform - ETL_L_PARTY_PHONE - End"); // TODO
+		System.out.println("#######Transform - ETL_L_CALENDAR - End"); // TODO
 		
 	}
+
+
 
 }
