@@ -55,7 +55,7 @@
 			<ref bean="jobDetailForMasterSchedule" />
 		</property>
 		<property name="cronExpression">
-			<value>*/20 * * * * ?</value>
+			<value>0 * * * * ?</value>
 		</property>
 	</bean>
   

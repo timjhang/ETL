@@ -33,9 +33,9 @@ public class ETL_C_PROCESS {
 		String upload_no = "";
 		boolean exeResult = true;
 		
-		// for test
-		exc_record_date = "20171206";
-		upload_no = "001";
+//		// for test
+//		exc_record_date = "20171206";
+//		upload_no = "001";
 		
 		
 		// **更新 Server 狀態使用中
@@ -50,12 +50,12 @@ public class ETL_C_PROCESS {
 		try {
 			
 			// 執行下載
-	//		if (!ETL_C_CallWS.call_ETL_Server_getUploadFileInfo(etlServerInfo[2], central_no, fileInfo)) {
-	//			System.out.println("#### ETL_C_PROCESS - executeETL - call_ETL_Server_getUploadFileInfo 發生錯誤！");
-	//			return false;
-	//		}
-	//		exc_record_date = fileInfo[0];
-	//		upload_no = fileInfo[1];
+			if (!ETL_C_CallWS.call_ETL_Server_getUploadFileInfo(etlServerInfo[2], central_no, fileInfo)) {
+				System.out.println("#### ETL_C_PROCESS - executeETL - call_ETL_Server_getUploadFileInfo 發生錯誤！");
+				return false;
+			}
+			exc_record_date = fileInfo[0];
+			upload_no = fileInfo[1];
 			
 			// for test
 //			Date testDate = new SimpleDateFormat("yyyyMMdd").parse("20180227");
@@ -71,11 +71,11 @@ public class ETL_C_PROCESS {
 	//			System.out.println("E Master Log已存在\n" + exeInfo);
 				return false;
 			};
-	//		// 進行E系列程式
-	//		if (!ETL_C_CallWS.call_ETL_Server_Efunction(etlServerInfo[2], "", batch_No, central_no, exc_record_date, upload_no)) {
-	//			System.out.println("#### ETL_C_PROCESS - executeETL - call_ETL_Server_Efunction 發生錯誤！");
-	//			return false;
-	//		}
+			// 進行E系列程式
+			if (!ETL_C_CallWS.call_ETL_Server_Efunction(etlServerInfo[2], "", batch_No, central_no, exc_record_date, upload_no)) {
+				System.out.println("#### ETL_C_PROCESS - executeETL - call_ETL_Server_Efunction 發生錯誤！");
+				return false;
+			}
 			// 更新 E Master Log
 			ETL_C_PROCESS.updateMasterLog(batch_No, central_no, record_Date, upload_no, "E", "E", "Y", "");
 			
