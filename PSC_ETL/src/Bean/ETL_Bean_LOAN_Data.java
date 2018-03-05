@@ -64,11 +64,11 @@ public class ETL_Bean_LOAN_Data {
 		this.file_type = file_type;
 	}
 
-	public int getRow_count() {
+	public Integer getRow_count() {
 		return row_count;
 	}
 
-	public void setRow_count(int row_count) {
+	public void setRow_count(Integer row_count) {
 		this.row_count = row_count;
 	}
 
@@ -184,11 +184,11 @@ public class ETL_Bean_LOAN_Data {
 		this.total_repayments_value = total_repayments_value;
 	}
 
-	public int getDelinquency_days() {
+	public Integer getDelinquency_days() {
 		return delinquency_days;
 	}
 
-	public void setDelinquency_days(int delinquency_days) {
+	public void setDelinquency_days(Integer delinquency_days) {
 		this.delinquency_days = delinquency_days;
 	}
 
@@ -223,7 +223,7 @@ public class ETL_Bean_LOAN_Data {
 	public void setError_mark(String error_mark) {
 		this.error_mark = error_mark;
 	}
-	
+
 	public String getUpload_no() {
 		return upload_no;
 	}

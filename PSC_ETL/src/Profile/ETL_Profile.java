@@ -79,5 +79,5 @@ public class ETL_Profile {
 	public final static int ETL_E_CALENDAR = 23;
 
 	// 讀檔筆數域值
-	public final static int ETL_E_Stage = 3;
+	public final static int ETL_E_Stage = 10000;
 }

@@ -16,6 +16,7 @@ import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
 import Tool.ETL_Tool_FileByteUtil;
+import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
@@ -116,11 +117,9 @@ public class ETL_E_TRANSACTION {
 				// 取得檔案
 				File parseFile = fileList.get(i);
 
-				System.out.println(fileList.get(i).getName());
-
 				// TODO V5 START
 				ETL_Tool_FileByteUtil fileByteUtil = new ETL_Tool_FileByteUtil(parseFile.getAbsolutePath(),
-						ETL_E_TRANSACTION.class);
+						ETL_E_TRANSACTION.class);//TODO
 				// TODO V5 END
 
 				// 檔名
@@ -185,6 +184,7 @@ public class ETL_E_TRANSACTION {
 				// 紀錄是否第一次
 				boolean isFirstTime = false;
 				// TODO V5 END
+				
 				try {
 
 					// 開始前ETL_FILE_Log寫入DB
@@ -201,10 +201,11 @@ public class ETL_E_TRANSACTION {
 					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-
-					// 讀檔並將結果注入ETL_字串處理Queue TODO V5 START
+					//TODO V5 START
+					// 讀檔並將結果注入ETL_字串處理Queue
 					// strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
 					// 首、明細、尾錄, 基本組成檢查
+					//boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
 					int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
@@ -271,15 +272,14 @@ public class ETL_E_TRANSACTION {
 					// TODO V5 START
 					// 實際處理明細錄筆數
 					int grandTotal = 0;
-
 					// TODO V5 END
+
+					// TODO V5 START
 					// 明細錄檢查- 逐行讀取檔案
-					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
-						// TODO V5 START
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行 TODO
 						if (rowCount == 2)
 							isFirstTime = true;
-						
-						System.out.println("資料總筆數:" + isFileOK);
+						//System.out.println("資料總筆數:" + isFileOK);
 						// while (strQueue.setTargetString() < strQueue.getByteListSize()) {
 						//以實際處理明細錄筆數為依據，只運行明細錄次數
 						while (grandTotal < (isFileOK - 2)) {
@@ -580,13 +580,12 @@ public class ETL_E_TRANSACTION {
 							} else {
 								successCount++;
 							}
-
 							// TODO V5 START
 							// 實際處理明細錄筆數累加
 							grandTotal += 1;
 
-							System.out.println("實際處理列數:" + rowCount + " / 實際處理明細錄筆數:" + grandTotal + " / 目前處理資料第"
-									+ strQueue.getBytesListIndex() + "筆");
+//							System.out.println("實際處理列數:" + rowCount + " / 實際處理明細錄筆數:" + grandTotal + " / 目前處理資料第"
+//									+ strQueue.getBytesListIndex() + "筆");
 
 							rowCount++; // 處理行數 + 1
 
@@ -600,32 +599,38 @@ public class ETL_E_TRANSACTION {
 
 							) {
 
-								System.out.println("=======================================");
-
-								if (isFirstTime)
-									System.out.println("第一次處理，資料來源須扣除首錄筆數");
+//								System.out.println("=======================================");
+//
+//								if (isFirstTime)
+//									System.out.println("第一次處理，資料來源須扣除首錄筆數");
+								//記錄非初次
 								isFirstTime = false;
 
-								System.out
-										.println("累積處理資料已達到限制處理筆數範圍:" + ETL_Profile.ETL_E_Stage + "筆，再度切割資料來源進入QUEUE");
+//								System.out
+//										.println("累積處理資料已達到限制處理筆數範圍:" + ETL_Profile.ETL_E_Stage + "筆，再度切割資料來源進入QUEUE");
 
 								// 注入指定範圍筆數資料到QUEUE
 								strQueue.setBytesList(fileByteUtil.getFilesBytes());
 								// 初始化使用筆數
 								strQueue.setBytesListIndex(0);
 
-								System.out.println("初始化提取處理資料，目前處理資料為:" + strQueue.getBytesListIndex());
-								System.out.println("=======================================");
+//								System.out.println("初始化提取處理資料，目前處理資料為:" + strQueue.getBytesListIndex());
+//								System.out.println("=======================================");
 							}
 							// TODO V5 END
 						}
 					}
+					
 					// Transaction_Data寫入DB
 					insert_Transaction_Datas();
 
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) {// 沒有嚴重錯誤時進行
 
+						//TODO V5 START
+						strQueue.setTargetString();
+						//TODO V5 END
+						
 						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 461 = 484)
 						if (strQueue.getTotalByteLength() != 484) {
 							fileFmtErrMsg = "尾錄位元數非預期484:" + strQueue.getTotalByteLength();
@@ -635,7 +640,7 @@ public class ETL_E_TRANSACTION {
 
 						// 區別碼檢核(1)
 						String typeCode = strQueue.popBytesString(1);
-						System.out.println("區別碼檢核:" + typeCode);
+
 						if (!"3".equals(typeCode)) {
 							fileFmtErrMsg = "尾錄區別碼有誤:" + typeCode;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -645,7 +650,7 @@ public class ETL_E_TRANSACTION {
 						 * 報送單位檢核(7) 報送單位一致性檢查,嚴重錯誤,不進行迴圈並記錄錯誤訊息
 						 */
 						String central_no = strQueue.popBytesString(7);
-						System.out.println("報送單位檢核:" + central_no);
+
 						if (!central_no.equals(pfn.getCentral_No())) {
 							fileFmtErrMsg = "尾錄報送單位代碼與檔名不符:" + central_no;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -654,7 +659,7 @@ public class ETL_E_TRANSACTION {
 
 						// 檔案日期檢核(8)
 						String record_date = strQueue.popBytesString(8);
-						System.out.println("檔案日期檢核:" + record_date);
+
 						if (record_date == null || "".equals(record_date.trim())) {
 							fileFmtErrMsg = "尾錄檔案日期空值";
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -671,9 +676,8 @@ public class ETL_E_TRANSACTION {
 
 						// 總筆數檢核(7)
 						String totalCount = strQueue.popBytesString(7);
-						// iTotalCount = ETL_Tool_StringX.toInt(totalCount);
-
-						System.out.println("總筆數檢核:" + totalCount);
+						// iTotalCount = ETL_Tool_StringX.toInt(totalCount); TODO V5
+						
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
 							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -728,6 +732,9 @@ public class ETL_E_TRANSACTION {
 					errWriter.insert_Error_Log();
 
 					// 處理後更新ETL_FILE_Log
+//					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
+//							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
+//							successCount, failureCount, file_exe_result, file_exe_result_description);
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate,
 							(successCount + failureCount), // TODO V5

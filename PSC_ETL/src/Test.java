@@ -17,6 +17,7 @@ import Extract.ETL_E_ACCOUNT;
 import Extract.ETL_E_COLLATERAL;
 import Extract.ETL_E_LOAN;
 import Extract.ETL_E_LOAN_DETAIL;
+import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_ADDRESS;
 import Extract.ETL_E_TRANSACTION;
 import Tool.ETL_Tool_FileByteUtil;
@@ -136,12 +137,35 @@ public class Test {
 		long time1, time2;
 		time1 = System.currentTimeMillis();
 
-		TRANSACTION();
+//		PARTY();
+		LOAN_DETAIL();
+//		TRANSACTION();
 
 		time2 = System.currentTimeMillis();
 		System.out.println("花了：" + (time2 - time1) + "豪秒");
 	}
 
+	public static void PARTY() throws IOException {
+		ETL_E_PARTY program = new ETL_E_PARTY();
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		Date exc_record_date = null;
+
+		try {
+			filePath = lines.get(0);
+			fileTypeName = "PARTY";
+			batch_no = lines.get(1);
+			exc_central_no = lines.get(2);
+			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(lines.get(3));
+			upload_no = lines.get(4);
+			program_no = lines.get(5);
+			program.read_Party_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
+					upload_no, program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void PARTY_ADDRESS() throws IOException {
 		ETL_E_PARTY_ADDRESS program = new ETL_E_PARTY_ADDRESS();
 		List<String> lines = getProperties("C:\\ETL\\properties.txt");

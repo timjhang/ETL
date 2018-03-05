@@ -135,6 +135,11 @@ public class ETL_E_ACCOUNT {
 				// 取得檔案
 				File parseFile = fileList.get(i);
 
+				// TODO V5 START
+				ETL_Tool_FileByteUtil fileByteUtil = new ETL_Tool_FileByteUtil(parseFile.getAbsolutePath(),
+						ETL_E_TRANSACTION.class);//TODO
+				// TODO V5 END
+
 				// 檔名
 				String fileName = parseFile.getName();
 				Date parseStartDate = new Date(); // 開始執行時間
