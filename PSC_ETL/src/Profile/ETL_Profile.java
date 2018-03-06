@@ -55,4 +55,23 @@ public class ETL_Profile {
 	
 	// 018金庫  018  相關參數
 	
+	// 各資料讀檔緩衝區大小
+		public final static int ETL_E_PARTY = 620;
+		public final static int ETL_E_PARTY_PARTY_REL = 203;
+		public final static int ETL_E_PARTY_PHONE = 43;
+		public final static int ETL_E_PARTY_ADDRESS = 137;
+		public final static int ETL_E_ACCOUNT = 113;
+		public final static int ETL_E_TRANSACTION = 484;
+		public final static int ETL_E_LOAN_DETAIL = 112;
+		public final static int ETL_E_LOAN = 214;
+		public final static int ETL_E_COLLATERAL = 203;
+		public final static int ETL_E_GUARANTOR = 124;
+		public final static int ETL_E_FX_RATE = 30;
+		public final static int ETL_E_SERVICE = 1434;
+		public final static int ETL_E_TRANSFER = 723;
+		public final static int ETL_E_FCX = 251;
+		public final static int ETL_E_CALENDAR = 23;
+
+		// 讀檔筆數域值
+		public final static int ETL_E_Stage = 10000;
 }
