@@ -280,7 +280,10 @@ public class ETL_C_CallWS {
 			System.out.println("call_ETL_Server_Tfunction : 開始執行");
 
 //				filePath = ""; // ETL Server下載檔案位置路徑 encode碼 (D:/ETL/DB)
-			filePath = "C%3A%2Ftest2%2F600%2F001"; // for test
+			//filePath = "C%3A%2Ftest2%2F600%2F001"; // for test
+			//TODO  upload_No???
+			filePath = ETL_C_Profile.ETL_Download_localPath + exc_central_no + "/" + record_DateStr + "/" + upload_No;
+			URLEncoder.encode(filePath, "UTF-8");
 			
 			String urlStr = "http://" + ip_port + "/AML_ETL/rest/Tfunction/WS1?";
 			urlStr = urlStr + "filePath=" + filePath;
