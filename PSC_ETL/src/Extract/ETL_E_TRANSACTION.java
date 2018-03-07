@@ -177,7 +177,7 @@ public class ETL_E_TRANSACTION {
 				int successCount = 0;
 				// 失敗計數
 				int failureCount = 0;
-				// TODO START
+				// TODO V5 START
 				// 尾錄總數
 				// int iTotalCount = 0;
 
@@ -206,7 +206,10 @@ public class ETL_E_TRANSACTION {
 					// strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
 					// 首、明細、尾錄, 基本組成檢查
 					//boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
-					int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					// TODO V6 START
+					//int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					int isFileOK = fileByteUtil.isFileOK(pfn, upload_no, parseFile.getAbsolutePath());
+					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
 
@@ -959,7 +962,7 @@ public class ETL_E_TRANSACTION {
 		long time1, time2;
 		time1 = System.currentTimeMillis();
 
-		one.read_Transaction_File(filePath, fileTypeName, "E8021501", "928",
+		one.read_Transaction_File(filePath, fileTypeName, "E9999999", "928",
 				new SimpleDateFormat("yyyyMMdd").parse("20180105"), "001", "ETL_E_TRANSACTION");
 
 		time2 = System.currentTimeMillis();

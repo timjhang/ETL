@@ -56,7 +56,6 @@ public class ETL_P_Data_Writer {
 							//將Object[]的轉換成Struct		 ps:一個Object[] =代表一個 row
 							structArr[i] = con.createStruct(insertAdapter.getCreateStructTypeName(), insertArrs.get(i));
 						}
-
 						//structArrs轉換成Array
 						Array array = con.createArrayOf(insertAdapter.getCreateStructTypeName(), structArr);
 

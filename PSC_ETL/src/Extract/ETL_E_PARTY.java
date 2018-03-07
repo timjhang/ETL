@@ -215,9 +215,11 @@ public class ETL_E_PARTY {
 					// 讀檔並將結果注入ETL_字串處理Queue
 					// strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
 					// 首、明細、尾錄, 基本組成檢查
-					// boolean isFileFormatOK =
-					// ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
-					int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					// boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
+					// TODO V6 START
+					//int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					int isFileOK = fileByteUtil.isFileOK(pfn, upload_no, parseFile.getAbsolutePath());
+					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
 
@@ -287,12 +289,14 @@ public class ETL_E_PARTY {
 
 					// TODO V5 START
 					// 逐行讀取檔案
-					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行 TODO
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
+																		// TODO
 						if (rowCount == 2)
 							isFirstTime = true;
-						//System.out.println("資料總筆數:" + isFileOK);
-						//while (strQueue.setTargetString() < strQueue.getByteListSize()) {
-						//以實際處理明細錄筆數為依據，只運行明細錄次數
+						// System.out.println("資料總筆數:" + isFileOK);
+						// while (strQueue.setTargetString() <
+						// strQueue.getByteListSize()) {
+						// 以實際處理明細錄筆數為依據，只運行明細錄次數
 						while (grandTotal < (isFileOK - 2)) {
 
 							strQueue.setTargetString();
@@ -378,6 +382,7 @@ public class ETL_E_PARTY {
 							// 由是否為本行/非本行客戶, 區分兩種完全不同檢核方式
 							// 本行客戶
 							if ("Y".equals(my_customer_flag)) {
+//								System.out.println("本行客戶");
 
 								// 異動代號檢核*
 								if (ETL_Tool_FormatCheck.isEmpty(change_code)) {
@@ -392,6 +397,7 @@ public class ETL_E_PARTY {
 
 								// 歸屬本/分會代號 c-*6(7)
 								String branch_code = strQueue.popBytesString(7);
+//								System.out.println("歸屬本/分會代號 c-*6(7):" + branch_code.getBytes().length);
 								data.setBranch_code(branch_code);
 								if (ETL_Tool_FormatCheck.isEmpty(branch_code)) {
 									data.setError_mark("Y");
@@ -405,6 +411,7 @@ public class ETL_E_PARTY {
 
 								// 顧客類型 c-*7(3)
 								String entity_type = strQueue.popBytesString(3);
+//								System.out.println("顧客類型 c-*7(3):" + entity_type.getBytes().length);
 								data.setEntity_type(entity_type);
 								if (ETL_Tool_FormatCheck.isEmpty(entity_type)) {
 									data.setError_mark("Y");
@@ -418,6 +425,7 @@ public class ETL_E_PARTY {
 
 								// 客戶子類型 c-8(1)
 								String entity_sub_type = strQueue.popBytesString(1);
+//								System.out.println("客戶子類型 c-8(1):" + entity_sub_type.getBytes().length);
 								data.setEntity_sub_type(entity_sub_type);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(entity_sub_type)
 										&& !checkMaps.get("c-8").containsKey(entity_sub_type)) {
@@ -427,11 +435,13 @@ public class ETL_E_PARTY {
 								}
 
 								// 中文名字 c-9(40)
-								String party_first_name_1 = strQueue.popBytesDiffString(40);
+								String party_first_name_1 = strQueue.popBytesString(40);
+//								System.out.println("中文名字 c-9(40):" + party_first_name_1.getBytes().length);
 								data.setParty_first_name_1(party_first_name_1);
 
 								// 中文姓氏 c-*10(80)
 								String party_last_name_1 = strQueue.popBytesDiffString(80);
+//								System.out.println("中文姓氏 c-*10(80):" + party_last_name_1.getBytes().length);
 								data.setParty_last_name_1(party_last_name_1);
 								if (ETL_Tool_FormatCheck.isEmpty(party_last_name_1)) {
 									data.setError_mark("Y");
@@ -441,6 +451,7 @@ public class ETL_E_PARTY {
 
 								// 出生年月日/創立日期 c-11(8)
 								String date_of_birth = strQueue.popBytesString(8);
+//								System.out.println("出生年月日/創立日期 c-11(8):" + date_of_birth.getBytes().length);
 								data.setDate_of_birth(ETL_Tool_StringX.toUtilDate(date_of_birth));
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(date_of_birth)
 										&& !ETL_Tool_FormatCheck.checkDate(date_of_birth)) {
@@ -451,6 +462,7 @@ public class ETL_E_PARTY {
 
 								// 亡故日期 c-12(8)
 								String deceased_date = strQueue.popBytesString(8);
+//								System.out.println("亡故日期 c-12(8):" + deceased_date.getBytes().length);
 								data.setDeceased_date(ETL_Tool_StringX.toUtilDate(deceased_date));
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(deceased_date)
 										&& !ETL_Tool_FormatCheck.checkDate(deceased_date)) {
@@ -461,6 +473,7 @@ public class ETL_E_PARTY {
 
 								// 國籍 c-*13(2)
 								String nationality_code = strQueue.popBytesString(2);
+//								System.out.println("國籍 c-*13(2):" + nationality_code.getBytes().length);
 								data.setNationality_code(nationality_code);
 								if (ETL_Tool_FormatCheck.isEmpty(nationality_code)) {
 									data.setError_mark("Y");
@@ -474,14 +487,17 @@ public class ETL_E_PARTY {
 
 								// 英文名字 c-14(40)
 								String party_first_name_2 = strQueue.popBytesString(40);
+//								System.out.println("英文名字 c-14(40):" + party_first_name_2.getBytes().length);
 								data.setParty_first_name_2(party_first_name_2);
 
 								// 英文姓氏 c-15(80)
 								String party_last_name_2 = strQueue.popBytesString(80);
+//								System.out.println("英文姓氏 c-15(80):" + party_last_name_2.getBytes().length);
 								data.setParty_last_name_2(party_last_name_2);
 
 								// 顧客開戶日期 c-16(8)
 								String open_date = strQueue.popBytesString(8);
+//								System.out.println("顧客開戶日期 c-16(8):" + open_date.getBytes().length);
 								data.setOpen_date(ETL_Tool_StringX.toUtilDate(open_date));
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(open_date)
 										&& !ETL_Tool_FormatCheck.checkDate(open_date)) {
@@ -492,6 +508,7 @@ public class ETL_E_PARTY {
 
 								// 顧客結清日期 c-17(8)
 								String close_date = strQueue.popBytesString(8);
+//								System.out.println("顧客結清日期 c-17(8):" + close_date.getBytes().length);
 								data.setClose_date(ETL_Tool_StringX.toUtilDate(close_date));
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(close_date)
 										&& !ETL_Tool_FormatCheck.checkDate(close_date)) {
@@ -502,6 +519,7 @@ public class ETL_E_PARTY {
 
 								// 性別 c-18(1)
 								String gender = strQueue.popBytesString(1);
+//								System.out.println("性別 c-18(1):" + gender.getBytes().length);
 								data.setGender(gender);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(gender)
 										&& !checkMaps.get("c-18").containsKey(gender)) {
@@ -512,6 +530,7 @@ public class ETL_E_PARTY {
 
 								// 年收入(法人) c-19(10)
 								String annual_income = strQueue.popBytesString(10);
+//								System.out.println("年收入(法人) c-19(10):" + annual_income.getBytes().length);
 								data.setAnnual_income(ETL_Tool_StringX.toLong(annual_income));
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(annual_income)
 										&& !ETL_Tool_FormatCheck.checkNum(annual_income)) {
@@ -522,6 +541,7 @@ public class ETL_E_PARTY {
 
 								// 職業/行業 c-*20(6)
 								String occupation_code = strQueue.popBytesString(6);
+//								System.out.println("職業/行業 c-*20(6):" + occupation_code.getBytes().length);
 								data.setOccupation_code(occupation_code);
 								if (ETL_Tool_FormatCheck.isEmpty(occupation_code)) {
 									data.setError_mark("Y");
@@ -535,6 +555,7 @@ public class ETL_E_PARTY {
 
 								// 婚姻狀況 c-21(1)
 								String marital_status_code = strQueue.popBytesString(1);
+//								System.out.println("婚姻狀況 c-21(1):" + marital_status_code.getBytes().length);
 								data.setMarital_status_code(marital_status_code);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(marital_status_code)
 										&& !checkMaps.get("c-21").containsKey(marital_status_code)) {
@@ -545,14 +566,17 @@ public class ETL_E_PARTY {
 
 								// 服務機構 c-22(30)
 								String employer_name = strQueue.popBytesString(30);
+//								System.out.println("服務機構 c-22(30):" + employer_name.getBytes().length);
 								data.setEmployer_name(employer_name);
 
 								// 服務機構統編 c-23(8)
 								String employer = strQueue.popBytesString(8);
+//								System.out.println("服務機構統編 c-23(8):" + employer.getBytes().length);
 								data.setEmployer(employer);
 
 								// 行內員工註記 c-24(1)
 								String employee_flag = strQueue.popBytesString(1);
+//								System.out.println("行內員工註記 c-24(1):" + employee_flag.getBytes().length);
 								data.setEmployee_flag(employee_flag);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(employee_flag)
 										&& !checkMaps.get("c-24").containsKey(employee_flag)) {
@@ -563,10 +587,13 @@ public class ETL_E_PARTY {
 
 								// 出生地 c-25(18)
 								String place_of_birth = strQueue.popBytesString(18);
+//								System.out.println("出生地 c-25(18):" + place_of_birth.getBytes().length);
 								data.setPlace_of_birth(place_of_birth);
 
 								// 是否具多重國籍(自然人) c-26(1)
 								String multiple_nationality_flag = strQueue.popBytesString(1);
+//								System.out
+//										.println("是否具多重國籍(自然人) c-26(1):" + multiple_nationality_flag.getBytes().length);
 								data.setMultiple_nationality_flag(multiple_nationality_flag);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(multiple_nationality_flag)
 										&& !checkMaps.get("c-26").containsKey(multiple_nationality_flag)) {
@@ -578,6 +605,7 @@ public class ETL_E_PARTY {
 
 								// 第二國籍 c-27(2)
 								String nationality_code_2 = strQueue.popBytesString(2);
+//								System.out.println("第二國籍 c-27(2):" + nationality_code_2.getBytes().length);
 								data.setNationality_code_2(nationality_code_2);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(nationality_code_2)
 										&& !checkMaps.get("c-27").containsKey(nationality_code_2)) {
@@ -588,10 +616,12 @@ public class ETL_E_PARTY {
 
 								// 顧客電子郵件 c-28(80)
 								String email_address = strQueue.popBytesString(80);
+//								System.out.println("顧客電子郵件 c-28(80):" + email_address.getBytes().length);
 								data.setEmail_address(email_address);
 
 								// 金融卡約定服務 c-29(1)
 								String registered_service_atm = strQueue.popBytesString(1);
+//								System.out.println("金融卡約定服務 c-29(1):" + registered_service_atm.getBytes().length);
 								data.setRegistered_service_atm(registered_service_atm);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(registered_service_atm)
 										&& !checkMaps.get("c-29").containsKey(registered_service_atm)) {
@@ -602,6 +632,7 @@ public class ETL_E_PARTY {
 
 								// 電話約定服務 c-30(1)
 								String registered_service_telephone = strQueue.popBytesString(1);
+//								System.out.println("電話約定服務 c-30(1):" + registered_service_telephone.getBytes().length);
 								data.setRegistered_service_telephone(registered_service_telephone);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(registered_service_telephone)
 										&& !checkMaps.get("c-30").containsKey(registered_service_telephone)) {
@@ -612,6 +643,7 @@ public class ETL_E_PARTY {
 
 								// 傳真約定服務 c-31(1)
 								String registered_service_fax = strQueue.popBytesString(1);
+//								System.out.println("傳真約定服務 c-31(1):" + registered_service_fax.getBytes().length);
 								data.setRegistered_service_fax(registered_service_fax);
 								// if
 								// (ETL_Profile.Foreign_Currency.equals(pfn.getFile_Type()))
@@ -625,6 +657,7 @@ public class ETL_E_PARTY {
 
 								// 網銀約定服務 c-32(1)
 								String registered_service_internet = strQueue.popBytesString(1);
+//								System.out.println("網銀約定服務 c-32(1):" + registered_service_internet.getBytes().length);
 								data.setRegistered_service_internet(registered_service_internet);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(registered_service_internet)
 										&& !checkMaps.get("c-32").containsKey(registered_service_internet)) {
@@ -635,6 +668,7 @@ public class ETL_E_PARTY {
 
 								// 行動銀行約定服務 c-33(1)
 								String registered_service_mobile = strQueue.popBytesString(1);
+//								System.out.println("行動銀行約定服務 c-33(1):" + registered_service_mobile.getBytes().length);
 								data.setRegistered_service_mobile(registered_service_mobile);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(registered_service_mobile)
 										&& !checkMaps.get("c-33").containsKey(registered_service_mobile)) {
@@ -645,6 +679,7 @@ public class ETL_E_PARTY {
 
 								// 是否得發行無記名股票 (法人) c-34(1)
 								String bearer_stock_flag = strQueue.popBytesString(1);
+//								System.out.println("是否得發行無記名股票 (法人) c-34(1):" + bearer_stock_flag.getBytes().length);
 								data.setBearer_stock_flag(bearer_stock_flag);
 								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(bearer_stock_flag)
 										&& !checkMaps.get("c-34").containsKey(bearer_stock_flag)) {
@@ -655,18 +690,24 @@ public class ETL_E_PARTY {
 
 								// 無記名股票 (法人)資訊說明 c-35(40)
 								String bearer_stock_description = strQueue.popBytesString(40);
+//								System.out.println(
+//										"無記名股票 (法人)資訊說明 c-35(40):" + bearer_stock_description.getBytes().length);
 								data.setBearer_stock_description(bearer_stock_description);
 
 								// 外國人士居留或交易目的 c-36(80)
 								String foreign_transaction_purpose = strQueue.popBytesString(80);
+//								System.out.println(
+//										"外國人士居留或交易目的 c-36(80):" + foreign_transaction_purpose.getBytes().length);
 								data.setForeign_transaction_purpose(foreign_transaction_purpose);
 
 								// 顧客AUM餘額 c-37(14)
 								String total_asset = strQueue.popBytesString(14);
+//								System.out.println("顧客AUM餘額 c-37(14):" + total_asset.getBytes().length);
 								data.setTotal_asset(ETL_Tool_StringX.strToBigDecimal(total_asset, 2));
 
 								// 信託客戶AUM餘額 c-38(14)
 								String trust_total_asset = strQueue.popBytesString(14);
+//								System.out.println("信託客戶AUM餘額 c-38(14):" + trust_total_asset.getBytes().length);
 								data.setTrust_total_asset(ETL_Tool_StringX.strToBigDecimal(trust_total_asset, 2));
 
 							}
@@ -1059,10 +1100,11 @@ public class ETL_E_PARTY {
 							// TODO V5 START
 							// 實際處理明細錄筆數累加
 							grandTotal += 1;
-							
-//							System.out.println("實際處理列數:" + rowCount + " / 實際處理明細錄筆數:" + grandTotal + " / 目前處理資料第"
-//							+ strQueue.getBytesListIndex() + "筆");
-							
+
+							// System.out.println("實際處理列數:" + rowCount + " /
+							// 實際處理明細錄筆數:" + grandTotal + " / 目前處理資料第"
+							// + strQueue.getBytesListIndex() + "筆");
+
 							rowCount++; // 處理行數 + 1
 							/*
 							 * 第一個條件是 初次處理，且資料總筆數比制定範圍大時 會進入條件
@@ -1074,25 +1116,28 @@ public class ETL_E_PARTY {
 
 							) {
 
-//								System.out.println("=======================================");
-//
-//								if (isFirstTime)
-//									System.out.println("第一次處理，資料來源須扣除首錄筆數");
-								//記錄非初次
+								// System.out.println("=======================================");
+								//
+								// if (isFirstTime)
+								// System.out.println("第一次處理，資料來源須扣除首錄筆數");
+								// 記錄非初次
 								isFirstTime = false;
 
-//								System.out
-//										.println("累積處理資料已達到限制處理筆數範圍:" + ETL_Profile.ETL_E_Stage + "筆，再度切割資料來源進入QUEUE");
+								// System.out
+								// .println("累積處理資料已達到限制處理筆數範圍:" +
+								// ETL_Profile.ETL_E_Stage +
+								// "筆，再度切割資料來源進入QUEUE");
 
 								// 注入指定範圍筆數資料到QUEUE
 								strQueue.setBytesList(fileByteUtil.getFilesBytes());
 								// 初始化使用筆數
 								strQueue.setBytesListIndex(0);
 
-//								System.out.println("初始化提取處理資料，目前處理資料為:" + strQueue.getBytesListIndex());
-//								System.out.println("=======================================");
+								// System.out.println("初始化提取處理資料，目前處理資料為:" +
+								// strQueue.getBytesListIndex());
+								// System.out.println("=======================================");
 							}
-							// TODO V5 END							
+							// TODO V5 END
 						}
 					}
 
@@ -1102,10 +1147,10 @@ public class ETL_E_PARTY {
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
-						//TODO V5 START
+						// TODO V5 START
 						strQueue.setTargetString();
-						//TODO V5 END
-						
+						// TODO V5 END
+
 						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 595 = 618)
 						if (strQueue.getTotalByteLength() != 618) {
 							fileFmtErrMsg = "尾錄位元數非預期618:" + strQueue.getTotalByteLength();
@@ -1149,7 +1194,8 @@ public class ETL_E_PARTY {
 
 						// 總筆數檢核(7)
 						String totalCount = strQueue.popBytesString(7);
-						// iTotalCount = ETL_Tool_StringX.toInt(totalCount); TODO V5
+						// iTotalCount = ETL_Tool_StringX.toInt(totalCount);
+						// TODO V5
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
 							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -1186,8 +1232,9 @@ public class ETL_E_PARTY {
 						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤-區別碼錯誤\n";
 
 						// 寫入Error Log
-						errWriter.addErrLog(
-								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0", "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
+						// errWriter.addErrLog(
+						// new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0",
+						// "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
 
 					} else if (!"".equals(fileFmtErrMsg)) {
 						file_exe_result = "S";
@@ -1205,9 +1252,12 @@ public class ETL_E_PARTY {
 					errWriter.insert_Error_Log();
 
 					// 處理後更新ETL_FILE_Log
-//					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
-//							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
-//							successCount, failureCount, file_exe_result, file_exe_result_description);
+					// ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(),
+					// pfn.getCentral_No(), exc_record_date,
+					// pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E",
+					// parseEndDate, iTotalCount,
+					// successCount, failureCount, file_exe_result,
+					// file_exe_result_description);
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate,
 							(successCount + failureCount), // TODO V5
@@ -1313,12 +1363,30 @@ public class ETL_E_PARTY {
 		this.dataList.clear();
 	}
 
-	public static void main(String[] argv) throws Exception {
-		ETL_E_PARTY one = new ETL_E_PARTY();
-		String filePath = "C:/Users/10404003/Desktop/農經/2018/180205/test";
-		String fileTypeName = "PARTY";
-		one.read_Party_File(filePath, fileTypeName, "tim00001", "018",
-				new SimpleDateFormat("yyyyMMdd").parse("20180116"), "001", "ETL_E_PARTY");
-	}
+	// public static void main(String[] argv) throws Exception {
+	// ETL_E_PARTY one = new ETL_E_PARTY();
+	// String filePath = "C:/Users/10404003/Desktop/農經/2018/180205/test";
+	// String fileTypeName = "PARTY";
+	// one.read_Party_File(filePath, fileTypeName, "tim00001", "018",
+	// new SimpleDateFormat("yyyyMMdd").parse("20180116"), "001",
+	// "ETL_E_PARTY");
+	// }
 
+	public static void main(String[] argv) throws Exception {
+
+		// 讀取測試資料，並運行程式
+		ETL_E_PARTY one = new ETL_E_PARTY();
+		String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
+		String fileTypeName = "PARTY";
+
+		long time1, time2;
+		time1 = System.currentTimeMillis();
+
+		one.read_Party_File(filePath, fileTypeName, "E9999999", "605",
+				new SimpleDateFormat("yyyyMMdd").parse("20180227"), "001", "ETL_E_PARTY");
+
+		time2 = System.currentTimeMillis();
+		System.out.println("花了：" + (time2 - time1) + "豪秒");
+
+	}
 }

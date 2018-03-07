@@ -19,6 +19,7 @@ import Extract.ETL_E_LOAN;
 import Extract.ETL_E_LOAN_DETAIL;
 import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_ADDRESS;
+import Extract.ETL_E_PARTY_PHONE;
 import Extract.ETL_E_TRANSACTION;
 import Tool.ETL_Tool_FileByteUtil;
 import Tool.ETL_Tool_JBReader;
@@ -137,8 +138,13 @@ public class Test {
 		long time1, time2;
 		time1 = System.currentTimeMillis();
 
-//		PARTY();
-		LOAN_DETAIL();
+//		ACCOUNT();
+//		COLLATERAL();
+//		LOAN_DETAIL();
+//		LOAN();
+//		PARTY_ADDRESS();
+//		PARTY_PHONE();
+		PARTY();
 //		TRANSACTION();
 
 		time2 = System.currentTimeMillis();
@@ -160,6 +166,27 @@ public class Test {
 			upload_no = lines.get(4);
 			program_no = lines.get(5);
 			program.read_Party_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
+					upload_no, program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void PARTY_PHONE() throws IOException {
+		ETL_E_PARTY_PHONE program = new ETL_E_PARTY_PHONE();
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		Date exc_record_date = null;
+
+		try {
+			filePath = lines.get(0);
+			fileTypeName = "PARTY_PHONE";
+			batch_no = lines.get(1);
+			exc_central_no = lines.get(2);
+			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(lines.get(3));
+			upload_no = lines.get(4);
+			program_no = lines.get(5);
+			program.read_Party_Phone_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
 					upload_no, program_no);
 		} catch (Exception e) {
 			e.printStackTrace();
