@@ -144,8 +144,8 @@ public class Test {
 //		LOAN();
 //		PARTY_ADDRESS();
 //		PARTY_PHONE();
-		PARTY();
-//		TRANSACTION();
+//		PARTY();
+		TRANSACTION();
 
 		time2 = System.currentTimeMillis();
 		System.out.println("花了：" + (time2 - time1) + "豪秒");

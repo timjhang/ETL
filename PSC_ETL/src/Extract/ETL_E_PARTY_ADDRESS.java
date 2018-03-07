@@ -198,9 +198,11 @@ public class ETL_E_PARTY_ADDRESS {
 					// 讀檔並將結果注入ETL_字串處理Queue
 					// strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
 					// 首、明細、尾錄, 基本組成檢查
-					// boolean isFileFormatOK =
-					// ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
-					int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					//boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
+					// TODO V6 START
+					//int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					int isFileOK = fileByteUtil.isFileOK(pfn, upload_no, parseFile.getAbsolutePath());
+					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
 
@@ -298,6 +300,7 @@ public class ETL_E_PARTY_ADDRESS {
 								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行
 								failureCount++;
 								rowCount++;
+								grandTotal++; //TODO V6
 								continue;
 							}
 
@@ -520,16 +523,19 @@ public class ETL_E_PARTY_ADDRESS {
 					// 執行結果說明
 					String file_exe_result_description;
 
-					if (!isFileFormatOK) {
-						file_exe_result = "S";
-						file_exe_result_description = "解析檔案出現嚴重錯誤-區別碼錯誤";
-						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤-區別碼錯誤\n";
-
-						// 寫入Error Log
-						errWriter.addErrLog(
-								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0", "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
-
-					} else if (!"".equals(fileFmtErrMsg)) {
+					//TODO V6 START
+//					if (!isFileFormatOK) {
+//						file_exe_result = "S";
+//						file_exe_result_description = "解析檔案出現嚴重錯誤-區別碼錯誤";
+//						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤-區別碼錯誤\n";
+//
+//						// 寫入Error Log
+//						errWriter.addErrLog(
+//								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0", "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
+//
+//					} else
+					//TODO V6 END
+					if (!"".equals(fileFmtErrMsg)) {
 						file_exe_result = "S";
 						file_exe_result_description = "解析檔案出現嚴重錯誤";
 						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤\n";
