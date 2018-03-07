@@ -23,9 +23,11 @@ public class ETL_C_Master {
 		Calendar c1 = Calendar.getInstance();
     	final String strTime = String.format("%1$tH%1$tM", c1);
 		
-    	// ETL_C_Master 使用編號" 1"設定檔(BatchRunTimeConfig)
+    	//  使用編號" 1"設定檔(BatchRunTimeConfig)
 		boolean isRun = ETL_C_BatchTime.isExecute(strTime, " 1");
 		if (!isRun) {
+			
+			System.out.println("isRun = false");
 			return;
 		}
 		

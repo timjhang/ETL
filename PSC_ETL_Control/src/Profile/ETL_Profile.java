@@ -33,18 +33,23 @@ public class ETL_Profile {
 	
 	private final static String db2SPSchema = "SRC";
 	public final static String db2TableSchema = "SRC";
+	
 	public final static String db2Url =
-			"jdbc:db2://localhost:50000/SAMPLE:"+
+			"jdbc:db2://172.18.6.133:50000/GAMLDB:"+
 			"currentschema=" + db2SPSchema + ";" +
 			"currentFunctionPath=" + db2SPSchema + ";";
 	
-//	"jdbc:db2://172.18.6.132:50000/GAMLDB:" +
+
+	public final static String db2User = "GAMLETL";
+	public final static String db2Password = "1qaz@WSX";
 	
-//	public final static String db2User = "GAMLETL";
-//	public final static String db2Password = "1qaz@WSX";
-	
-	public final static String db2User = "tibyby";
-	public final static String db2Password = "Nn125303960";
+//	public final static String db2Url =
+//			"jdbc:db2://localhost:50000/SAMPLE:"+
+//			"currentschema=" + db2SPSchema + ";" +
+//			"currentFunctionPath=" + db2SPSchema + ";";
+//	
+//	public final static String db2User = "tibyby";
+//	public final static String db2Password = "Nn125303960";
 	
 	// Error Log寫入域值
 	public final static int ErrorLog_Stage = 10000;
