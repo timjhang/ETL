@@ -33,11 +33,13 @@ public class ETL_Profile {
 	
 	private final static String db2SPSchema = "SRC";
 	public final static String db2TableSchema = "SRC";
-	
-	public final static String db2Url =
-			"jdbc:db2://172.18.6.133:50000/GAMLDB:"+
-			"currentschema=" + db2SPSchema + ";" +
-			"currentFunctionPath=" + db2SPSchema + ";";
+	public final static String db2Ip = "172.18.6.133";
+	public final static String db2port = "50000";
+
+//	public final static String db2Url = 
+//			"jdbc:db2://" + db2Ip + ":" + db2port + "/GAMLDB:" + "currentschema="
+//			+ db2SPSchema + ";" + "currentFunctionPath=" + db2SPSchema + ";";
+
 	
 
 	public final static String db2User = "GAMLETL";
@@ -76,5 +78,21 @@ public class ETL_Profile {
 	// 農漁會資訊共用系統  600  相關參數
 	
 	// 018金庫  018  相關參數
+	
+	// 其他
+	public static String getDB2Url(String v_CENTRAL_NO) {
+		String db2url = "jdbc:db2://" + db2Ip + ":" + db2port + "/GAML" + v_CENTRAL_NO + ":" + "currentschema="
+				+ db2SPSchema + ";" + "currentFunctionPath=" + db2SPSchema + ";";
+		return db2url;
+	}
+
+	// GAMLDB
+	public static String getDB2Url() {
+		String db2url = "jdbc:db2://" + db2Ip + ":" + db2port + "/GAMLDB:" + "currentschema=" + db2SPSchema + ";"
+				+ "currentFunctionPath=" + db2SPSchema + ";";
+		return db2url;
+	}
+	
+	
 	
 }

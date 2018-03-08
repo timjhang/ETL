@@ -35,7 +35,7 @@ public class ConnectionHelper {
 	
 	
 	
-	// 連線DB2資料庫
+	// 連線DB2資料庫 GAMLDB
 	public static Connection getDB2Connection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 //		String db2Driver = "com.ibm.db2.jcc.DB2Driver";
@@ -45,7 +45,7 @@ public class ConnectionHelper {
 //		Class.forName(db2Driver).newInstance();
 		
 		Class.forName(Profile.ETL_Profile.db2Driver).newInstance();
-		String url = Profile.ETL_Profile.db2Url;
+		String url = Profile.ETL_Profile.getDB2Url();
 		String user = Profile.ETL_Profile.db2User;
 		String password = Profile.ETL_Profile.db2Password;
 		
@@ -55,5 +55,25 @@ public class ConnectionHelper {
 		
 		return con;
 	}
+	
+	// 連線DB2資料庫 其他單位
+	public static Connection getDB2Connection(String v_CENTRAL_NO) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
+		Class.forName(Profile.ETL_Profile.db2Driver).newInstance();
+		String url =  Profile.ETL_Profile.getDB2Url(v_CENTRAL_NO.trim());
+	
+		String user = Profile.ETL_Profile.db2User;
+		String password = Profile.ETL_Profile.db2Password;
+		
+		System.out.println(user + " 連線  " + url + " ...");
+		Connection con = DriverManager.getConnection(url, user, password);
+		System.out.println(user + " 連線成功!!");
+		
+		return con;
+	}
+
+
+
+
 	
 }

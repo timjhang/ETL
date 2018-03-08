@@ -13,7 +13,6 @@ import Load.*;
 import Profile.ETL_Profile;
 
 public class ETL_C_PROCESS {
-	static String[] fileInfo = new String[3];
 	// 執行ETL
 	public static boolean executeETL(String[] etlServerInfo, String batch_No, String central_no, Date record_Date) {
 		
@@ -300,55 +299,62 @@ public class ETL_C_PROCESS {
 	}
 	
 	// 執行L系列程式  // TODO
-		private static boolean exeLfunction(String server_No, String batch_No, String exc_central_no, String record_DateStr, String upload_No) {
-			
-			try {
-				
-				ETL_Bean_LogData logData = new ETL_Bean_LogData();
-				logData.setBATCH_NO(batch_No);
-				logData.setCENTRAL_NO(exc_central_no);
-				logData.setFILE_TYPE(null);
-				Date exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(record_DateStr);
-				logData.setRECORD_DATE(exc_record_date);
-				logData.setUPLOAD_NO(upload_No);
-				
-				String fedServer = "";
-				// 設定fedName
-				if ("ETL_S1".equals(server_No)) {
-					fedServer = "ETLDB001";
-				} else if ("ETL_S2".equals(server_No)) {
-					fedServer = "ETLDB002";
-				}
-				
-				// 執行用Table (正常 rerun, 重跑rerun)
-				String runTable = "temp";
-				
-				// 執行20支L系列程式
-				new ETL_L_PARTY_PHONE().trans_to_PARTY_PHONE_LOAD(logData, fedServer, runTable);
-				new ETL_L_CALENDAR().trans_to_CALENDAR_LOAD(logData, fedServer, runTable);
-				new ETL_L_COLLATERAL().trans_to_COLLATERAL_LOAD(logData, fedServer, runTable);
-				new ETL_L_FX_RATE().trans_to_FX_RATE_LOAD(logData, fedServer, runTable);
-				new ETL_L_LOAN_DETAIL().trans_to_LOAN_DETAIL_LOAD(logData, fedServer, runTable);
-				new ETL_L_LOAN_GUARANTOR().trans_to_LOAN_DETAIL_LOAD(logData, fedServer, runTable);
-				new ETL_L_LOAN_MASTER().trans_to_LOAN_MASTER_LOAD(logData, fedServer, runTable);
-				new ETL_L_LOAN().trans_to_LOAN_LOAD(logData, fedServer, runTable);
-				new ETL_L_SERVICE().trans_to_SERVICE_LOAD(logData, fedServer, runTable);
-				new ETL_L_TRANSACTION().trans_to_TRANSACTION_LOAD(logData, fedServer, runTable);
-				new ETL_L_TRANSFER().trans_to_TRANSFER_LOAD(logData, fedServer, runTable);
-				
-				//缺 ian L
-				
-				// ... 補上Ian, Kevin, Tim Code
-				
-				
-				
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				return false;
+	public static boolean exeLfunction(String server_No, String batch_No, String exc_central_no, String record_DateStr,
+			String upload_No) {
+		System.out.println("call_ETL_Server_Lfunction : 開始執行");
+		try {
+
+			ETL_Bean_LogData logData = new ETL_Bean_LogData();
+			logData.setBATCH_NO(batch_No);
+			logData.setCENTRAL_NO(exc_central_no);
+			logData.setFILE_TYPE(null);
+			Date exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(record_DateStr);
+			logData.setRECORD_DATE(exc_record_date);
+			logData.setUPLOAD_NO(upload_No);
+
+			String fedServer = "";
+			// 設定fedName
+			if ("ETL_S1".equals(server_No)) {
+				fedServer = "ETLDB001";
+			} else if ("ETL_S2".equals(server_No)) {
+				fedServer = "ETLDB002";
 			}
-			
-			return true;
+
+			// 執行用Table (正常 rerun, 重跑rerun)
+			String runTable = "temp";
+
+			// 執行20支L系列程式
+			new ETL_L_PARTY_PHONE().trans_to_PARTY_PHONE_LOAD(logData, fedServer, runTable);
+			new ETL_L_CALENDAR().trans_to_CALENDAR_LOAD(logData, fedServer, runTable);
+			new ETL_L_COLLATERAL().trans_to_COLLATERAL_LOAD(logData, fedServer, runTable);
+			new ETL_L_FX_RATE().trans_to_FX_RATE_LOAD(logData, fedServer, runTable);
+			new ETL_L_LOAN_DETAIL().trans_to_LOAN_DETAIL_LOAD(logData, fedServer, runTable);
+			new ETL_L_LOAN_GUARANTOR().trans_to_LOAN_DETAIL_LOAD(logData, fedServer, runTable);
+			new ETL_L_LOAN_MASTER().trans_to_LOAN_MASTER_LOAD(logData, fedServer, runTable);
+			new ETL_L_LOAN().trans_to_LOAN_LOAD(logData, fedServer, runTable);
+			new ETL_L_SERVICE().trans_to_SERVICE_LOAD(logData, fedServer, runTable);
+			new ETL_L_TRANSACTION().trans_to_TRANSACTION_LOAD(logData, fedServer, runTable);
+			new ETL_L_TRANSFER().trans_to_TRANSFER_LOAD(logData, fedServer, runTable);
+			new ETL_L_ACCOUNT_PROPERTY().trans_to_ACCOUNT_PROPERTY_LOAD(logData, fedServer, runTable);
+			new ETL_L_ACCOUNT().trans_to_ACCOUNT_LOAD(logData, fedServer, runTable);
+			new ETL_L_BALANCE().trans_to_BALANCE_LOAD(logData, fedServer, runTable);
+			new ETL_L_PARTY_ACCOUNT_REL().trans_to_PARTY_ACCOUNT_REL_LOAD(logData, fedServer, runTable);
+			new ETL_L_PARTY_ADDRESS().trans_to_PARTY_ADDRESS_LOAD(logData, fedServer, runTable);
+			new ETL_L_PARTY_EMAIL().trans_to_PARTY_EMAIL_LOAD(logData, fedServer, runTable);
+			new ETL_L_PARTY_NATINOALITY().trans_to_PARTY_NATINOALITY_LOAD(logData, fedServer, runTable);
+			new ETL_L_PARTY_PARTY_REL().trans_to_PARTY_PARTY_REL_LOAD(logData, fedServer, runTable);
+			new ETL_L_PARTY().trans_to_PARTY_LOAD(logData, fedServer, runTable);
+
+		
+
+		} catch (Exception ex) {
+			System.out.println("call_ETL_Server_Lfunction : 發生錯誤");
+			ex.printStackTrace();
+			return false;
 		}
+		System.out.println("call_ETL_Server_Lfunction : 結束");
+		return true;
+	}
 	
 	public static void main(String[] argv) {
 		try {

@@ -22,7 +22,7 @@ public class ETL_L_CALENDAR {
 			// TODO
 			String sql = "{call " + ETL_Profile.db2TableSchema + ".Load.loadETL_CALENDAR_LOAD(?,?,?,?,?)}";
 			
-			Connection con = ConnectionHelper.getDB2Connection();
+			Connection con = ConnectionHelper.getDB2Connection(logData.getCENTRAL_NO().trim());
 			CallableStatement cstmt = con.prepareCall(sql);
 			
 			Struct dataStruct = con.createStruct("T_LOGDATA", ETL_Tool_CastObjUtil.castObjectArr(logData));
