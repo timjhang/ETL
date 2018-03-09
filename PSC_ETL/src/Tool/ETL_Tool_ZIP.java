@@ -101,7 +101,7 @@ public class ETL_Tool_ZIP {
             try {
                 closeFileHandlers(is, os);
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
         

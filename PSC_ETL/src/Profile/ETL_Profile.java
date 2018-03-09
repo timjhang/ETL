@@ -41,6 +41,12 @@ public class ETL_Profile {
 	// 難字表excel檔存放路徑
 	public final static String DifficultWords_Lists_Path = "C:/DifficultWords/%s.xlsx";
 	
+	// 連線GAML用URL string
+	public final static String db2UrlGAMLpre = "jdbc:db2://172.18.21.206:50000/GAML";
+	public final static String db2UrlGAMLafter = 
+			":currentschema=" + db2SPSchema + ";" +
+			"currentFunctionPath=" + db2SPSchema + ";";
+	
 	// 新北市農會附設北區農會電腦共用中心  951  相關參數
 	
 	// 財團法人農漁會南區資訊中心  952  相關參數

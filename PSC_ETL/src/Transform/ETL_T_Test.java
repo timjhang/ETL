@@ -2,9 +2,7 @@ package Transform;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.SQLType;
 import java.sql.Types;
-import java.util.Date;
 
 import DB.ConnectionHelper;
 import Profile.ETL_Profile;
