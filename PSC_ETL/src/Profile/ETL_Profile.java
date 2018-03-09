@@ -21,9 +21,13 @@ public class ETL_Profile {
 	// public final static String db2Url =
 	// "jdbc:db2://localhost:50000/sample:" +
 	// "currentschema=" + db2SPSchema + ";" +
-	// "currentFunctionPath=" + db2SPSchema + ";";
+//	 "currentFunctionPath=" + db2SPSchema + ";";
 	public final static String db2Url = "jdbc:db2://172.18.21.206:50000/ETLDB600:" + "currentschema=" + db2SPSchema
 			+ ";" + "currentFunctionPath=" + db2SPSchema + ";";
+//	public final static String db2Url = 
+//			   "jdbc:db2://172.18.6.152:50000/ETLDB002:" +
+//			   "currentschema=" + db2SPSchema + ";" +
+//			   "currentFunctionPath=" + db2SPSchema + ";";
 	// public final static String db2User = "IAN";
 	// public final static String db2Password = "Administrator7456";
 	public final static String db2User = "Administrator";

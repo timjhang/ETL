@@ -37,6 +37,10 @@ public class ETL_Bean_TRANSACTION_Data {
 	private BigDecimal repayment_principal;// 還款本金
 	private String ec_flag;// 更正記號
 	private String ordering_customer_country;// 申報國別
+	// TODO Transaction新規格，因目前客戶提供資料還有問題，暫時不更版 START
+//	private String surrogate_id;//代理人ID
+//	private BigDecimal fund_number_unit;// 特金信託申購/贖回單位數
+	// TODO Transaction新規格，因目前客戶提供資料還有問題，暫時不更版 END
 	private String error_mark = "";// 錯誤註記
 	private String upload_no;// 上傳批號(測試用)
 
@@ -279,6 +283,24 @@ public class ETL_Bean_TRANSACTION_Data {
 	public void setOrdering_customer_country(String ordering_customer_country) {
 		this.ordering_customer_country = ordering_customer_country;
 	}
+
+	// TODO Transaction新規格，因目前客戶提供資料還有問題，暫時不更版 START
+//	public String getSurrogate_id() {
+//		return surrogate_id;
+//	}
+//
+//	public void setSurrogate_id(String surrogate_id) {
+//		this.surrogate_id = surrogate_id;
+//	}
+//
+//	public BigDecimal getFund_number_unit() {
+//		return fund_number_unit;
+//	}
+//
+//	public void setFund_number_unit(BigDecimal fund_number_unit) {
+//		this.fund_number_unit = fund_number_unit;
+//	}
+	// TODO Transaction新規格，因目前客戶提供資料還有問題，暫時不更版 END
 
 	public String getError_mark() {
 		return error_mark;

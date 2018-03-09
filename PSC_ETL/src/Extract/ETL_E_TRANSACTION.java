@@ -1,6 +1,8 @@
 package Extract;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -576,6 +578,16 @@ public class ETL_E_TRANSACTION {
 										String.valueOf(rowCount), "申報國別", "當交易類型為 外幣現鈔時，需提供此欄位資料"));
 							}
 
+							// TODO Transaction新規格，因目前客戶提供資料還有問題，暫時不更版 START
+							//代理人ID O X(11)
+//							String surrogate_id = strQueue.popBytesString(11);
+//							data.setSurrogate_id(surrogate_id);
+
+							//特金信託申購/贖回單位數 O 9(12)V99
+//							String fund_number_unit = strQueue.popBytesString(14);
+//							data.setRepayment_principal(ETL_Tool_StringX.strToBigDecimal(fund_number_unit, 2));
+							// TODO Transaction新規格，因目前客戶提供資料還有問題，暫時不更版 END
+
 							// data list 加入一個檔案
 							addData(data);
 
@@ -966,6 +978,12 @@ public class ETL_E_TRANSACTION {
 		long time1, time2;
 		time1 = System.currentTimeMillis();
 
+//		byte[]  file_018= Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\018_L_TRANSACTION_20180131_______ - 複製.TXT"));
+//		byte[] file_600 = Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\600_R_TRANSACTION_20180221.TXT"));
+//		byte[] file_928_old = Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\928_K_TRANSACTION_20180105.TXT"));
+//		System.out.println("file_600: "+file_600.length);
+//		System.out.println("file_018: "+file_018.length);
+//		System.out.println("file_928_old: "+file_928_old.length);
 		one.read_Transaction_File(filePath, fileTypeName, "E9999999", "928",
 				new SimpleDateFormat("yyyyMMdd").parse("20180105"), "001", "ETL_E_TRANSACTION");
 
