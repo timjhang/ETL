@@ -41,13 +41,12 @@ public class KevinTest {
 		String runTable = "temp";
 
 		ETL_Bean_LogData logData = new ETL_Bean_LogData();
-		logData.setBATCH_NO("001");
-		logData.setCENTRAL_NO("600");
-		logData.setFILE_TYPE("tw");
-		logData.setPROGRAM_NO("001");
-
-		logData.setRECORD_DATE(new SimpleDateFormat("yyyyMMdd").parse("20171206"));
-		logData.setUPLOAD_NO("001");
+//		logData.setBATCH_NO("9999");
+//		logData.setCENTRAL_NO("600");
+//		logData.setPROGRAM_NO("ETL_T_PARTY_ADDRESS");
+//
+//		logData.setRECORD_DATE(new SimpleDateFormat("yyyyMMdd").parse("20171206"));
+//		logData.setUPLOAD_NO("001");
 		
 	
 	

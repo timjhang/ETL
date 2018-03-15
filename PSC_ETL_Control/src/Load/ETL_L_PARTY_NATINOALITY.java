@@ -20,7 +20,7 @@ public class ETL_L_PARTY_NATINOALITY {
 		try {
 			
 			// TODO
-			String sql = "{call " + ETL_Profile.db2TableSchema + ".Load.loadETL_PARTY_NATINOALITY_LOAD(?,?,?,?,?)}";
+			String sql = "{call " + ETL_Profile.db2TableSchema + ".Load.loadETL_PARTY_NATIONALITY_LOAD(?,?,?,?,?)}";
 			
 			Connection con = ConnectionHelper.getDB2Connection(logData.getCENTRAL_NO().trim());
 			CallableStatement cstmt = con.prepareCall(sql);

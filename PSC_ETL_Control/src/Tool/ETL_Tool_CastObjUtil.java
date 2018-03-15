@@ -21,7 +21,19 @@ public class ETL_Tool_CastObjUtil {
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
 			Class<?> clazz = field.getType();
-
+			
+			//FOR TEST
+//			if("java.lang.String".equals(clazz.getName())) {
+//				System.out.println("Name"+field.getName());
+//				java.lang.String mytestStr = (String) clazz
+//						.cast(PropertyUtils.getProperty(javaBean, field.getName()));
+//				if(mytestStr!=null) {
+//				System.out.println(mytestStr.length());
+//				}else {
+//					System.out.println(mytestStr+" is null");
+//				}
+//			}
+			
 			if ("java.util.Date".equals(clazz.getName())) {
 				java.util.Date utilDate = (java.util.Date) clazz
 						.cast(PropertyUtils.getProperty(javaBean, field.getName()));
@@ -30,6 +42,7 @@ public class ETL_Tool_CastObjUtil {
 			} else {
 
 				objs[i] = clazz.cast(PropertyUtils.getProperty(javaBean, field.getName()));
+				
 			}
 		}
 		return objs;

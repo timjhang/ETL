@@ -33,6 +33,12 @@ public class ETL_L_PARTY_ADDRESS {
 			cstmt.setString(4, runTable);
 			cstmt.registerOutParameter(5, Types.VARCHAR);
 			
+			
+			
+			  System.out.println("dataStruct:"+dataStruct+":dataStruct");
+			  System.out.println("fedServer:"+fedServer+":fedServer");
+			  System.out.println("runTable:"+runTable+":runTable");
+			
 			cstmt.execute();
 			
 			int returnCode = cstmt.getInt(1);
