@@ -6,7 +6,7 @@ import java.util.Date;
 
 import Tool.ETL_Tool_ParseFileName;
 
-public class ETL_Bean_TRANSACTION_Data {
+public class ETL_Bean_TRANSACTION_Data_Old {
 
 	private String central_no;// 報送單位
 	private Date record_date;// 檔案日期
@@ -38,13 +38,13 @@ public class ETL_Bean_TRANSACTION_Data {
 	private String ec_flag;// 更正記號
 	private String ordering_customer_country;// 申報國別
 	// TODO Transaction新規格 START
-	private String surrogate_id;//代理人ID
-	private BigDecimal fund_number_unit;// 特金信託申購/贖回單位數
+//	private String surrogate_id;//代理人ID
+//	private BigDecimal fund_number_unit;// 特金信託申購/贖回單位數
 	// TODO Transaction新規格 END
 	private String error_mark = "";// 錯誤註記
 	private String upload_no;// 上傳批號(測試用)
 
-	public ETL_Bean_TRANSACTION_Data(ETL_Tool_ParseFileName pfn) {
+	public ETL_Bean_TRANSACTION_Data_Old(ETL_Tool_ParseFileName pfn) {
 
 		this.central_no = pfn.getCentral_No();// 報送單位
 		this.record_date = pfn.getRecord_Date();// 檔案日期
@@ -285,21 +285,21 @@ public class ETL_Bean_TRANSACTION_Data {
 	}
 
 	// TODO Transaction新規格 START
-	public String getSurrogate_id() {
-		return surrogate_id;
-	}
-
-	public void setSurrogate_id(String surrogate_id) {
-		this.surrogate_id = surrogate_id;
-	}
-
-	public BigDecimal getFund_number_unit() {
-		return fund_number_unit;
-	}
-
-	public void setFund_number_unit(BigDecimal fund_number_unit) {
-		this.fund_number_unit = fund_number_unit;
-	}
+//	public String getSurrogate_id() {
+//		return surrogate_id;
+//	}
+//
+//	public void setSurrogate_id(String surrogate_id) {
+//		this.surrogate_id = surrogate_id;
+//	}
+//
+//	public BigDecimal getFund_number_unit() {
+//		return fund_number_unit;
+//	}
+//
+//	public void setFund_number_unit(BigDecimal fund_number_unit) {
+//		this.fund_number_unit = fund_number_unit;
+//	}
 	// TODO Transaction新規格 END
 
 	public String getError_mark() {

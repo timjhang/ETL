@@ -22,6 +22,7 @@ import Extract.ETL_E_PARTY_ADDRESS;
 import Extract.ETL_E_PARTY_PARTY_REL;
 import Extract.ETL_E_PARTY_PHONE;
 import Extract.ETL_E_TRANSACTION;
+import Extract.ETL_E_TRANSACTION_OLD;
 import Tool.ETL_Tool_FileByteUtil;
 import Tool.ETL_Tool_JBReader;
 
@@ -148,9 +149,31 @@ public class Test {
 //		PARTY();
 //		PARTY_PARTY_REL();
 		TRANSACTION();
+//		TRANSACTION_OLD();
 
 		time2 = System.currentTimeMillis();
 		System.out.println("花了：" + (time2 - time1) + "豪秒");
+	}
+
+	public static void TRANSACTION_OLD() throws IOException {
+		ETL_E_TRANSACTION_OLD program = new ETL_E_TRANSACTION_OLD();
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		Date exc_record_date = null;
+
+		try {
+			filePath = lines.get(0);
+			fileTypeName = "TRANSACTION";
+			batch_no = lines.get(1);
+			exc_central_no = lines.get(2);
+			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(lines.get(3));
+			upload_no = lines.get(4);
+			program_no = lines.get(5);
+			program.read_Transaction_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date, upload_no,
+					program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void PARTY_PARTY_REL() throws IOException {

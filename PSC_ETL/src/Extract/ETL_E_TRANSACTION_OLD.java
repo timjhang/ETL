@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import Bean.ETL_Bean_ErrorLog_Data;
-import Bean.ETL_Bean_TRANSACTION_Data;
+import Bean.ETL_Bean_TRANSACTION_Data_Old;
 import DB.ETL_P_Data_Writer;
 import DB.ETL_P_ErrorLog_Writer;
 import DB.ETL_P_Log;
@@ -18,14 +18,13 @@ import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
 import Tool.ETL_Tool_FileByteUtil;
-import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
 import Tool.ETL_Tool_StringX;
 
-public class ETL_E_TRANSACTION {
+public class ETL_E_TRANSACTION_OLD {
 
 	// 進階檢核參數
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
@@ -51,7 +50,7 @@ public class ETL_E_TRANSACTION {
 	private int dataCount = 0;
 
 	// Data儲存List
-	private List<ETL_Bean_TRANSACTION_Data> dataList = new ArrayList<ETL_Bean_TRANSACTION_Data>();
+	private List<ETL_Bean_TRANSACTION_Data_Old> dataList = new ArrayList<ETL_Bean_TRANSACTION_Data_Old>();
 
 	// class生成時, 取得所有檢核用子map, 置入母map內
 	{
@@ -121,7 +120,7 @@ public class ETL_E_TRANSACTION {
 
 				// TODO V5 START
 				ETL_Tool_FileByteUtil fileByteUtil = new ETL_Tool_FileByteUtil(parseFile.getAbsolutePath(),
-						ETL_E_TRANSACTION.class);//TODO
+						ETL_E_TRANSACTION_OLD.class);//TODO
 				// TODO V5 END
 
 				// 檔名
@@ -210,6 +209,7 @@ public class ETL_E_TRANSACTION {
 					//boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
 					// TODO V6 START
 					//int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					System.out.println(parseFile.getAbsolutePath());
 					int isFileOK = fileByteUtil.isFileOK(pfn, upload_no, parseFile.getAbsolutePath());
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
@@ -226,9 +226,9 @@ public class ETL_E_TRANSACTION {
 						// strQueue工具注入第一筆資料
 						strQueue.setTargetString();
 
-						// 檢查整行bytes數(1 + 7 + 8 + 493 = 509)
-						if (strQueue.getTotalByteLength() != 509) {
-							fileFmtErrMsg = "首錄位元數非預期509:" + strQueue.getTotalByteLength();
+						// 檢查整行bytes數(1 + 7 + 8 + 468 = 484)
+						if (strQueue.getTotalByteLength() != 484) {
+							fileFmtErrMsg = "首錄位元數非預期484:" + strQueue.getTotalByteLength();
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
@@ -294,19 +294,19 @@ public class ETL_E_TRANSACTION {
 							// TODO V5 END
 
 							// 生成一個Data
-							ETL_Bean_TRANSACTION_Data data = new ETL_Bean_TRANSACTION_Data(pfn);
+							ETL_Bean_TRANSACTION_Data_Old data = new ETL_Bean_TRANSACTION_Data_Old(pfn);
 							data.setRow_count(rowCount);
 
 							/*
 							 * 整行bytes數檢核(01+ 07+ 11+ 30+ 20+ 08+ 14+ 03+ 01+
 							 * 14+ 01+ 04+ 03+ 10+ 10+ 05+ 80+ 07+ 20+ 80+ 80+
-							 * 08+ 50+ 14+ 01+ 02 + 11 + 14 = 509)
+							 * 08+ 50+ 14+ 01+ 02 = 484)
 							 */
-							if (strQueue.getTotalByteLength() != 509) {
+							if (strQueue.getTotalByteLength() != 484) {
 								data.setError_mark("Y");
 								errWriter.addErrLog(
 										new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(rowCount),
-												"行數bytes檢查", "非預期509:" + strQueue.getTotalByteLength()));
+												"行數bytes檢查", "非預期484:" + strQueue.getTotalByteLength()));
 
 								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行
 								failureCount++;
@@ -580,12 +580,12 @@ public class ETL_E_TRANSACTION {
 
 							// TODO Transaction新規格 START
 							//代理人ID O X(11)
-							String surrogate_id = strQueue.popBytesString(11);
-							data.setSurrogate_id(surrogate_id);
+//							String surrogate_id = strQueue.popBytesString(11);
+//							data.setSurrogate_id(surrogate_id);
 
 							//特金信託申購/贖回單位數 O 9(12)V99
-							String fund_number_unit = strQueue.popBytesString(14);
-							data.setFund_number_unit(ETL_Tool_StringX.strToBigDecimal(fund_number_unit, 2));
+//							String fund_number_unit = strQueue.popBytesString(14);
+//							data.setRepayment_principal(ETL_Tool_StringX.strToBigDecimal(fund_number_unit, 2));
 							// TODO Transaction新規格 END
 
 							// data list 加入一個檔案
@@ -647,9 +647,9 @@ public class ETL_E_TRANSACTION {
 						strQueue.setTargetString();
 						//TODO V5 END
 						
-						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 486 = 509)
-						if (strQueue.getTotalByteLength() != 509) {
-							fileFmtErrMsg = "尾錄位元數非預期509:" + strQueue.getTotalByteLength();
+						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 461 = 484)
+						if (strQueue.getTotalByteLength() != 484) {
+							fileFmtErrMsg = "尾錄位元數非預期484:" + strQueue.getTotalByteLength();
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 									String.valueOf(rowCount), "行數bytes檢查", fileFmtErrMsg));
 						}
@@ -769,7 +769,7 @@ public class ETL_E_TRANSACTION {
 							ex.getMessage());
 					processErrMsg = processErrMsg + ex.getMessage() + "\n";
 
-					ex.printStackTrace();
+//					ex.printStackTrace();
 				}
 				// 累加TRANSACTION處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
@@ -817,7 +817,7 @@ public class ETL_E_TRANSACTION {
 	}
 
 	// List增加一個data
-	private void addData(ETL_Bean_TRANSACTION_Data data) throws Exception {
+	private void addData(ETL_Bean_TRANSACTION_Data_Old data) throws Exception {
 		this.dataList.add(data);
 		this.dataCount++;
 
@@ -835,11 +835,11 @@ public class ETL_E_TRANSACTION {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		// 呼叫TRANSACTION寫入DB2 - SP
-		insertAdapter.setSql("{call SP_INSERT_TRANSACTION_TEMP(?)}");
+		insertAdapter.setSql("{call SP_INSERT_TRANSACTION_OLD(?)}");
 		// DB2 type - TRANSACTION
-		insertAdapter.setCreateStructTypeName("T_TRANSACTION");
+		insertAdapter.setCreateStructTypeName("T_T_TEMP_OLD");
 		// DB2 array type - TRANSACTION
-		insertAdapter.setCreateArrayTypesName("A_TRANSACTION");
+		insertAdapter.setCreateArrayTypesName("A_T_TEMP_OLD");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
@@ -971,7 +971,7 @@ public class ETL_E_TRANSACTION {
 		// }
 
 		// 讀取測試資料，並運行程式
-		ETL_E_TRANSACTION one = new ETL_E_TRANSACTION();
+		ETL_E_TRANSACTION_OLD one = new ETL_E_TRANSACTION_OLD();
 		String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
 		String fileTypeName = "TRANSACTION";
 
@@ -984,8 +984,8 @@ public class ETL_E_TRANSACTION {
 //		System.out.println("file_600: "+file_600.length);
 //		System.out.println("file_018: "+file_018.length);
 //		System.out.println("file_928_old: "+file_928_old.length);
-		one.read_Transaction_File(filePath, fileTypeName, "E9999999", "605",
-				new SimpleDateFormat("yyyyMMdd").parse("20180313"), "001", "ETL_E_TRANSACTION");
+		one.read_Transaction_File(filePath, fileTypeName, "E9999999", "928",
+				new SimpleDateFormat("yyyyMMdd").parse("20180105"), "001", "ETL_E_TRANSACTION");
 
 		time2 = System.currentTimeMillis();
 		System.out.println("花了：" + (time2 - time1) + "豪秒");

@@ -698,7 +698,7 @@ public class ETL_E_PARTY_ADDRESS {
 		ETL_E_PARTY_ADDRESS one = new ETL_E_PARTY_ADDRESS();
 		String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
 		String fileTypeName = "PARTY_ADDRESS";
-		one.read_Party_Address_File(filePath, fileTypeName, "ETL00001", "018",
-				new SimpleDateFormat("yyyyMMdd").parse("20180116"), "001", "ETL_E_PARTY_ADDRESS");
+		one.read_Party_Address_File(filePath, fileTypeName, "ETL00001", "600",
+				new SimpleDateFormat("yyyyMMdd").parse("20171206"), "001", "ETL_E_PARTY_ADDRESS");
 	}
 }

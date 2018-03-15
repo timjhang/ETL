@@ -5,6 +5,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Struct;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +57,22 @@ public class ETL_P_Data_Writer {
 							//將Object[]的轉換成Struct		 ps:一個Object[] =代表一個 row
 							structArr[i] = con.createStruct(insertAdapter.getCreateStructTypeName(), insertArrs.get(i));
 						}
+
 						//structArrs轉換成Array
 						Array array = con.createArrayOf(insertAdapter.getCreateStructTypeName(), structArr);
 
 						cstmt.setArray(1, array);
+//						cstmt.registerOutParameter(2, Types.INTEGER); // 取得回傳寫入失敗筆數
+						
 						cstmt.execute();
+						
 						con.commit();
+						
+						// 取得寫入失敗筆數
+//						int errorCount = cstmt.getInt(2);
+						// 存入錯誤筆數
+//						insertAdapter.setErrorCount(errorCount);
+						
 						insertArrs.clear();
 					}
 				} catch (SqlDataException e) {

@@ -806,7 +806,7 @@ public class ETL_E_COLLATERAL {
 		String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
 		String fileTypeName = "COLLATERAL";
 		one.read_Collateral_File(filePath, fileTypeName, "ETL00001", "600",
-				new SimpleDateFormat("yyyyMMdd").parse("20171031"), "001", "ETL_E_COLLATERAL");
+				new SimpleDateFormat("yyyyMMdd").parse("20180221"), "001", "ETL_E_COLLATERAL");
 	}
 
 }

@@ -59,6 +59,9 @@ public class ETL_E_PARTY {
 
 	// list data筆數
 	private int dataCount = 0;
+	
+	// insert errorLog fail Count  // TODO V6_2
+	private int totleErrorCount = 0;
 
 	// Data儲存List
 	private List<ETL_Bean_PARTY_Data> dataList = new ArrayList<ETL_Bean_PARTY_Data>();
@@ -1296,8 +1299,8 @@ public class ETL_E_PARTY {
 					// file_exe_result_description);
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate,
-							(successCount + failureCount), // TODO V5
-							successCount, failureCount, file_exe_result, file_exe_result_description);
+							(successCount + failureCount), successCount - this.totleErrorCount, failureCount + this.totleErrorCount, // TODO V6_2
+							file_exe_result, file_exe_result_description);
 
 				} catch (Exception ex) {
 					// 寫入Error_Log
@@ -1378,7 +1381,7 @@ public class ETL_E_PARTY {
 		}
 
 		InsertAdapter insertAdapter = new InsertAdapter();
-		insertAdapter.setSql("{call SP_INSERT_PARTY_TEMP(?)}"); // 呼叫PARTY_PHONE寫入DB2
+		insertAdapter.setSql("{call SP_INSERT_PARTY_TEMP(?,?)}"); // 呼叫PARTY_PHONE寫入DB2  // TODO V6_2
 																// - SP
 		insertAdapter.setCreateArrayTypesName("A_PARTY"); // DB2 array type -
 															// PARTY_PHONE
@@ -1387,9 +1390,11 @@ public class ETL_E_PARTY {
 		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage); // 設定上限寫入參數
 
 		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
+		int errorCount = insertAdapter.getErrorCount(); // TODO V6_2
 
 		if (isSuccess) {
-			System.out.println("insert_Party_Datas 寫入 " + this.dataList.size() + " 筆資料!");
+			System.out.println("insert_Party_Datas 寫入 " + (this.dataList.size() - errorCount) + " 筆資料!"); // TODO V6_2
+			this.totleErrorCount = this.totleErrorCount + errorCount; // TODO V6_2
 		} else {
 			throw new Exception("insert_Party_Datas 發生錯誤");
 		}
@@ -1418,7 +1423,7 @@ public class ETL_E_PARTY {
 		long time1, time2;
 		time1 = System.currentTimeMillis();
 
-		one.read_Party_File(filePath, fileTypeName, "E9999999", "605",
+		one.read_Party_File(filePath, fileTypeName, "E9999998", "605",
 				new SimpleDateFormat("yyyyMMdd").parse("20180227"), "001", "ETL_E_PARTY");
 
 		time2 = System.currentTimeMillis();

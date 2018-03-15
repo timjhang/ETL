@@ -58,6 +58,9 @@ public class ETL_Tool_FileByteUtil {
 		case "ETL_E_TRANSACTION":
 			this.buffer_size = ETL_Profile.ETL_E_TRANSACTION;
 			break;
+		case "ETL_E_TRANSACTION_OLD":
+			this.buffer_size = ETL_Profile.ETL_E_TRANSACTION_OLD;
+			break;
 		case "ETL_E_LOAN_DETAIL":
 			this.buffer_size = ETL_Profile.ETL_E_LOAN_DETAIL;
 			break;

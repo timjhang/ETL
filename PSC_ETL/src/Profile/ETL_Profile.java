@@ -22,12 +22,12 @@ public class ETL_Profile {
 	// "jdbc:db2://localhost:50000/sample:" +
 	// "currentschema=" + db2SPSchema + ";" +
 //	 "currentFunctionPath=" + db2SPSchema + ";";
-	public final static String db2Url = "jdbc:db2://172.18.21.206:50000/ETLDB600:" + "currentschema=" + db2SPSchema
-			+ ";" + "currentFunctionPath=" + db2SPSchema + ";";
-//	public final static String db2Url = 
-//			   "jdbc:db2://172.18.6.152:50000/ETLDB002:" +
-//			   "currentschema=" + db2SPSchema + ";" +
-//			   "currentFunctionPath=" + db2SPSchema + ";";
+//	public final static String db2Url = "jdbc:db2://172.18.21.206:50000/ETLDB600:" + "currentschema=" + db2SPSchema
+//			+ ";" + "currentFunctionPath=" + db2SPSchema + ";";
+	public final static String db2Url = 
+			   "jdbc:db2://172.18.6.152:50000/ETLDB002:" +
+			   "currentschema=" + db2SPSchema + ";" +
+			   "currentFunctionPath=" + db2SPSchema + ";";
 	// public final static String db2User = "IAN";
 	// public final static String db2Password = "Administrator7456";
 	public final static String db2User = "Administrator";
@@ -87,6 +87,7 @@ public class ETL_Profile {
 	public final static int ETL_E_PARTY_ADDRESS = 63;
 	public final static int ETL_E_ACCOUNT = 56;
 	public final static int ETL_E_TRANSACTION = 242;
+	public final static int ETL_E_TRANSACTION_OLD = 204;
 	public final static int ETL_E_LOAN_DETAIL = 56;
 	public final static int ETL_E_LOAN = 107;
 	public final static int ETL_E_COLLATERAL = 101;

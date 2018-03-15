@@ -13,6 +13,8 @@ public class InsertAdapter {
 	private String createStructTypeName;
 	// DB2 Array type名稱
 	private String createArrayTypesName;
+	// 紀錄insert Error Log失敗比數用
+	private int errorCount;
 	
 	public int getTypeArrayLength() {
 		return typeArrayLength;
@@ -44,6 +46,14 @@ public class InsertAdapter {
 	
 	public void setCreateArrayTypesName(String createArrayTypesName) {
 		this.createArrayTypesName = createArrayTypesName;
+	}
+
+	public int getErrorCount() {
+		return errorCount;
+	}
+
+	public void setErrorCount(int errorCount) {
+		this.errorCount = errorCount;
 	}
 	
 }
