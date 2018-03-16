@@ -60,8 +60,8 @@ public class ConnectionHelper {
 	public static Connection getDB2ConnGAML(String central_No) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Class.forName(Profile.ETL_Profile.db2Driver).newInstance();
 		String url = Profile.ETL_Profile.db2UrlGAMLpre + central_No + Profile.ETL_Profile.db2UrlGAMLafter;
-		String user = Profile.ETL_Profile.db2User;
-		String password = Profile.ETL_Profile.db2Password;
+		String user = Profile.ETL_Profile.GAML_db2User;
+		String password = Profile.ETL_Profile.GAML_db2Password;
 		
 		System.out.println(user + " 連線  " + url + " ...");
 		Connection con = DriverManager.getConnection(url, user, password);

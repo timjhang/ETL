@@ -52,12 +52,13 @@ public class ETL_T_PARTY_PARTY_REL {
 		
 		ETL_T_PARTY_PARTY_REL one = new ETL_T_PARTY_PARTY_REL();
 		ETL_Bean_LogData two = new ETL_Bean_LogData();
-		two.setBATCH_NO("1");
-		two.setCENTRAL_NO("2");
+		two.setBATCH_NO("2");
+		two.setCENTRAL_NO("600");
 		two.setFILE_TYPE("3");
 		two.setPROGRAM_NO("4");
 		two.setUPLOAD_NO("5");
 		two.setRECORD_DATE(new java.util.Date());
+		two.setBEFORE_ETL_PROCESS_DATE(new java.util.Date());
 		
 		one.trans_to_PARTY_PARTY_REL_LOAD(two); // TODO
 		

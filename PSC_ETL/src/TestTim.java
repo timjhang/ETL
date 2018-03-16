@@ -9,21 +9,27 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Struct;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ibm.db2.jcc.DB2Types;
+
 import DB.ConnectionHelper;
 import DB.ETL_P_Log;
 import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_PHONE;
 import Profile.ETL_Profile;
+import Tool.ETL_Tool_CastObjUtil;
 import Tool.ETL_Tool_FileByteUtil;
 import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FormatCheck;
@@ -48,13 +54,54 @@ public class TestTim {
 //			date.setTime(0);
 //			System.out.println(date);
 			
+			
 //			testNewInput();
 			
-			testQueryDetailLog();
+//			testQueryDetailLog();
+			
+			testCursor();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public static void testCursor() {
+		
+		System.out.println("#######testCursor - Start");
+		try {
+			
+			// TODO
+			String sql = "{call " + ETL_Profile.db2TableSchema + ".Tool.getCodePairs(?,?,?,?,?)}";
+			
+			Connection con = ConnectionHelper.getDB2Connection();
+			CallableStatement cstmt = con.prepareCall(sql);
+			
+			cstmt.registerOutParameter(1, Types.INTEGER);
+			cstmt.setString(2, "");
+			cstmt.setString(3, "COMM_DOMAIN_ID");
+			cstmt.registerOutParameter(4, DB2Types.CURSOR);
+			cstmt.registerOutParameter(5, Types.VARCHAR);
+			
+			cstmt.execute();
+			
+			int returnCode = cstmt.getInt(1);
+			
+			if (returnCode != 0) {
+				String errorMessage = cstmt.getString(5);
+	            throw new Exception("Error Code = " + returnCode + ", Error Message : " + errorMessage);
+			}
+			
+			java.sql.ResultSet rs = (java.sql.ResultSet)cstmt.getObject(4);
+			while (rs.next()) {
+	        	System.out.println(rs.getString(1) + " " + rs.getString(2)); // test
+	        	
+			}
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		System.out.println("#######testCursor - End");
 	}
 	
 	public static void testQueryDetailLog() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, ParseException {
@@ -69,42 +116,42 @@ public class TestTim {
 		
 	}
 	
-	public static void testNewInput() throws Exception {
-		
-		File parseFile = new File("C:/Users/10404003/Desktop/農經/2018/180205/test/018_CF_PARTY_20180116.TXT");
-//		File parseFile = new File("C:/Tim/test.TXT");
-		
-		// ETL_字串處理Queue
-		ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue("952");
-		ETL_Tool_StringQueue strQueue2 = new ETL_Tool_StringQueue("952");
-		
-		List<byte[]> array = ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath());
-		// 讀檔並將結果注入ETL_字串處理Queue  // TODO V4
-		strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
-		strQueue2.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
-		
-		System.out.println("array size = " + array.size());
-		
-		for (int i = 0 ; i < array.size(); i++) {
-//			strQueue.setTargetString();
-			strQueue2.setTargetString();
-//			System.out.println(strQueue.getTotalByteLength());
-//			String str = strQueue.popBytesString(strQueue.getTotalByteLength());
-//			System.out.println(str);
-//			System.out.println("1, " + str.getBytes().length);
-			String str2 = strQueue2.popBytesDiffString(strQueue2.getTotalByteLength());
-			System.out.println(str2);
-//			System.out.println("2, " + str2.getBytes().length);
-//			byte[] oneAry = new byte[1];
-//			oneAry[0] = array.get(i)[0];
-//			System.out.println(new String(oneAry, "UTF8"));
-//			System.out.println(new String(oneAry, "UTF8").equals("2"));
-			
-		}
-		
-		System.out.println(ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList()));
-		
-	}
+//	public static void testNewInput() throws Exception {
+//		
+//		File parseFile = new File("C:/Users/10404003/Desktop/農經/2018/180205/test/018_CF_PARTY_20180116.TXT");
+////		File parseFile = new File("C:/Tim/test.TXT");
+//		
+//		// ETL_字串處理Queue
+//		ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue("952");
+//		ETL_Tool_StringQueue strQueue2 = new ETL_Tool_StringQueue("952");
+//		
+//		List<byte[]> array = ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath());
+//		// 讀檔並將結果注入ETL_字串處理Queue  // TODO V4
+//		strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
+//		strQueue2.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
+//		
+//		System.out.println("array size = " + array.size());
+//		
+//		for (int i = 0 ; i < array.size(); i++) {
+////			strQueue.setTargetString();
+//			strQueue2.setTargetString();
+////			System.out.println(strQueue.getTotalByteLength());
+////			String str = strQueue.popBytesString(strQueue.getTotalByteLength());
+////			System.out.println(str);
+////			System.out.println("1, " + str.getBytes().length);
+//			String str2 = strQueue2.popBytesDiffString(strQueue2.getTotalByteLength());
+//			System.out.println(str2);
+////			System.out.println("2, " + str2.getBytes().length);
+////			byte[] oneAry = new byte[1];
+////			oneAry[0] = array.get(i)[0];
+////			System.out.println(new String(oneAry, "UTF8"));
+////			System.out.println(new String(oneAry, "UTF8").equals("2"));
+//			
+//		}
+//		
+//		System.out.println(ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList()));
+//		
+//	}
 	
 	public static void testInput() {
 		try {
