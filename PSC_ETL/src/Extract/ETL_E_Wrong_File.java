@@ -23,21 +23,33 @@ public class ETL_E_Wrong_File {
 
 	};
 
-	// class生成時, 取得所有檢核用子map, 置入母map內
-	{
-		try {
-			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-		} catch (Exception ex) {
-			checkMaps = null;
-
-			System.out.println("ETL_E_FCX 抓取checkMaps資料有誤!"); 
-			ex.printStackTrace();
-		}
-	};
+//	// class生成時, 取得所有檢核用子map, 置入母map內
+//	{
+//		try {
+//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+//		} catch (Exception ex) {
+//			checkMaps = null;
+//
+//			System.out.println("ETL_E_FCX 抓取checkMaps資料有誤!"); 
+//			ex.printStackTrace();
+//		}
+//	};
 
 	// 取得錯誤檔名 並寫入到error Log
 	public void record_Error_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
+		
+		// TODO V6_2 start
+		// 取得所有檢核用子map, 置入母map內
+		try {
+
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
+		} catch (Exception ex) {
+			checkMaps = null;
+			System.out.println("ETL_E_PARTY_PHONE 抓取checkMaps資料有誤!"); // TODO V6_2
+			ex.printStackTrace();
+		}
+		// TODO V6_2 end
 
 		try {
 			System.out.println("#######Extrace - ETL_E_Wrong_File - Start");

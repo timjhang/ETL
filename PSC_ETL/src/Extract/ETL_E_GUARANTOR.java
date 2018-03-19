@@ -9,6 +9,7 @@ import java.util.Map;
 import Bean.ETL_Bean_ErrorLog_Data;
 import Bean.ETL_Bean_GUARANTOR_TEMP_Data;
 import DB.ETL_P_Data_Writer;
+import DB.ETL_P_EData_Filter;
 import DB.ETL_P_ErrorLog_Writer;
 import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
@@ -43,28 +44,44 @@ public class ETL_E_GUARANTOR {
 
 	// list data筆數
 	private int dataCount = 0;
+	
+	// insert errorLog fail Count  // TODO V6_2
+	private int oneFileInsertErrorCount = 0;
 
 	// Data儲存List
 	private List<ETL_Bean_GUARANTOR_TEMP_Data> dataList = new ArrayList<ETL_Bean_GUARANTOR_TEMP_Data>();
 
-	// class生成時, 取得所有檢核用子map, 置入母map內
-	{
-		try {
-
-			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-
-		} catch (Exception ex) {
-			checkMaps = null;
-			System.out.println("ETL_E_GUARANTOR 抓取checkMaps資料有誤!");
-			ex.printStackTrace();
-		}
-	};
+//	// class生成時, 取得所有檢核用子map, 置入母map內
+//	{
+//		try {
+//
+//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+//
+//		} catch (Exception ex) {
+//			checkMaps = null;
+//			System.out.println("ETL_E_GUARANTOR 抓取checkMaps資料有誤!");
+//			ex.printStackTrace();
+//		}
+//	};
 
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
 	// 回傳boolean 成功(true)/失敗(false)
 	public void read_Guarantor_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
+
+		// TODO V6_2 start
+		// 取得所有檢核用子map, 置入母map內
+		try {
+
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
+		} catch (Exception ex) {
+			checkMaps = null;
+			System.out.println("ETL_E_GUARANTOR 抓取checkMaps資料有誤!"); // TODO V6_2
+			ex.printStackTrace();
+		}
+		// TODO V6_2 end
+		
 		System.out.println("#######Extrace - ETL_E_GUARANTOR - Start");
 
 		try {
@@ -478,6 +495,14 @@ public class ETL_E_GUARANTOR {
 					}
 
 					insert_GUARANTOR_TEMP_Datas();
+					
+					// TODO V6_2 start
+					// 修正筆數, 考慮寫入資料庫時寫入失敗的狀況
+					successCount = successCount - this.oneFileInsertErrorCount;
+					failureCount = failureCount + this.oneFileInsertErrorCount;
+					// 單一檔案寫入DB error個數重計
+					this.oneFileInsertErrorCount = 0;
+					// TODO V6_2 end
 
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行 // TODO V4
@@ -594,6 +619,10 @@ public class ETL_E_GUARANTOR {
 							(successCount + failureCount), successCount, failureCount, file_exe_result,
 							file_exe_result_description);
 				} catch (Exception ex) {
+					// 發生錯誤時, 資料List & 計數 reset // TODO V6_2
+					this.dataCount = 0; 
+					this.dataList.clear();
+					
 					// 寫入Error_Log
 					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
 							"E", "0", "ETL_E_GUARANTOR程式處理", ex.getMessage(), null); // TODO V4 NEW
@@ -612,6 +641,23 @@ public class ETL_E_GUARANTOR {
 
 			}
 
+			// TODO V6_2 Start
+			// 過濾軌跡資料
+			try {
+
+				ETL_P_EData_Filter.E_Datas_Filter("filter_GUARANTOR_Temp_Temp", // TODO v6_2
+						batch_no, exc_central_no, exc_record_date, upload_no, program_no);
+
+			} catch (Exception ex) {
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no, "E",
+						"0", "ETL_E_GUARANTOR程式處理", ex.getMessage(), null); // TODO v6_2
+				processErrMsg = processErrMsg + ex.getMessage() + "\n";
+
+				ex.printStackTrace();
+			}
+			// TODO V6_2 End
+			
 			// 執行結果
 			String detail_exe_result;
 			// 執行結果說明
@@ -674,15 +720,17 @@ public class ETL_E_GUARANTOR {
 		}
 
 		InsertAdapter insertAdapter = new InsertAdapter();
-		insertAdapter.setSql("{call SP_INSERT_GUARANTOR_TEMP(?)}");
+		insertAdapter.setSql("{call SP_INSERT_GUARANTOR_TEMP(?,?)}");
 		insertAdapter.setCreateArrayTypesName("A_GUARANTOR_TEMP");
 		insertAdapter.setCreateStructTypeName("T_GUARANTOR_TEMP");
 		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage); // 設定上限寫入參數
 
-		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
-
+		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject2(this.dataList, insertAdapter); // TODO V6_2
+		int errorCount = insertAdapter.getErrorCount(); // TODO V6_2
+		
 		if (isSuccess) {
 			System.out.println("insert_GUARANTOR_TEMP_Datas 寫入 " + this.dataList.size() + " 筆資料!");
+			this.oneFileInsertErrorCount = this.oneFileInsertErrorCount + errorCount; // TODO V6_2
 		} else {
 			throw new Exception("insert_GUARANTOR_TEMP_Datas 發生錯誤");
 		}

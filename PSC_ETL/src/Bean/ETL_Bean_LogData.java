@@ -46,7 +46,7 @@ public class ETL_Bean_LogData {
 //	private String SRC_FILE; // 來源檔案
 	
 	//前代日期
-	private String BEFORE_ETL_PROCESS_DATE;
+	private Date BEFORE_ETL_PROCESS_DATE;
 	
 	
 	public String getBATCH_NO() {
@@ -97,13 +97,14 @@ public class ETL_Bean_LogData {
 		PROGRAM_NO = pROGRAM_NO;
 	}
 
-	public String getBEFORE_ETL_PROCESS_DATE() {
+	public Date getBEFORE_ETL_PROCESS_DATE() {
 		return BEFORE_ETL_PROCESS_DATE;
 	}
 
-	public void setBEFORE_ETL_PROCESS_DATE(String bEFORE_ETL_PROCESS_DATE) {
+	public void setBEFORE_ETL_PROCESS_DATE(Date bEFORE_ETL_PROCESS_DATE) {
 		BEFORE_ETL_PROCESS_DATE = bEFORE_ETL_PROCESS_DATE;
 	}
+
 	
 
 }

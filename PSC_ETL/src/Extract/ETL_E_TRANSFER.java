@@ -42,28 +42,44 @@ public class ETL_E_TRANSFER {
 
 	// list data筆數
 	private int dataCount = 0;
+	
+	// insert errorLog fail Count // TODO V6_2
+	private int oneFileInsertErrorCount = 0;
 
 	// Data儲存List
 	private List<ETL_Bean_TRANSFER_TEMP_Data> dataList = new ArrayList<ETL_Bean_TRANSFER_TEMP_Data>();
 
 	// class生成時, 取得所有檢核用子map, 置入母map內
-	{
-		try {
-
-			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-
-		} catch (Exception ex) {
-			checkMaps = null;
-			System.out.println("ETL_E_TRANSFER 抓取checkMaps資料有誤!");
-			ex.printStackTrace();
-		}
-	};
+//	{
+//		try {
+//
+//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+//
+//		} catch (Exception ex) {
+//			checkMaps = null;
+//			System.out.println("ETL_E_TRANSFER 抓取checkMaps資料有誤!");
+//			ex.printStackTrace();
+//		}
+//	};
 
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
 	// 回傳boolean 成功(true)/失敗(false)
 	public void read_Transfer_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
+		
+		// TODO V6_2 start
+		// 取得所有檢核用子map, 置入母map內
+		try {
+
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
+		} catch (Exception ex) {
+			checkMaps = null;
+			System.out.println("ETL_E_TRANSFER 抓取checkMaps資料有誤!"); // TODO V6_2
+			ex.printStackTrace();
+		}
+		// TODO V6_2 end
+		
 		System.out.println("#######Extrace - ETL_E_TRANSFER - Start");
 
 		try {
@@ -565,6 +581,14 @@ public class ETL_E_TRANSFER {
 					}
 
 					insert_TRANSFER_TEMP_Datas();
+					
+					// TODO V6_2 start
+					// 修正筆數, 考慮寫入資料庫時寫入失敗的狀況
+					successCount = successCount - this.oneFileInsertErrorCount;
+					failureCount = failureCount + this.oneFileInsertErrorCount;
+					// 單一檔案寫入DB error個數重計
+					this.oneFileInsertErrorCount = 0;
+					// TODO V6_2 end
 
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
@@ -680,6 +704,11 @@ public class ETL_E_TRANSFER {
 							(successCount + failureCount), successCount, failureCount, file_exe_result,
 							file_exe_result_description);
 				} catch (Exception ex) {
+					// 發生錯誤時, 資料List & 計數 reset // TODO V6_2
+					this.dataCount = 0; 
+					this.dataList.clear();
+					
+					
 					// 寫入Error_Log
 					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
 							"E", "0", "ETL_E_TRANSFER程式處理", ex.getMessage(), null); // TODO V4 NEW
@@ -766,19 +795,21 @@ public class ETL_E_TRANSFER {
 		}
 
 		InsertAdapter insertAdapter = new InsertAdapter();
-		insertAdapter.setSql("{call SP_INSERT_TRANSFER_TEMP(?)}"); // 呼叫寫入DB2 - SP
+		insertAdapter.setSql("{call SP_INSERT_TRANSFER_TEMP(?,?)}"); // 呼叫寫入DB2 - SP
 		insertAdapter.setCreateArrayTypesName("A_TRANSFER_TEMP"); // DB2 array type
 		insertAdapter.setCreateStructTypeName("T_TRANSFER_TEMP"); // DB2 type
 		insertAdapter.setTypeArrayLength(ETL_Profile.Data_Stage); // 設定上限寫入參數
 
-		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
+		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject2(this.dataList, insertAdapter); // TODO V6_2
+		int errorCount = insertAdapter.getErrorCount(); // TODO V6_2
 
 		if (isSuccess) {
-			System.out.println("insert_TRANSFER_TEMP_Datas 寫入 " + this.dataList.size() + " 筆資料!");
+			System.out.println("insert_TRANSFER_Datas 寫入 " + this.dataList.size() + "(-" + errorCount + ")筆資料!"); // TODO V6_2
+			this.oneFileInsertErrorCount = this.oneFileInsertErrorCount + errorCount; // TODO V6_2
 		} else {
-			throw new Exception("insert_TRANSFER_TEMP_Datas 發生錯誤");
+			throw new Exception("insert_TRANSFER_Datas 發生錯誤");
 		}
-
+		
 		this.dataCount = 0;
 		this.dataList.clear();
 	}

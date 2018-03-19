@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ETL_Tool_FileReader {
 	
-	public static boolean forTest = false;
+	public static boolean forTest = true;
 	
 	// 取得目標檔名資料List
 	public static List<File> getTargetFileList(String filePath, String fileTypeName) throws Exception {
