@@ -209,7 +209,10 @@ public class ETL_E_CALENDAR {
 					int isFileOK = fileByteUtil.isFileOK(pfn, upload_no, parseFile.getAbsolutePath());
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
-
+					// TODO V5 END 
+					
+				     fileFmtErrMsg = isFileFormatOK ? "":"區別碼錯誤";
+					
 					// 首錄檢查
 					if (isFileFormatOK) {
 

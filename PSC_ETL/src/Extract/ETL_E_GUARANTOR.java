@@ -218,6 +218,8 @@ public class ETL_E_GUARANTOR {
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
+					
+					fileFmtErrMsg = isFileFormatOK ? "" : "區別碼錯誤";
 
 					// 首錄檢查
 					if (isFileFormatOK) {
