@@ -63,7 +63,7 @@ public class ETL_C_Master {
 		// for test
 		Date record_date;
 		try {
-			record_date = new SimpleDateFormat("yyyyMMdd").parse("20171206");
+			record_date = new SimpleDateFormat("yyyyMMdd").parse("20180313");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			record_date = new Date();
