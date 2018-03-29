@@ -1,11 +1,8 @@
 package Extract;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +10,7 @@ import java.util.Map;
 import Bean.ETL_Bean_ACCOUNT_Data;
 import Bean.ETL_Bean_ErrorLog_Data;
 import DB.ETL_P_Data_Writer;
+import DB.ETL_P_EData_Filter;
 import DB.ETL_P_ErrorLog_Writer;
 import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
@@ -54,22 +52,25 @@ public class ETL_E_ACCOUNT {
 
 	// list data筆數
 	private int dataCount = 0;
+	
+	// insert errorLog fail Count  // TODO V6_2
+	private int oneFileInsertErrorCount = 0;
 
 	// Data儲存List
 	private List<ETL_Bean_ACCOUNT_Data> dataList = new ArrayList<ETL_Bean_ACCOUNT_Data>();
 
-	// class生成時, 取得所有檢核用子map, 置入母map內
-	{
-		try {
-
-			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-
-		} catch (Exception ex) {
-			checkMaps = null;
-			System.out.println("ETL_E_ACCOUNT 抓取checkMaps資料有誤!");
-			ex.printStackTrace();
-		}
-	};
+	// class生成時, 取得所有檢核用子map, 置入母map內 // TODO V6_2
+//	{
+//		try {
+//
+//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+//
+//		} catch (Exception ex) {
+//			checkMaps = null;
+//			System.out.println("ETL_E_ACCOUNT 抓取checkMaps資料有誤!");
+//			ex.printStackTrace();
+//		}
+//	};
 
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
@@ -84,6 +85,18 @@ public class ETL_E_ACCOUNT {
 	public void read_Account_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
 
+		// TODO  V6_2 start
+		// 取得所有檢核用子map, 置入母map內
+		try {
+
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
+		} catch (Exception ex) {
+			checkMaps = null;
+			System.out.println("ETL_E_ACCOUNT 抓取checkMaps資料有誤!"); // TODO  V6_2
+			ex.printStackTrace();
+		}
+		// TODO  V6_2 end
+		
 		System.out.println("#######Extrace - ETL_E_ACCOUNT - Start");
 
 		try {
@@ -221,6 +234,9 @@ public class ETL_E_ACCOUNT {
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
+					// TODO V6_3 start
+					fileFmtErrMsg = isFileFormatOK ? "":"區別碼錯誤";
+					// TODO V6_3 END
 
 					// 首錄檢查
 					if (isFileFormatOK) {
@@ -616,6 +632,14 @@ public class ETL_E_ACCOUNT {
 
 					// Account_Data寫入DB
 					insert_Account_Datas();
+					
+					// TODO V6_2 start
+					// 修正筆數, 考慮寫入資料庫時寫入失敗的狀況
+					successCount = successCount - this.oneFileInsertErrorCount;
+					failureCount = failureCount + this.oneFileInsertErrorCount;
+					// 單一檔案寫入DB error個數重計
+					this.oneFileInsertErrorCount = 0;
+					// TODO V6_2 end
 
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
@@ -733,11 +757,13 @@ public class ETL_E_ACCOUNT {
 							(successCount + failureCount), // TODO V5
 							successCount, failureCount, file_exe_result, file_exe_result_description);
 				} catch (Exception ex) {
+					// 發生錯誤時, 資料List & 計數 reset // TODO V6_2
+					this.dataCount = 0; 
+					this.dataList.clear();
+					
 					// 寫入Error_Log
 					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
-							"E", "0", "ETL_E_ACCOUNT程式處理", ex.getMessage(), null); // TODO
-																					// V4
-																					// NEW
+							"E", "0", "ETL_E_ACCOUNT程式處理", ex.getMessage(), null); 
 
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
@@ -750,6 +776,24 @@ public class ETL_E_ACCOUNT {
 				// 累加處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
+			
+			// TODO V6_2 Start
+			// 過濾軌跡資料
+			try {
+				
+				ETL_P_EData_Filter.E_Datas_Filter("filter_Account_Temp_Temp", // TODO v6_2
+						batch_no, exc_central_no, exc_record_date, upload_no, program_no);
+				
+			} catch (Exception ex) {
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
+						"E", "0", "ETL_E_ACCOUNT程式處理", ex.getMessage(), null); // TODO v6_2
+				processErrMsg = processErrMsg + ex.getMessage() + "\n";
+				
+				ex.printStackTrace();
+			}
+			// TODO V6_2 End
+			
 			// 執行結果
 			String detail_exe_result;
 			// 執行結果說明
@@ -813,17 +857,19 @@ public class ETL_E_ACCOUNT {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		// 呼叫ACCOUNT寫入DB2 - SP
-		insertAdapter.setSql("{call SP_INSERT_ACCOUNT_TEMP(?)}");
+		insertAdapter.setSql("{call SP_INSERT_ACCOUNT_TEMP(?,?)}");// TODO V6_2
 		// DB2 type - ACCOUNT
 		insertAdapter.setCreateStructTypeName("T_ACCOUNT");
 		// DB2 array type - ACCOUNT
 		insertAdapter.setCreateArrayTypesName("A_ACCOUNT");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
-		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
+		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject2(this.dataList, insertAdapter); // TODO V6_2
+		int errorCount = insertAdapter.getErrorCount(); // TODO V6_2
 
 		if (isSuccess) {
-			System.out.println("insert_Account_Datas 寫入 " + this.dataList.size() + " 筆資料!");
+			System.out.println("insert_Account_Datas 寫入 " + this.dataList.size() + "(-" + errorCount + ")筆資料!"); // TODO V6_2
+			this.oneFileInsertErrorCount = this.oneFileInsertErrorCount + errorCount; // TODO V6_2
 		} else {
 			throw new Exception("insert_Account_Datas 發生錯誤");
 		}
@@ -836,51 +882,51 @@ public class ETL_E_ACCOUNT {
 	public static void main(String[] argv) throws Exception {
 
 		// 讀取測試資料，並只列出明細錄欄位
-		Charset charset = Charset.forName("Big5");
-		List<String> lines = Files
-				.readAllLines(Paths.get("D:\\PSC\\Projects\\AgriBank\\單元測試報告\\018_FR_ACCOUNT_20180116.txt"), charset);
-
-		if (lines.size() > 2) {
-
-			lines.remove(0);
-			lines.remove(lines.size() - 1);
-
-			System.out.println(
-					"============================================================================================");
-			for (String line : lines) {
-				byte[] tmp = line.getBytes(charset);
-				System.out.println("第" + (lines.indexOf(line) + 1) + "行");
-				System.out.println("位元組長度: " + tmp.length);
-				System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
-				System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
-				System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
-				System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
-				System.out.println("帳號X(30): " + new String(Arrays.copyOfRange(tmp, 20, 50), "Big5"));
-				System.out.println("帳戶行X(07): " + new String(Arrays.copyOfRange(tmp, 50, 57), "Big5"));
-				System.out.println("帳戶類別X(02): " + new String(Arrays.copyOfRange(tmp, 57, 59), "Big5"));
-				System.out.println("連結服務X(01): " + new String(Arrays.copyOfRange(tmp, 59, 60), "Big5"));
-				System.out.println("幣別X(03): " + new String(Arrays.copyOfRange(tmp, 60, 63), "Big5"));
-				System.out.println("帳戶狀態X(01): " + new String(Arrays.copyOfRange(tmp, 63, 64), "Big5"));
-				System.out.println("開戶管道X(01): " + new String(Arrays.copyOfRange(tmp, 64, 65), "Big5"));
-				System.out.println("開戶日期X(08): " + new String(Arrays.copyOfRange(tmp, 65, 73), "Big5"));
-				System.out.println("結清(銷戶)日期X(08): " + new String(Arrays.copyOfRange(tmp, 73, 81), "Big5"));
-				System.out.println("帳戶餘額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 81, 82), "Big5"));
-				System.out.println("帳戶餘額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 82, 96), "Big5"));
-				System.out.println("過去一個月平均餘額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 96, 97), "Big5"));
-				System.out.println("過去一個月平均餘額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 97, 111), "Big5"));
-				System.out.println("警示註記X(02): " + new String(Arrays.copyOfRange(tmp, 111, 113), "Big5"));
-				System.out.println(
-						"============================================================================================");
-			}
-		}
+//		Charset charset = Charset.forName("Big5");
+//		List<String> lines = Files
+//				.readAllLines(Paths.get("D:\\PSC\\Projects\\AgriBank\\單元測試報告\\018_FR_ACCOUNT_20180116.txt"), charset);
+//
+//		if (lines.size() > 2) {
+//
+//			lines.remove(0);
+//			lines.remove(lines.size() - 1);
+//
+//			System.out.println(
+//					"============================================================================================");
+//			for (String line : lines) {
+//				byte[] tmp = line.getBytes(charset);
+//				System.out.println("第" + (lines.indexOf(line) + 1) + "行");
+//				System.out.println("位元組長度: " + tmp.length);
+//				System.out.println("區別碼X(01): " + new String(Arrays.copyOfRange(tmp, 0, 1), "Big5"));
+//				System.out.println("本會代號X(07): " + new String(Arrays.copyOfRange(tmp, 1, 8), "Big5"));
+//				System.out.println("客戶統編X(11): " + new String(Arrays.copyOfRange(tmp, 8, 19), "Big5"));
+//				System.out.println("異動代號X(01): " + new String(Arrays.copyOfRange(tmp, 19, 20), "Big5"));
+//				System.out.println("帳號X(30): " + new String(Arrays.copyOfRange(tmp, 20, 50), "Big5"));
+//				System.out.println("帳戶行X(07): " + new String(Arrays.copyOfRange(tmp, 50, 57), "Big5"));
+//				System.out.println("帳戶類別X(02): " + new String(Arrays.copyOfRange(tmp, 57, 59), "Big5"));
+//				System.out.println("連結服務X(01): " + new String(Arrays.copyOfRange(tmp, 59, 60), "Big5"));
+//				System.out.println("幣別X(03): " + new String(Arrays.copyOfRange(tmp, 60, 63), "Big5"));
+//				System.out.println("帳戶狀態X(01): " + new String(Arrays.copyOfRange(tmp, 63, 64), "Big5"));
+//				System.out.println("開戶管道X(01): " + new String(Arrays.copyOfRange(tmp, 64, 65), "Big5"));
+//				System.out.println("開戶日期X(08): " + new String(Arrays.copyOfRange(tmp, 65, 73), "Big5"));
+//				System.out.println("結清(銷戶)日期X(08): " + new String(Arrays.copyOfRange(tmp, 73, 81), "Big5"));
+//				System.out.println("帳戶餘額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 81, 82), "Big5"));
+//				System.out.println("帳戶餘額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 82, 96), "Big5"));
+//				System.out.println("過去一個月平均餘額正負號X(01): " + new String(Arrays.copyOfRange(tmp, 96, 97), "Big5"));
+//				System.out.println("過去一個月平均餘額9(12)V99: " + new String(Arrays.copyOfRange(tmp, 97, 111), "Big5"));
+//				System.out.println("警示註記X(02): " + new String(Arrays.copyOfRange(tmp, 111, 113), "Big5"));
+//				System.out.println(
+//						"============================================================================================");
+//			}
+//		}
 
 		// 讀取測試資料，並運行程式
-		// ETL_E_ACCOUNT one = new ETL_E_ACCOUNT();
-		// String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
-		// String fileTypeName = "ACCOUNT";
-		// one.read_Account_File(filePath, fileTypeName, "ETL00001", "951",
-		// new SimpleDateFormat("yyyyMMdd").parse("20180124"), "001",
-		// "ETL_E_ACCOUNT");
+		 ETL_E_ACCOUNT one = new ETL_E_ACCOUNT();
+		 String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
+		 String fileTypeName = "ACCOUNT";
+		 one.read_Account_File(filePath, fileTypeName, "ETL12146", "600",
+		 new SimpleDateFormat("yyyyMMdd").parse("20180227"), "001",
+		 "ETL_E_ACCOUNT");
 	}
 
 }

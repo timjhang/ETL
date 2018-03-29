@@ -53,17 +53,17 @@ public class ETL_E_TRANSACTION_OLD {
 	private List<ETL_Bean_TRANSACTION_Data_Old> dataList = new ArrayList<ETL_Bean_TRANSACTION_Data_Old>();
 
 	// class生成時, 取得所有檢核用子map, 置入母map內
-	{
-		try {
-
-			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-
-		} catch (Exception ex) {
-			checkMaps = null;
-			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!");
-			ex.printStackTrace();
-		}
-	};
+//	{
+//		try {
+//
+//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+//
+//		} catch (Exception ex) {
+//			checkMaps = null;
+//			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!");
+//			ex.printStackTrace();
+//		}
+//	};
 
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
@@ -78,6 +78,19 @@ public class ETL_E_TRANSACTION_OLD {
 	public void read_Transaction_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
 
+		// TODO  V6_2 start
+		// 取得所有檢核用子map, 置入母map內
+		try {
+
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
+			
+		} catch (Exception ex) {
+			checkMaps = null;
+			System.out.println("ETL_E_PARTY_PHONE 抓取checkMaps資料有誤!"); // TODO  V6_2
+			ex.printStackTrace();
+		}
+		// TODO  V6_2 end		
+		
 		System.out.println("#######Extrace - ETL_E_TRANSACTION - Start");
 
 		try {
@@ -214,6 +227,9 @@ public class ETL_E_TRANSACTION_OLD {
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
+					// TODO V6_3 start
+					fileFmtErrMsg = isFileFormatOK ? "":"區別碼錯誤";
+					// TODO V6_3 END
 
 					// 首錄檢查
 					if (isFileFormatOK) {
@@ -984,8 +1000,8 @@ public class ETL_E_TRANSACTION_OLD {
 //		System.out.println("file_600: "+file_600.length);
 //		System.out.println("file_018: "+file_018.length);
 //		System.out.println("file_928_old: "+file_928_old.length);
-		one.read_Transaction_File(filePath, fileTypeName, "E9999999", "928",
-				new SimpleDateFormat("yyyyMMdd").parse("20180105"), "001", "ETL_E_TRANSACTION");
+		one.read_Transaction_File(filePath, fileTypeName, "E0000001", "600",
+				new SimpleDateFormat("yyyyMMdd").parse("20171206"), "001", "ETL_E_TRANSACTION");
 
 		time2 = System.currentTimeMillis();
 		System.out.println("花了：" + (time2 - time1) + "豪秒");

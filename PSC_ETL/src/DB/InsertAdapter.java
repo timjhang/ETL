@@ -1,7 +1,5 @@
 package DB;
 
-import java.util.List;
-
 public class InsertAdapter {
 	// insert DB2輔助class
 	

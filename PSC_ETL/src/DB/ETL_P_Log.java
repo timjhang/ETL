@@ -69,7 +69,7 @@ public class ETL_P_Log {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		String sql_statement = 
-				" INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_FILE_LOG ( " +
+				" INSERT INTO " + ETL_Profile.GAML_db2TableSchema + ".ETL_FILE_LOG ( " +
 					" BATCH_NO, " +
 					" CENTRAL_NO, " +
 					" RECORD_DATE, " +
@@ -87,7 +87,7 @@ public class ETL_P_Log {
 					" SRC_FILE " +
 				") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		Connection con = ConnectionHelper.getDB2Connection();
+		Connection con = ConnectionHelper.getDB2ConnGAML("DB");
 		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setString(1, BATCH_NO);
@@ -144,7 +144,7 @@ public class ETL_P_Log {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		String sql_statement = 
-				" UPDATE " + ETL_Profile.db2TableSchema + ".ETL_FILE_LOG SET " +
+				" UPDATE " + ETL_Profile.GAML_db2TableSchema + ".ETL_FILE_LOG SET " +
 					" END_DATETIME = ?, " +
 					" TOTAL_CNT = ?, " +
 					" SUCCESS_CNT = ?, " +
@@ -160,7 +160,7 @@ public class ETL_P_Log {
 					" AND STEP_TYPE = ? "
 				;
 
-		Connection con = ConnectionHelper.getDB2Connection();
+		Connection con = ConnectionHelper.getDB2ConnGAML("DB");
 		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setTimestamp(1, new Timestamp(END_DATETIME.getTime()));
@@ -217,7 +217,7 @@ public class ETL_P_Log {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		String insert_query = 
-				" UPDATE " + ETL_Profile.db2TableSchema + ".ETL_FILE_LOG SET " +
+				" UPDATE " + ETL_Profile.GAML_db2TableSchema + ".ETL_FILE_LOG SET " +
 					" END_DATETIME = ?, " +
 					" TOTAL_CNT = ?, " +
 					" SUCCESS_CNT = ?, " +
@@ -232,7 +232,7 @@ public class ETL_P_Log {
 					" AND STEP_TYPE = ? "
 				;
 
-		Connection con = ConnectionHelper.getDB2Connection();
+		Connection con = ConnectionHelper.getDB2ConnGAML("DB");
 		PreparedStatement pstmt = con.prepareStatement(insert_query);
 
 		pstmt.setTimestamp(1, new Timestamp(END_DATETIME.getTime()));
@@ -349,7 +349,7 @@ public class ETL_P_Log {
 			java.util.Date end_datetime) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		String sql_statement = 
-				" INSERT INTO " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG ( " +
+				" INSERT INTO " + ETL_Profile.GAML_db2TableSchema + ".ETL_DETAIL_LOG ( " +
 					" BATCH_NO, " +
 					" CENTRAL_NO, " +
 					" RECORD_DATE, " +
@@ -363,7 +363,7 @@ public class ETL_P_Log {
 					" END_DATETIME " +
 				" ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
-		Connection con = ConnectionHelper.getDB2Connection();
+		Connection con = ConnectionHelper.getDB2ConnGAML("DB");
 		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setString(1, batch_no);
@@ -413,7 +413,7 @@ public class ETL_P_Log {
 			String program_no, String exe_status, String exe_result, String exe_result_description, java.util.Date end_datetime
 			) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		String sql_statement = " UPDATE " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG " +
+		String sql_statement = " UPDATE " + ETL_Profile.GAML_db2TableSchema + ".ETL_DETAIL_LOG " +
 				" SET " +
 					" EXE_STATUS = ? ," +
 					" EXE_RESULT = ? ," +
@@ -427,7 +427,7 @@ public class ETL_P_Log {
 					" AND STEP_TYPE = ? " +
 					" AND PROGRAM_NO = ? ";
 
-		Connection con = ConnectionHelper.getDB2Connection();
+		Connection con = ConnectionHelper.getDB2ConnGAML("DB");
 		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		
@@ -474,7 +474,7 @@ public class ETL_P_Log {
 		int resultCount = 0;
 		
 		String sql_statement = 
-				" SELECT COUNT(*) FROM  " + ETL_Profile.db2TableSchema + ".ETL_DETAIL_LOG " +
+				" SELECT COUNT(*) FROM  " + ETL_Profile.GAML_db2TableSchema + ".ETL_DETAIL_LOG " +
 				" WHERE " +
 					" BATCH_NO = ? " +
 					" AND CENTRAL_NO = ? " +
@@ -483,7 +483,7 @@ public class ETL_P_Log {
 					" AND STEP_TYPE = ? " +
 					" AND PROGRAM_NO = ? ";
 
-		Connection con = ConnectionHelper.getDB2Connection();
+		Connection con = ConnectionHelper.getDB2ConnGAML("DB");
 		PreparedStatement pstmt = con.prepareStatement(sql_statement);
 
 		pstmt.setString(1, batch_no);

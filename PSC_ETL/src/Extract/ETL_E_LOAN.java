@@ -1,15 +1,8 @@
 package Extract;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +10,13 @@ import java.util.Map;
 import Bean.ETL_Bean_ErrorLog_Data;
 import Bean.ETL_Bean_LOAN_Data;
 import DB.ETL_P_Data_Writer;
+import DB.ETL_P_EData_Filter;
 import DB.ETL_P_ErrorLog_Writer;
 import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
 import Tool.ETL_Tool_FileByteUtil;
-import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
@@ -53,22 +46,25 @@ public class ETL_E_LOAN {
 
 	// list data筆數
 	private int dataCount = 0;
+	
+	// insert errorLog fail Count  // TODO V6_2
+	private int oneFileInsertErrorCount = 0;
 
 	// Data儲存List
 	private List<ETL_Bean_LOAN_Data> dataList = new ArrayList<ETL_Bean_LOAN_Data>();
 
 	// class生成時, 取得所有檢核用子map, 置入母map內
-	{
-		try {
-
-			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-
-		} catch (Exception ex) {
-			checkMaps = null;
-			System.out.println("ETL_E_LOAN 抓取checkMaps資料有誤!");
-			ex.printStackTrace();
-		}
-	};
+//	{
+//		try {
+//
+//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+//
+//		} catch (Exception ex) {
+//			checkMaps = null;
+//			System.out.println("ETL_E_LOAN 抓取checkMaps資料有誤!");
+//			ex.printStackTrace();
+//		}
+//	};
 
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
@@ -82,7 +78,19 @@ public class ETL_E_LOAN {
 	// program_no 程式代號
 	public void read_Loan_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
+		
+		// TODO  V6_2 start
+		// 取得所有檢核用子map, 置入母map內
+		try {
 
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
+		} catch (Exception ex) {
+			checkMaps = null;
+			System.out.println("ETL_E_LOAN 抓取checkMaps資料有誤!"); // TODO  V6_2
+			ex.printStackTrace();
+		}
+		// TODO  V6_2 end
+		
 		System.out.println("#######Extrace - ETL_E_LOAN - Start");
 
 		try {
@@ -219,6 +227,9 @@ public class ETL_E_LOAN {
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
+					// TODO V6_3 start
+					fileFmtErrMsg = isFileFormatOK ? "":"區別碼錯誤";
+					// TODO V6_3 END
 
 					// 首錄檢查
 					if (isFileFormatOK) {
@@ -599,6 +610,14 @@ public class ETL_E_LOAN {
 
 					// Loan_Data寫入DB
 					insert_Loan_Datas();
+					
+					// TODO V6_2 start
+					// 修正筆數, 考慮寫入資料庫時寫入失敗的狀況
+					successCount = successCount - this.oneFileInsertErrorCount;
+					failureCount = failureCount + this.oneFileInsertErrorCount;
+					// 單一檔案寫入DB error個數重計
+					this.oneFileInsertErrorCount = 0;
+					// TODO V6_2 end
 
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
@@ -719,11 +738,13 @@ public class ETL_E_LOAN {
 							successCount, failureCount, file_exe_result, file_exe_result_description);
 
 				} catch (Exception ex) {
+					// 發生錯誤時, 資料List & 計數 reset // TODO V6_2
+					this.dataCount = 0; 
+					this.dataList.clear();
+					
 					// 寫入Error_Log
 					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
-							"E", "0", "ETL_E_PARTY_PHONE程式處理", ex.getMessage(), null); // TODO
-																						// V4
-																						// NEW
+							"E", "0", "ETL_E_LOAN程式處理", ex.getMessage(), null);
 
 					// 執行錯誤更新ETL_FILE_Log
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
@@ -736,6 +757,24 @@ public class ETL_E_LOAN {
 				// 累加LOAN處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
+			
+			// TODO V6_2 Start
+			// 過濾軌跡資料
+			try {
+				
+				ETL_P_EData_Filter.E_Datas_Filter("filter_Loan_Temp_Temp", // TODO v6_2
+						batch_no, exc_central_no, exc_record_date, upload_no, program_no);
+				
+			} catch (Exception ex) {
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
+						"E", "0", "ETL_E_LOAN程式處理", ex.getMessage(), null); // TODO v6_2
+				processErrMsg = processErrMsg + ex.getMessage() + "\n";
+				
+				ex.printStackTrace();
+			}
+			// TODO V6_2 End
+			
 			// 執行結果
 			String detail_exe_result;
 			// 執行結果說明
@@ -767,9 +806,7 @@ public class ETL_E_LOAN {
 		} catch (Exception ex) {
 			// 寫入Error_Log
 			ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no, "E",
-					"0", "ETL_E_PARTY_PHONE程式處理", ex.getMessage(), null); // TODO
-																			// V4
-																			// NEW
+					"0", "ETL_E_LOAN程式處理", ex.getMessage(), null);
 
 			// 處理後更新ETL_Detail_Log
 			ETL_P_Log.update_End_ETL_Detail_Log(batch_no, exc_central_no, exc_record_date, upload_no, "E", program_no,
@@ -800,17 +837,19 @@ public class ETL_E_LOAN {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		// 呼叫LOAN寫入DB2 - SP
-		insertAdapter.setSql("{call SP_INSERT_LOAN_TEMP(?)}");
+		insertAdapter.setSql("{call SP_INSERT_LOAN_TEMP(?,?)}");// TODO V6_2
 		// DB2 type - LOAN
 		insertAdapter.setCreateStructTypeName("T_LOAN");
 		// DB2 array type - LOAN
 		insertAdapter.setCreateArrayTypesName("A_LOAN");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
-		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
+		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject2(this.dataList, insertAdapter); // TODO V6_2
+		int errorCount = insertAdapter.getErrorCount(); // TODO V6_2
 
 		if (isSuccess) {
-			System.out.println("insert_Loan_Datas 寫入 " + this.dataList.size() + " 筆資料!");
+			System.out.println("insert_Loan_Datas 寫入 " + this.dataList.size() + "(-" + errorCount + ")筆資料!"); // TODO V6_2
+			this.oneFileInsertErrorCount = this.oneFileInsertErrorCount + errorCount; // TODO V6_2
 		} else {
 			throw new Exception("insert_Loan_Datas 發生錯誤");
 		}
@@ -865,8 +904,8 @@ public class ETL_E_LOAN {
 		ETL_E_LOAN one = new ETL_E_LOAN();
 		String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
 		String fileTypeName = "LOAN";
-		one.read_Loan_File(filePath, fileTypeName, "ETL00001", "605",
-				new SimpleDateFormat("yyyyMMdd").parse("20180212"), "001", "ETL_E_LOAN");
+		one.read_Loan_File(filePath, fileTypeName, "ETL00001", "600",
+				new SimpleDateFormat("yyyyMMdd").parse("20180221"), "001", "ETL_E_LOAN");
 	}
 
 }

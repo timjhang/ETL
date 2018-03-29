@@ -1,14 +1,11 @@
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,14 +14,11 @@ import Extract.ETL_E_ACCOUNT;
 import Extract.ETL_E_COLLATERAL;
 import Extract.ETL_E_LOAN;
 import Extract.ETL_E_LOAN_DETAIL;
-import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_ADDRESS;
-import Extract.ETL_E_PARTY_PARTY_REL;
 import Extract.ETL_E_PARTY_PHONE;
 import Extract.ETL_E_TRANSACTION;
 import Extract.ETL_E_TRANSACTION_OLD;
 import Tool.ETL_Tool_FileByteUtil;
-import Tool.ETL_Tool_JBReader;
 
 public class Test {
 	public static boolean isMatch(byte[] pattern, byte[] input, int pos) {
@@ -145,10 +139,7 @@ public class Test {
 //		LOAN_DETAIL();
 //		LOAN();
 //		PARTY_ADDRESS();
-//		PARTY_PHONE();
-//		PARTY();
-//		PARTY_PARTY_REL();
-		TRANSACTION();
+//		TRANSACTION();
 //		TRANSACTION_OLD();
 
 		time2 = System.currentTimeMillis();
@@ -171,48 +162,6 @@ public class Test {
 			program_no = lines.get(5);
 			program.read_Transaction_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date, upload_no,
 					program_no);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void PARTY_PARTY_REL() throws IOException {
-		ETL_E_PARTY_PARTY_REL program = new ETL_E_PARTY_PARTY_REL();
-		List<String> lines = getProperties("C:\\ETL\\properties.txt");
-		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
-		Date exc_record_date = null;
-
-		try {
-			filePath = lines.get(0);
-			fileTypeName = "PARTY_PARTY_REL";
-			batch_no = lines.get(1);
-			exc_central_no = lines.get(2);
-			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(lines.get(3));
-			upload_no = lines.get(4);
-			program_no = lines.get(5);
-			program.read_Party_Party_Rel_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
-					upload_no, program_no);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void PARTY() throws IOException {
-		ETL_E_PARTY program = new ETL_E_PARTY();
-		List<String> lines = getProperties("C:\\ETL\\properties.txt");
-		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
-		Date exc_record_date = null;
-
-		try {
-			filePath = lines.get(0);
-			fileTypeName = "PARTY";
-			batch_no = lines.get(1);
-			exc_central_no = lines.get(2);
-			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(lines.get(3));
-			upload_no = lines.get(4);
-			program_no = lines.get(5);
-			program.read_Party_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
-					upload_no, program_no);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

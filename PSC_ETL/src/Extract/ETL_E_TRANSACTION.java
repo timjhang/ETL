@@ -1,8 +1,6 @@
 package Extract;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,13 +10,13 @@ import java.util.Map;
 import Bean.ETL_Bean_ErrorLog_Data;
 import Bean.ETL_Bean_TRANSACTION_Data;
 import DB.ETL_P_Data_Writer;
+import DB.ETL_P_EData_Filter;
 import DB.ETL_P_ErrorLog_Writer;
 import DB.ETL_P_Log;
 import DB.ETL_Q_ColumnCheckCodes;
 import DB.InsertAdapter;
 import Profile.ETL_Profile;
 import Tool.ETL_Tool_FileByteUtil;
-import Tool.ETL_Tool_FileFormat;
 import Tool.ETL_Tool_FileReader;
 import Tool.ETL_Tool_FormatCheck;
 import Tool.ETL_Tool_ParseFileName;
@@ -49,22 +47,25 @@ public class ETL_E_TRANSACTION {
 
 	// list data筆數
 	private int dataCount = 0;
+	
+	// insert errorLog fail Count  // TODO V6_2
+	private int oneFileInsertErrorCount = 0;
 
 	// Data儲存List
 	private List<ETL_Bean_TRANSACTION_Data> dataList = new ArrayList<ETL_Bean_TRANSACTION_Data>();
 
-	// class生成時, 取得所有檢核用子map, 置入母map內
-	{
-		try {
-
-			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-
-		} catch (Exception ex) {
-			checkMaps = null;
-			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!");
-			ex.printStackTrace();
-		}
-	};
+	// class生成時, 取得所有檢核用子map, 置入母map內 // TODO V6_2
+//	{
+//		try {
+//
+//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+//
+//		} catch (Exception ex) {
+//			checkMaps = null;
+//			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!");
+//			ex.printStackTrace();
+//		}
+//	};
 
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
@@ -79,6 +80,19 @@ public class ETL_E_TRANSACTION {
 	public void read_Transaction_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
 
+		// TODO  V6_2 start
+		// 取得所有檢核用子map, 置入母map內
+		try {
+
+			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
+		
+		} catch (Exception ex) {
+			checkMaps = null;
+			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!"); // TODO  V6_2
+			ex.printStackTrace();
+		}
+		// TODO  V6_2 end
+		
 		System.out.println("#######Extrace - ETL_E_TRANSACTION - Start");
 
 		try {
@@ -214,6 +228,9 @@ public class ETL_E_TRANSACTION {
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
+					// TODO V6_3 start
+					fileFmtErrMsg = isFileFormatOK ? "":"區別碼錯誤";
+					// TODO V6_3 END
 
 					// 首錄檢查
 					if (isFileFormatOK) {
@@ -639,6 +656,14 @@ public class ETL_E_TRANSACTION {
 					
 					// Transaction_Data寫入DB
 					insert_Transaction_Datas();
+					
+					// TODO V6_2 start
+					// 修正筆數, 考慮寫入資料庫時寫入失敗的狀況
+					successCount = successCount - this.oneFileInsertErrorCount;
+					failureCount = failureCount + this.oneFileInsertErrorCount;
+					// 單一檔案寫入DB error個數重計
+					this.oneFileInsertErrorCount = 0;
+					// TODO V6_2 end
 
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) {// 沒有嚴重錯誤時進行
@@ -759,6 +784,10 @@ public class ETL_E_TRANSACTION {
 							(successCount + failureCount), // TODO V5
 							successCount, failureCount, file_exe_result, file_exe_result_description);
 				} catch (Exception ex) {
+					// 發生錯誤時, 資料List & 計數 reset // TODO V6_2
+					this.dataCount = 0; 
+					this.dataList.clear();
+					
 					// 寫入Error_Log
 					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
 							"E", "0", "ETL_E_TRANSACTION程式處理", ex.getMessage(), null);
@@ -774,6 +803,24 @@ public class ETL_E_TRANSACTION {
 				// 累加TRANSACTION處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
+			
+			// TODO V6_2 Start
+			// 過濾軌跡資料
+			try {
+				
+				ETL_P_EData_Filter.E_Datas_Filter("filter_Transaction_Temp_Temp", // TODO v6_2
+						batch_no, exc_central_no, exc_record_date, upload_no, program_no);
+				
+			} catch (Exception ex) {
+				// 寫入Error_Log
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
+						"E", "0", "ETL_E_TRANSACTION程式處理", ex.getMessage(), null); // TODO v6_2
+				processErrMsg = processErrMsg + ex.getMessage() + "\n";
+				
+				ex.printStackTrace();
+			}
+			// TODO V6_2 End
+
 			// 執行結果
 			String detail_exe_result;
 			// 執行結果說明
@@ -835,17 +882,19 @@ public class ETL_E_TRANSACTION {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		// 呼叫TRANSACTION寫入DB2 - SP
-		insertAdapter.setSql("{call SP_INSERT_TRANSACTION_TEMP(?)}");
+		insertAdapter.setSql("{call SP_INSERT_TRANSACTION_TEMP(?,?)}");// TODO V6_2
 		// DB2 type - TRANSACTION
 		insertAdapter.setCreateStructTypeName("T_TRANSACTION");
 		// DB2 array type - TRANSACTION
 		insertAdapter.setCreateArrayTypesName("A_TRANSACTION");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
-		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject(this.dataList, insertAdapter);
-
+		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject2(this.dataList, insertAdapter); // TODO V6_2
+		int errorCount = insertAdapter.getErrorCount(); // TODO V6_2
+		
 		if (isSuccess) {
-			System.out.println("insert_Transaction_Datas 寫入 " + this.dataList.size() + " 筆資料!");
+			System.out.println("insert_Transaction_Datas 寫入 " + this.dataList.size() + "(-" + errorCount + ")筆資料!"); // TODO V6_2
+			this.oneFileInsertErrorCount = this.oneFileInsertErrorCount + errorCount; // TODO V6_2
 		} else {
 			throw new Exception("insert_Transaction_Datas 發生錯誤");
 		}
