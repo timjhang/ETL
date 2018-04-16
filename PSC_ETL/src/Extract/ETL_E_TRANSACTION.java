@@ -1033,8 +1033,8 @@ public class ETL_E_TRANSACTION {
 //		System.out.println("file_600: "+file_600.length);
 //		System.out.println("file_018: "+file_018.length);
 //		System.out.println("file_928_old: "+file_928_old.length);
-		one.read_Transaction_File(filePath, fileTypeName, "E9999999", "605",
-				new SimpleDateFormat("yyyyMMdd").parse("20180313"), "001", "ETL_E_TRANSACTION");
+		one.read_Transaction_File(filePath, fileTypeName, "E7777833", "600",
+				new SimpleDateFormat("yyyyMMdd").parse("20180409"), "001", "ETL_E_TRANSACTION");
 
 		time2 = System.currentTimeMillis();
 		System.out.println("花了：" + (time2 - time1) + "豪秒");

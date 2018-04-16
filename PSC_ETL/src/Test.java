@@ -139,7 +139,7 @@ public class Test {
 //		LOAN_DETAIL();
 //		LOAN();
 //		PARTY_ADDRESS();
-//		TRANSACTION();
+		TRANSACTION();
 //		TRANSACTION_OLD();
 
 		time2 = System.currentTimeMillis();

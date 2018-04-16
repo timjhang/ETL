@@ -924,8 +924,8 @@ public class ETL_E_ACCOUNT {
 		 ETL_E_ACCOUNT one = new ETL_E_ACCOUNT();
 		 String filePath = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST";
 		 String fileTypeName = "ACCOUNT";
-		 one.read_Account_File(filePath, fileTypeName, "ETL12146", "600",
-		 new SimpleDateFormat("yyyyMMdd").parse("20180227"), "001",
+		 one.read_Account_File(filePath, fileTypeName, "IAN00002", "018",
+		 new SimpleDateFormat("yyyyMMdd").parse("20180331"), "001",
 		 "ETL_E_ACCOUNT");
 	}
 

@@ -33,6 +33,11 @@ public class ETL_Profile {
 			"jdbc:db2://172.18.6.152:50000/ETLDB002:" +
 			"currentschema=" + db2SPSchema + ";" +
 			"currentFunctionPath=" + db2SPSchema + ";";
+	
+//	public final static String db2Url = 
+//			"jdbc:db2://172.18.6.151:50000/ETLDB001:" +
+//			"currentschema=" + db2SPSchema + ";" +
+//			"currentFunctionPath=" + db2SPSchema + ";";
 	public final static String db2User = "Administrator";
 	public final static String db2Password = "9ol.)P:?";
 	
@@ -47,6 +52,9 @@ public class ETL_Profile {
 	
 	// 難字表excel檔存放路徑
 	public final static String DifficultWords_Lists_Path = "C:/DifficultWords/%s.xlsx";
+	
+	// 特殊符號及罕見字表excel檔存放路徑
+	public final static String SpecialWords_Lists_Path = "C:/SpecialBig5Words/SpecialBig5Words.xlsx";
 	
 	// 連線GAML用URL string
 	public final static String GAML_db2User = "GAMLETL";
