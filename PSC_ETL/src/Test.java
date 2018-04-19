@@ -134,12 +134,12 @@ public class Test {
 		long time1, time2;
 		time1 = System.currentTimeMillis();
 
-//		ACCOUNT();
+		ACCOUNT();
 //		COLLATERAL();
 //		LOAN_DETAIL();
 //		LOAN();
 //		PARTY_ADDRESS();
-		TRANSACTION();
+//		TRANSACTION();
 //		TRANSACTION_OLD();
 
 		time2 = System.currentTimeMillis();

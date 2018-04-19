@@ -28,6 +28,9 @@ public class ETL_E_TRANSACTION {
 	// 進階檢核參數
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
+	// 是否印出欄位長度
+//	private boolean isPrintStringLength = false;
+
 	// 欄位檢核用陣列
 	private String[][] checkMapArray = { { "comm_file_type", "COMM_FILE_TYPE" }, // 業務別
 			{ "domain_id", "COMM_DOMAIN_ID" }, // 本會代號
@@ -47,25 +50,25 @@ public class ETL_E_TRANSACTION {
 
 	// list data筆數
 	private int dataCount = 0;
-	
-	// insert errorLog fail Count  // TODO V6_2
+
+	// insert errorLog fail Count // TODO V6_2
 	private int oneFileInsertErrorCount = 0;
 
 	// Data儲存List
 	private List<ETL_Bean_TRANSACTION_Data> dataList = new ArrayList<ETL_Bean_TRANSACTION_Data>();
 
 	// class生成時, 取得所有檢核用子map, 置入母map內 // TODO V6_2
-//	{
-//		try {
-//
-//			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
-//
-//		} catch (Exception ex) {
-//			checkMaps = null;
-//			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!");
-//			ex.printStackTrace();
-//		}
-//	};
+	// {
+	// try {
+	//
+	// checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(checkMapArray);
+	//
+	// } catch (Exception ex) {
+	// checkMaps = null;
+	// System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!");
+	// ex.printStackTrace();
+	// }
+	// };
 
 	// 讀取檔案
 	// 根據(1)代號 (2)年月日yyyyMMdd, 開啟讀檔路徑中符合檔案
@@ -80,19 +83,20 @@ public class ETL_E_TRANSACTION {
 	public void read_Transaction_File(String filePath, String fileTypeName, String batch_no, String exc_central_no,
 			Date exc_record_date, String upload_no, String program_no) throws Exception {
 
-		// TODO  V6_2 start
+		// TODO V6_2 start
 		// 取得所有檢核用子map, 置入母map內
 		try {
 
 			checkMaps = new ETL_Q_ColumnCheckCodes().getCheckMaps(exc_record_date, exc_central_no, checkMapArray);
-		
+
 		} catch (Exception ex) {
 			checkMaps = null;
-			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!"); // TODO  V6_2
+			System.out.println("ETL_E_TRANSACTION 抓取checkMaps資料有誤!"); // TODO
+																		// V6_2
 			ex.printStackTrace();
 		}
-		// TODO  V6_2 end
-		
+		// TODO V6_2 end
+
 		System.out.println("#######Extrace - ETL_E_TRANSACTION - Start");
 
 		try {
@@ -135,7 +139,7 @@ public class ETL_E_TRANSACTION {
 
 				// TODO V5 START
 				ETL_Tool_FileByteUtil fileByteUtil = new ETL_Tool_FileByteUtil(parseFile.getAbsolutePath(),
-						ETL_E_TRANSACTION.class);//TODO
+						ETL_E_TRANSACTION.class);// TODO
 				// TODO V5 END
 
 				// 檔名
@@ -200,7 +204,7 @@ public class ETL_E_TRANSACTION {
 				// 紀錄是否第一次
 				boolean isFirstTime = false;
 				// TODO V5 END
-				
+
 				try {
 
 					// 開始前ETL_FILE_Log寫入DB
@@ -217,19 +221,21 @@ public class ETL_E_TRANSACTION {
 					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-					//TODO V5 START
+					// TODO V5 START
 					// 讀檔並將結果注入ETL_字串處理Queue
 					// strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
 					// 首、明細、尾錄, 基本組成檢查
-					//boolean isFileFormatOK = ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
+					// boolean isFileFormatOK =
+					// ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
 					// TODO V6 START
-					//int isFileOK = fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					// int isFileOK =
+					// fileByteUtil.isFileOK(parseFile.getAbsolutePath());
 					int isFileOK = fileByteUtil.isFileOK(pfn, upload_no, parseFile.getAbsolutePath());
 					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
 					// TODO V5 END
 					// TODO V6_3 start
-					fileFmtErrMsg = isFileFormatOK ? "":"區別碼錯誤";
+					fileFmtErrMsg = isFileFormatOK ? "" : "區別碼錯誤";
 					// TODO V6_3 END
 
 					// 首錄檢查
@@ -298,12 +304,14 @@ public class ETL_E_TRANSACTION {
 
 					// TODO V5 START
 					// 明細錄檢查- 逐行讀取檔案
-					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行 TODO
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
+																		// TODO
 						if (rowCount == 2)
 							isFirstTime = true;
-						//System.out.println("資料總筆數:" + isFileOK);
-						// while (strQueue.setTargetString() < strQueue.getByteListSize()) {
-						//以實際處理明細錄筆數為依據，只運行明細錄次數
+						// System.out.println("資料總筆數:" + isFileOK);
+						// while (strQueue.setTargetString() <
+						// strQueue.getByteListSize()) {
+						// 以實際處理明細錄筆數為依據，只運行明細錄次數
 						while (grandTotal < (isFileOK - 2)) {
 
 							strQueue.setTargetString();
@@ -328,7 +336,7 @@ public class ETL_E_TRANSACTION {
 								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行
 								failureCount++;
 								rowCount++;
-								grandTotal++; //TODO V6
+								grandTotal++; // TODO V6
 								continue;
 							}
 
@@ -339,6 +347,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "區別碼", "非預期:" + typeCode));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("區別碼檢核 R X(01)", typeCode);
+//							}
 
 							// 本會代號檢核 R X(07)*
 							String domain_id = strQueue.popBytesString(7);
@@ -353,6 +364,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "本會代號", "非預期:" + domain_id));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("本會代號檢核 R X(07)", domain_id);
+//							}
 
 							// 客戶統編檢核 R X(11)*
 							String party_number = strQueue.popBytesString(11);
@@ -363,6 +377,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "客戶統編", "空值"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("客戶統編檢核 R X(11)", party_number);
+//							}
 
 							// 帳號 R X(30)*
 							String account_id = strQueue.popBytesString(30);
@@ -373,6 +390,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "帳號", "空值"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("帳號 R X(30)", account_id);
+//							}
 
 							// 主機交易序號 R X(20)*
 							String transaction_id = strQueue.popBytesString(20);
@@ -383,6 +403,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "主機交易序號", "空值"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("主機交易序號 R X(20)", transaction_id);
+//							}
 
 							// 作帳日 R X(08)*
 							String transaction_date = strQueue.popBytesString(8);
@@ -397,6 +420,10 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "作帳日", "格式錯誤:" + transaction_date));
 							}
+//							if (isPrintStringLength) {
+								printStrByteLength("作帳日 R X(08)", transaction_date);
+//							}
+							
 							// 實際交易時間 R X(14)*
 							String transaction_time = strQueue.popBytesString(14);
 							data.setTransaction_time(ETL_Tool_StringX.toTimestamp(transaction_time));
@@ -410,6 +437,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "實際交易時間", "格式錯誤:" + transaction_time));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("實際交易時間 R X(14)", transaction_time);
+//							}
 
 							// 交易幣別 R X(03)*
 							String currency_code = strQueue.popBytesString(3);
@@ -424,6 +454,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "交易幣別", "非預期:" + currency_code));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("交易幣別 R X(03)", currency_code);
+//							}
 
 							// 交易金額正負號 R X(01)*
 							String amt_sign = strQueue.popBytesString(1);
@@ -438,6 +471,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "交易金額正負號", "非預期:" + amt_sign));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("交易金額正負號 R X(01)", amt_sign);
+//							}
 
 							// 交易金額 R 9(12)V99*
 							String amount = strQueue.popBytesString(14);
@@ -452,6 +488,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "交易金額", "格式錯誤:" + amount));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("交易金額 R 9(12)V99", amount);
+//							}
 
 							// 存提區分 R X(01)*
 							String direction = strQueue.popBytesString(1);
@@ -466,6 +505,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "存提區分", "非預期:" + direction));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("存提區分 R X(01)", direction);
+//							}
 
 							// 交易類別 R X(04)*
 							String transaction_type = strQueue.popBytesString(4);
@@ -480,6 +522,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "交易類別", "非預期:" + transaction_type));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("交易類別 R X(04)", transaction_type);
+//							}
 
 							// 交易管道 R X(03)*
 							String channel_type = strQueue.popBytesString(3);
@@ -494,22 +539,37 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "交易管道", "非預期:" + channel_type));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("交易管道 R X(03)", channel_type);
+//							}
 
 							// 交易代號 R X(10)
 							String transaction_purpose = strQueue.popBytesString(10);
 							data.setTransaction_purpose(transaction_purpose);
+//							if (isPrintStringLength) {
+//								printStrByteLength("交易代號 R X(10)", transaction_purpose);
+//							}
 
 							// 原交易代號 O X(10)
 							String transaction_reference_number = strQueue.popBytesString(10);
 							data.setTransaction_reference_number(transaction_reference_number);
+//							if (isPrintStringLength) {
+//								printStrByteLength("原交易代號 O X(10)", transaction_reference_number);
+//							}
 
 							// 交易摘要 O X(5)
 							String transaction_summary = strQueue.popBytesString(5);
 							data.setTransaction_summary(transaction_summary);
+//							if (isPrintStringLength) {
+//								printStrByteLength("交易摘要 O X(5)", transaction_summary);
+//							}
 
 							// 備註 O X(80)
 							String transaction_description = strQueue.popBytesString(80);
 							data.setTransaction_description(transaction_description);
+//							if (isPrintStringLength) {
+//								printStrByteLength("備註 O X(80)", transaction_description);
+//							}
 
 							// 操作行 O X(7)
 							String execution_branch_code = strQueue.popBytesString(7);
@@ -520,15 +580,24 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "操作行", "當交易管道為C02才提供登入行"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("操作行 O X(7)", execution_branch_code);
+//							}
 
 							// 操作櫃員代號或姓名 O X(20)
 							String executer_id = strQueue.popBytesDiffString(20);
 							data.setExecuter_id(executer_id);
+//							if (isPrintStringLength) {
+//								printStrByteLength("操作櫃員代號或姓名 O X(20)", executer_id);
+//							}
 							// System.out.println("操作櫃員代號或姓名:" + executer_id);
 
 							// 匯款人姓名 O X(80)
 							String ordering_customer_party_name = strQueue.popBytesDiffString(80);
 							data.setOrdering_customer_party_name(ordering_customer_party_name);
+//							if (isPrintStringLength) {
+//								printStrByteLength("匯款人姓名 O X(80)", ordering_customer_party_name);
+//							}
 							// System.out.println("匯款人姓名:" +
 							// ordering_customer_party_name);
 
@@ -542,6 +611,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "受款人姓名", "當交易類型為國內跨行匯款(DWR) 時需有值"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("受款人姓名 O X(80)", beneficiary_customer_party_name);
+//							}
 
 							// 受款人銀行 O X(08)
 							String beneficiary_customer_bank_bic = strQueue.popBytesString(8);
@@ -552,6 +624,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "受款人銀行", "當交易類型為國內跨行匯款(DWR) 時需有值"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("受款人銀行 O X(08)", beneficiary_customer_bank_bic);
+//							}
 
 							// 受款人帳號 O X(50)
 							String beneficiary_customer_account_number = strQueue.popBytesString(50);
@@ -562,6 +637,9 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "受款人帳號", "當交易類型為國內跨行匯款(DWR) 時需有值"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("受款人帳號 O X(50)", beneficiary_customer_account_number);
+//							}
 
 							// 還款本金 O 9(12)V99
 							String repayment_principal = strQueue.popBytesString(14);
@@ -572,6 +650,10 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "還款本金", "當交易類型為還款(LNP) 時需有值"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("還款本金 O 9(12)V99", repayment_principal);
+//								System.out.println(repayment_principal);
+//							}
 
 							// 更正記號 O X(01)
 							String ec_flag = strQueue.popBytesString(1);
@@ -583,6 +665,10 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "更正記號", "非預期"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("更正記號 O X(01)", ec_flag);
+//								System.out.println(ec_flag);
+//							}
 
 							// 申報國別 R X(02)
 							String ordering_customer_country = strQueue.popBytesString(2);
@@ -594,15 +680,25 @@ public class ETL_E_TRANSACTION {
 								errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 										String.valueOf(rowCount), "申報國別", "當交易類型為 外幣現鈔時，需提供此欄位資料"));
 							}
+//							if (isPrintStringLength) {
+//								printStrByteLength("申報國別 R X(02)", ordering_customer_country);
+//								System.out.println(ordering_customer_country);
+//							}
 
 							// TODO Transaction新規格 START
-							//代理人ID O X(11)
+							// 代理人ID O X(11)
 							String surrogate_id = strQueue.popBytesString(11);
 							data.setSurrogate_id(surrogate_id);
+//							if (isPrintStringLength) {
+//								printStrByteLength("代理人ID O X(11)", surrogate_id);
+//							}
 
-							//特金信託申購/贖回單位數 O 9(12)V99
+							// 特金信託申購/贖回單位數 O 9(12)V99
 							String fund_number_unit = strQueue.popBytesString(14);
 							data.setFund_number_unit(ETL_Tool_StringX.strToBigDecimal(fund_number_unit, 2));
+//							if (isPrintStringLength) {
+//								printStrByteLength("特金信託申購/贖回單位數 O 9(12)V99", fund_number_unit);
+//							}
 							// TODO Transaction新規格 END
 
 							// data list 加入一個檔案
@@ -617,8 +713,9 @@ public class ETL_E_TRANSACTION {
 							// 實際處理明細錄筆數累加
 							grandTotal += 1;
 
-//							System.out.println("實際處理列數:" + rowCount + " / 實際處理明細錄筆數:" + grandTotal + " / 目前處理資料第"
-//									+ strQueue.getBytesListIndex() + "筆");
+							// System.out.println("實際處理列數:" + rowCount + " /
+							// 實際處理明細錄筆數:" + grandTotal + " / 目前處理資料第"
+							// + strQueue.getBytesListIndex() + "筆");
 
 							rowCount++; // 處理行數 + 1
 
@@ -632,31 +729,34 @@ public class ETL_E_TRANSACTION {
 
 							) {
 
-//								System.out.println("=======================================");
-//
-//								if (isFirstTime)
-//									System.out.println("第一次處理，資料來源須扣除首錄筆數");
-								//記錄非初次
+								// System.out.println("=======================================");
+								//
+								// if (isFirstTime)
+								// System.out.println("第一次處理，資料來源須扣除首錄筆數");
+								// 記錄非初次
 								isFirstTime = false;
 
-//								System.out
-//										.println("累積處理資料已達到限制處理筆數範圍:" + ETL_Profile.ETL_E_Stage + "筆，再度切割資料來源進入QUEUE");
+								// System.out
+								// .println("累積處理資料已達到限制處理筆數範圍:" +
+								// ETL_Profile.ETL_E_Stage +
+								// "筆，再度切割資料來源進入QUEUE");
 
 								// 注入指定範圍筆數資料到QUEUE
 								strQueue.setBytesList(fileByteUtil.getFilesBytes());
 								// 初始化使用筆數
 								strQueue.setBytesListIndex(0);
 
-//								System.out.println("初始化提取處理資料，目前處理資料為:" + strQueue.getBytesListIndex());
-//								System.out.println("=======================================");
+								// System.out.println("初始化提取處理資料，目前處理資料為:" +
+								// strQueue.getBytesListIndex());
+								// System.out.println("=======================================");
 							}
 							// TODO V5 END
 						}
 					}
-					
+
 					// Transaction_Data寫入DB
 					insert_Transaction_Datas();
-					
+
 					// TODO V6_2 start
 					// 修正筆數, 考慮寫入資料庫時寫入失敗的狀況
 					successCount = successCount - this.oneFileInsertErrorCount;
@@ -668,10 +768,10 @@ public class ETL_E_TRANSACTION {
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) {// 沒有嚴重錯誤時進行
 
-						//TODO V5 START
+						// TODO V5 START
 						strQueue.setTargetString();
-						//TODO V5 END
-						
+						// TODO V5 END
+
 						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 486 = 509)
 						if (strQueue.getTotalByteLength() != 509) {
 							fileFmtErrMsg = "尾錄位元數非預期509:" + strQueue.getTotalByteLength();
@@ -717,8 +817,9 @@ public class ETL_E_TRANSACTION {
 
 						// 總筆數檢核(7)
 						String totalCount = strQueue.popBytesString(7);
-						// iTotalCount = ETL_Tool_StringX.toInt(totalCount); TODO V5
-						
+						// iTotalCount = ETL_Tool_StringX.toInt(totalCount);
+						// TODO V5
+
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
 							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;
 							errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
@@ -748,18 +849,20 @@ public class ETL_E_TRANSACTION {
 					// 執行結果說明
 					String file_exe_result_description;
 
-					//TODO V6 START
-//					if (!isFileFormatOK) {
-//						file_exe_result = "S";
-//						file_exe_result_description = "解析檔案出現嚴重錯誤-區別碼錯誤";
-//						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤-區別碼錯誤\n";
-//
-//						// 寫入Error Log
-//						errWriter.addErrLog(
-//								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0", "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
-//
-//					} else
-					//TODO V6 END
+					// TODO V6 START
+					// if (!isFileFormatOK) {
+					// file_exe_result = "S";
+					// file_exe_result_description = "解析檔案出現嚴重錯誤-區別碼錯誤";
+					// processErrMsg = processErrMsg + pfn.getFileName() +
+					// "解析檔案出現嚴重錯誤-區別碼錯誤\n";
+					//
+					// // 寫入Error Log
+					// errWriter.addErrLog(
+					// new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0",
+					// "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
+					//
+					// } else
+					// TODO V6 END
 					if (!"".equals(fileFmtErrMsg)) {
 						file_exe_result = "S";
 						file_exe_result_description = "解析檔案出現嚴重錯誤";
@@ -776,18 +879,21 @@ public class ETL_E_TRANSACTION {
 					errWriter.insert_Error_Log();
 
 					// 處理後更新ETL_FILE_Log
-//					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
-//							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
-//							successCount, failureCount, file_exe_result, file_exe_result_description);
+					// ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(),
+					// pfn.getCentral_No(), exc_record_date,
+					// pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E",
+					// parseEndDate, iTotalCount,
+					// successCount, failureCount, file_exe_result,
+					// file_exe_result_description);
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate,
 							(successCount + failureCount), // TODO V5
 							successCount, failureCount, file_exe_result, file_exe_result_description);
 				} catch (Exception ex) {
 					// 發生錯誤時, 資料List & 計數 reset // TODO V6_2
-					this.dataCount = 0; 
+					this.dataCount = 0;
 					this.dataList.clear();
-					
+
 					// 寫入Error_Log
 					ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
 							"E", "0", "ETL_E_TRANSACTION程式處理", ex.getMessage(), null);
@@ -803,20 +909,22 @@ public class ETL_E_TRANSACTION {
 				// 累加TRANSACTION處理錯誤筆數
 				detail_ErrorCount = detail_ErrorCount + failureCount;
 			}
-			
+
 			// TODO V6_2 Start
 			// 過濾軌跡資料
 			try {
-				
-				ETL_P_EData_Filter.E_Datas_Filter("filter_Transaction_Temp_Temp", // TODO v6_2
+
+				ETL_P_EData_Filter.E_Datas_Filter("filter_Transaction_Temp_Temp", // TODO
+																					// v6_2
 						batch_no, exc_central_no, exc_record_date, upload_no, program_no);
-				
+
 			} catch (Exception ex) {
 				// 寫入Error_Log
-				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no,
-						"E", "0", "ETL_E_TRANSACTION程式處理", ex.getMessage(), null); // TODO v6_2
+				ETL_P_Log.write_Error_Log(batch_no, exc_central_no, exc_record_date, null, fileTypeName, upload_no, "E",
+						"0", "ETL_E_TRANSACTION程式處理", ex.getMessage(), null); // TODO
+																				// v6_2
 				processErrMsg = processErrMsg + ex.getMessage() + "\n";
-				
+
 				ex.printStackTrace();
 			}
 			// TODO V6_2 End
@@ -882,19 +990,23 @@ public class ETL_E_TRANSACTION {
 
 		InsertAdapter insertAdapter = new InsertAdapter();
 		// 呼叫TRANSACTION寫入DB2 - SP
-		insertAdapter.setSql("{call SP_INSERT_TRANSACTION_TEMP(?,?)}");// TODO V6_2
+		insertAdapter.setSql("{call SP_INSERT_TRANSACTION_TEMP(?,?)}");// TODO
+																		// V6_2
 		// DB2 type - TRANSACTION
 		insertAdapter.setCreateStructTypeName("T_TRANSACTION");
 		// DB2 array type - TRANSACTION
 		insertAdapter.setCreateArrayTypesName("A_TRANSACTION");
 		insertAdapter.setTypeArrayLength(ETL_Profile.ErrorLog_Stage); // 設定上限寫入參數
 
-		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject2(this.dataList, insertAdapter); // TODO V6_2
+		Boolean isSuccess = ETL_P_Data_Writer.insertByDefineArrayListObject2(this.dataList, insertAdapter); // TODO
+																											// V6_2
 		int errorCount = insertAdapter.getErrorCount(); // TODO V6_2
-		
+
 		if (isSuccess) {
-			System.out.println("insert_Transaction_Datas 寫入 " + this.dataList.size() + "(-" + errorCount + ")筆資料!"); // TODO V6_2
-			this.oneFileInsertErrorCount = this.oneFileInsertErrorCount + errorCount; // TODO V6_2
+			System.out.println("insert_Transaction_Datas 寫入 " + this.dataList.size() + "(-" + errorCount + ")筆資料!"); // TODO
+																														// V6_2
+			this.oneFileInsertErrorCount = this.oneFileInsertErrorCount + errorCount; // TODO
+																						// V6_2
 		} else {
 			throw new Exception("insert_Transaction_Datas 發生錯誤");
 		}
@@ -917,6 +1029,10 @@ public class ETL_E_TRANSACTION {
 	private static boolean specialRequired(String source, String now, String compareVal) {
 		return (!ETL_Tool_FormatCheck.isEmpty(source) && compareVal.equals(source.trim())
 				&& ETL_Tool_FormatCheck.isEmpty(now)) ? false : true;
+	}
+
+	private static void printStrByteLength(String name, String string) {
+		System.out.println(name + ":" + string.getBytes().length);
 	}
 
 	public static void main(String[] argv) throws Exception {
@@ -1027,14 +1143,18 @@ public class ETL_E_TRANSACTION {
 		long time1, time2;
 		time1 = System.currentTimeMillis();
 
-//		byte[]  file_018= Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\018_L_TRANSACTION_20180131_______ - 複製.TXT"));
-//		byte[] file_600 = Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\600_R_TRANSACTION_20180221.TXT"));
-//		byte[] file_928_old = Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\928_K_TRANSACTION_20180105.TXT"));
-//		System.out.println("file_600: "+file_600.length);
-//		System.out.println("file_018: "+file_018.length);
-//		System.out.println("file_928_old: "+file_928_old.length);
-		one.read_Transaction_File(filePath, fileTypeName, "E7777833", "600",
-				new SimpleDateFormat("yyyyMMdd").parse("20180409"), "001", "ETL_E_TRANSACTION");
+		// byte[] file_018=
+		// Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\018_L_TRANSACTION_20180131_______
+		// - 複製.TXT"));
+		// byte[] file_600 =
+		// Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\600_R_TRANSACTION_20180221.TXT"));
+		// byte[] file_928_old =
+		// Files.readAllBytes(Paths.get("D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\928_K_TRANSACTION_20180105.TXT"));
+		// System.out.println("file_600: "+file_600.length);
+		// System.out.println("file_018: "+file_018.length);
+		// System.out.println("file_928_old: "+file_928_old.length);
+		one.read_Transaction_File(filePath, fileTypeName, "E7777845", "600",
+				new SimpleDateFormat("yyyyMMdd").parse("20180409"), "003", "ETL_E_TRANSACTION");
 
 		time2 = System.currentTimeMillis();
 		System.out.println("花了：" + (time2 - time1) + "豪秒");

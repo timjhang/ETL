@@ -56,6 +56,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 			map.put("ps_map", ps_map);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 
@@ -92,8 +93,13 @@ public class ETL_Tool_Big5_To_UTF8 {
 
 				String code = byteArrayToHexStr(b);
 
+				// System.out.println("code: " + code);
+
 				boolean isBig5Code = isBig5Code(code);
 				boolean isBig5DifficultWord = isBig5DifficultWord(code);
+
+				// System.out.println("isBig5Code: " + isBig5Code + " \\
+				// isBig5DifficultWord: " + isBig5DifficultWord);
 
 				i += isBig5Code | isBig5DifficultWord ? 1 : 0;
 
@@ -101,11 +107,16 @@ public class ETL_Tool_Big5_To_UTF8 {
 					// 查找UniCode系統字區
 					String mapped_code = ps_map.get(code);
 
+					// System.out.println("查找UniCode系統字區: " + mapped_code);
+
 					// 判斷系統字區是否有對應的字碼
 					if (mapped_code == null || "".equals(mapped_code.trim())) {
+						// System.out.println("查無系統字區，改為查詢造字區");
 
 						// 查找UniCode造字區
 						mapped_code = pp_map.get(code);
+
+						// System.out.println("查找UniCode造字區: " + mapped_code);
 
 						// 判斷造字區是否有對應的字碼，假如沒有，則回傳特殊字碼 □
 						mapped_code = (mapped_code == null || "".equals(mapped_code.replaceAll("[ |　]", ""))
@@ -189,7 +200,7 @@ public class ETL_Tool_Big5_To_UTF8 {
 			// Big5造字區
 			Cell big5_cell = currentRow.getCell(1);
 
-			if (big5_cell != null) {
+			if (transCell(big5_cell) != null) {
 				// UniCode系統字區
 				Cell uniCode_cell = currentRow.getCell(3);
 
@@ -235,11 +246,11 @@ public class ETL_Tool_Big5_To_UTF8 {
 			// Big5造字區
 			Cell big5_cell = currentRow.getCell(1);
 
-			if (big5_cell != null) {
+			if (transCell(big5_cell) != null) {
 				// UniCode造字區
 				Cell uniCode_cell = currentRow.getCell(2);
-				String uniCode_cell_val = uniCode_cell == null ? null : uniCode_cell.getStringCellValue();
-				map.put(big5_cell.getStringCellValue(), uniCode_cell_val);
+
+				map.put(transCell(big5_cell), transCell(uniCode_cell));
 			}
 		}
 		return map;
@@ -258,6 +269,8 @@ public class ETL_Tool_Big5_To_UTF8 {
 		try {
 			if (cell.getCellTypeEnum() == CellType.STRING) {
 				cell_val = cell.getStringCellValue();
+				if (!ETL_Tool_FormatCheck.isEmpty(cell_val))
+					cell_val = cell_val.replaceAll("[ |　]", "");
 			}
 
 			if (cell.getCellTypeEnum() == CellType.NUMERIC) {
@@ -566,15 +579,66 @@ public class ETL_Tool_Big5_To_UTF8 {
 		return specialBig5Map == null | unicode == null ? UTF_8(byteArrayToHexStr(bytes)) : UTF_8(unicode);
 	}
 
-	private void print_is_Big5_excel_fromat(String central_no) {
+	private void print_is_Big5_excel_fromat(String central_no) throws IOException {
 
-		StringBuffer stringBuffer = new StringBuffer();
-		Formatter formatter = new Formatter(stringBuffer);
-		formatter.format(ETL_Profile.DifficultWords_Lists_Path, central_no);
+		Map<String, String> map = new HashMap<String, String>();
+
+		// try {
+		String XLSXPath = getXLSXPath(central_no);
+
+		FileInputStream excelFile = new FileInputStream(new File(XLSXPath));
+
+		@SuppressWarnings("resource")
+		Workbook workbook = new XSSFWorkbook(excelFile);
+
+		// 取出第一個工作表
+		Sheet datatypeSheet = workbook.getSheetAt(0);
+
+		boolean is = true;
+
+		for (int i = 1; i <= datatypeSheet.getLastRowNum(); i++) {
+
+			Row currentRow = datatypeSheet.getRow(i);
+
+			// 為空，不處理
+			if (currentRow == null) {
+				continue;
+			}
+
+			// Big5造字區
+			Cell big5_cell = currentRow.getCell(1);
+
+			if (transCell(big5_cell) != null) {
+
+				if (!isBig5Code(transCell(big5_cell)) && !isBig5DifficultWord(transCell(big5_cell))) {
+					is = false;
+					System.out.println("第" + (i + 1) + "行，Big5造字區非Big5編碼");
+				}
+			}
+
+		}
+		if (is)
+			System.out.println("Big5造字區全為Big5編碼");
 
 	}
 
-	public static void main(String[] args) throws UnsupportedEncodingException {
-		System.out.println("x".equalsIgnoreCase("  X ".replaceAll("[ |　]", "")));
+	public static void main(String[] args) throws IOException {
+		ETL_Tool_Big5_To_UTF8 wordsXTool = new ETL_Tool_Big5_To_UTF8(ETL_Profile.DifficultWords_Lists_Path);
+
+		// Map<String, Map<String, String>> difficultWordMaps =
+		// wordsXTool.getDifficultWordMaps("605");
+		// Map<String, String> specialBig5Map =
+		// wordsXTool.get_Special_Big5_System_And_Unicode_System_Map();
+		//
+		String uri = "D:\\PSC\\Projects\\AgriBank\\UNIT_TEST\\605難字測試.TXT";
+		//
+		byte[] stream = Files.readAllBytes(Paths.get(uri));
+		// System.out.println(format(stream, difficultWordMaps,
+		// specialBig5Map));
+
+		wordsXTool.print_is_Big5_excel_fromat("600");
+		// System.out.println(isBig5Code("1111"));
+		// System.out.println(isBig5CodeSpecial("1111"));
+		// System.out.println(isBig5DifficultWord("1111"));
 	}
 }
