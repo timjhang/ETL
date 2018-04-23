@@ -147,7 +147,7 @@ public class ETL_Tool_FileByteUtil {
 		// 1:true 2: false 如格式都正確則是資料總筆數
 		int isFileOK = 0;
 		boolean isInsert = false;
-		List<Byte> list = new ArrayList<Byte>();
+		byte[]bytes =new byte[99999999];
 		
 		FileInputStream fileInputStream = new FileInputStream(path);
 		ETL_Tool_JBReader bufferedReader = new ETL_Tool_JBReader(fileInputStream, buffer_size);
@@ -157,40 +157,40 @@ public class ETL_Tool_FileByteUtil {
 		byte body = (byte) 50;
 		byte foot = (byte) 51;
 		
+		int index = 0;
 		while ((line = bufferedReader.readLineInBinary()) != null) {
-			list.add(line[0]);
+			bytes[index] = line[0];
+			index++;
 		}
 
-		if (list.size() < 2) {
+		if (bytes.length < 2) {
 			return isFileOK;
 		}
 
-		for (int i = 0; i < list.size(); i++) {
-			byte now = list.get(i);
+		for (int i = 0; i < index; i++) {
+			byte now = bytes[i];
 
 			if (i == 0) {
-				isFileOK = head == now ? 1 : 0;
+				isFileOK = (head == now) ? 1 : 0;
 				// break;
-			} else if (i != (list.size() - 1)) {
-				isFileOK = body == now ? 1 : 0;
+			} else if (i != (index - 1)) {
+				isFileOK = (body == now) ? 1 : 0;
 			} else {
-				isFileOK = foot == now ? 1 : 0;
+				isFileOK = (foot == now) ? 1 : 0;
 			}
 
 			if (isFileOK == 0) {
 				isInsert = true;
+				
 				// 寫入Error Log
 				errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", String.valueOf(i + 1), "區別碼",
 						"解析檔案出現嚴重錯誤-區別碼錯誤"));
-				System.out.println("第" + i + "筆");
+				errWriter.insert_Error_Log();
 			}
 
 		}
 
-		if (isInsert)
-			errWriter.insert_Error_Log();
-
-		return isFileOK == 1 ? list.size() : 0;
+		return (isInsert)? 0 : index;
 	}
 
 	public int isFileOK(String path) throws IOException {

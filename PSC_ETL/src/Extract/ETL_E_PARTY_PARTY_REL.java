@@ -108,18 +108,15 @@ public class ETL_E_PARTY_PARTY_REL {
 				// 取得檔案
 				File parseFile = fileList.get(i);
 
-				// TODO V5 START
 				ETL_Tool_FileByteUtil fileByteUtil = new ETL_Tool_FileByteUtil(parseFile.getAbsolutePath(),
-						ETL_E_PARTY_PARTY_REL.class);// TODO
-				// TODO V5 END
+						ETL_E_PARTY_PARTY_REL.class);
 
 				// 檔名
 				String fileName = parseFile.getName();
-				// TODO V5 START
 				// 讀檔檔名英文字轉大寫比較
-				if (!ETL_Tool_FormatCheck.isEmpty(fileName))
+				if (!ETL_Tool_FormatCheck.isEmpty(fileName)) {
 					fileName = fileName.toUpperCase();
-				// TODO V5 END
+				}
 				Date parseStartDate = new Date(); // 開始執行時間
 				System.out.println("解析檔案： " + fileName + " Start " + parseStartDate);
 
@@ -167,13 +164,8 @@ public class ETL_E_PARTY_PARTY_REL {
 				int successCount = 0;
 				// 失敗計數
 				int failureCount = 0;
-				// TODO V5 START
-				// 尾錄總數
-				// int iTotalCount = 0;
-
 				// 紀錄是否第一次
 				boolean isFirstTime = false;
-				// TODO V5 END
 
 				try {
 
@@ -185,33 +177,22 @@ public class ETL_E_PARTY_PARTY_REL {
 					// 嚴重錯誤訊息變數
 					String fileFmtErrMsg = "";
 
-					// String lineStr = ""; // 行字串暫存區 // TODO V4 NEW
+					// String lineStr = ""; // 行字串暫存區
 
 					// ETL_字串處理Queue
 					ETL_Tool_StringQueue strQueue = new ETL_Tool_StringQueue(exc_central_no);
 					// ETL_Error Log寫入輔助工具
 					ETL_P_ErrorLog_Writer errWriter = new ETL_P_ErrorLog_Writer();
-					// TODO V5 START
-					// 讀檔並將結果注入ETL_字串處理Queue
-					// strQueue.setBytesList(ETL_Tool_FileByteUtil.getFilesBytes(parseFile.getAbsolutePath()));
-					// 首、明細、尾錄, 基本組成檢查
-					// boolean isFileFormatOK =
-					// ETL_Tool_FileFormat.checkBytesList(strQueue.getBytesList());
-					// TODO V6 START
-					// int isFileOK =
-					// fileByteUtil.isFileOK(parseFile.getAbsolutePath());
+					
 					int isFileOK = fileByteUtil.isFileOK(pfn, upload_no, parseFile.getAbsolutePath());
-					// TODO V6 END
 					boolean isFileFormatOK = isFileOK != 0 ? true : false;
-					// TODO V5 END
+					fileFmtErrMsg = isFileFormatOK ? "":"區別碼錯誤";
 
 					// 首錄檢查
 					if (isFileFormatOK) {
 
-						// TODO V5 START
 						// 注入指定範圍筆數資料到QUEUE
 						strQueue.setBytesList(fileByteUtil.getFilesBytes());
-						// TODO V5 END
 
 						// strQueue工具注入第一筆資料
 						strQueue.setTargetString();
@@ -264,24 +245,19 @@ public class ETL_E_PARTY_PARTY_REL {
 						rowCount++; // 處理行數 + 1
 					}
 
-					// TODO V5 START
 					// 實際處理明細錄筆數
 					int grandTotal = 0;
-					// TODO V5 END
 
-					// TODO V5 START
 					// 明細錄檢查- 逐行讀取檔案
-					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行 TODO
-						if (rowCount == 2)
+					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
+						if (rowCount == 2) {
 							isFirstTime = true;
-						//System.out.println("資料總筆數:" + isFileOK);
-						// while (strQueue.setTargetString() < strQueue.getByteListSize()) {
+						}
+						
 						//以實際處理明細錄筆數為依據，只運行明細錄次數
 						while (grandTotal < (isFileOK - 2)) {
 
 							strQueue.setTargetString();
-
-							// TODO V5 END
 
 							// 生成一個Data
 							ETL_Bean_PARTY_PARTY_REL_Data data = new ETL_Bean_PARTY_PARTY_REL_Data(pfn);
@@ -298,7 +274,7 @@ public class ETL_E_PARTY_PARTY_REL {
 								// 明細錄資料bytes不正確, 跳過此行後續檢核, 執行下一行
 								failureCount++;
 								rowCount++;
-								grandTotal++; //TODO V6
+								grandTotal++;
 								continue;
 							}
 
@@ -407,12 +383,9 @@ public class ETL_E_PARTY_PARTY_REL {
 							} else {
 								successCount++;
 							}
-							// TODO V5 START
+							
 							// 實際處理明細錄筆數累加
 							grandTotal += 1;
-
-//							System.out.println("實際處理列數:" + rowCount + " / 實際處理明細錄筆數:" + grandTotal + " / 目前處理資料第"
-//									+ strQueue.getBytesListIndex() + "筆");
 
 							rowCount++; // 處理行數 + 1
 
@@ -422,29 +395,17 @@ public class ETL_E_PARTY_PARTY_REL {
 							 */
 							if ((isFirstTime && (isFileOK >= ETL_Profile.ETL_E_Stage)
 									&& grandTotal == (ETL_Profile.ETL_E_Stage - 1))
-									|| (!isFirstTime && (strQueue.getBytesListIndex() % ETL_Profile.ETL_E_Stage == 0))
+									|| (!isFirstTime && (strQueue.getBytesListIndex() % ETL_Profile.ETL_E_Stage == 0))) {
 
-							) {
-
-//								System.out.println("=======================================");
-//
-//								if (isFirstTime)
-//									System.out.println("第一次處理，資料來源須扣除首錄筆數");
 								//記錄非初次
 								isFirstTime = false;
-
-//								System.out
-//										.println("累積處理資料已達到限制處理筆數範圍:" + ETL_Profile.ETL_E_Stage + "筆，再度切割資料來源進入QUEUE");
 
 								// 注入指定範圍筆數資料到QUEUE
 								strQueue.setBytesList(fileByteUtil.getFilesBytes());
 								// 初始化使用筆數
 								strQueue.setBytesListIndex(0);
 
-//								System.out.println("初始化提取處理資料，目前處理資料為:" + strQueue.getBytesListIndex());
-//								System.out.println("=======================================");
 							}
-							// TODO V5 END
 						}
 					}
 
@@ -460,9 +421,7 @@ public class ETL_E_PARTY_PARTY_REL {
 					// 尾錄檢查
 					if (isFileFormatOK && "".equals(fileFmtErrMsg)) { // 沒有嚴重錯誤時進行
 
-						//TODO V5 START
 						strQueue.setTargetString();
-						//TODO V5 END
 						
 						// 整行bytes數檢核 (1 + 7 + 8 + 7 + 180 = 203)
 						if (strQueue.getTotalByteLength() != 203) {
@@ -507,7 +466,6 @@ public class ETL_E_PARTY_PARTY_REL {
 
 						// 總筆數檢核(7)
 						String totalCount = strQueue.popBytesString(7);
-						// iTotalCount = ETL_Tool_StringX.toInt(totalCount); TODO V5
 
 						if (!ETL_Tool_FormatCheck.checkNum(totalCount)) {
 							fileFmtErrMsg = "尾錄總筆數格式錯誤:" + totalCount;
@@ -539,18 +497,6 @@ public class ETL_E_PARTY_PARTY_REL {
 					// 執行結果說明
 					String file_exe_result_description;
 
-					//TODO V6 START
-//					if (!isFileFormatOK) {
-//						file_exe_result = "S";
-//						file_exe_result_description = "解析檔案出現嚴重錯誤-區別碼錯誤";
-//						processErrMsg = processErrMsg + pfn.getFileName() + "解析檔案出現嚴重錯誤-區別碼錯誤\n";
-//
-//						// 寫入Error Log
-//						errWriter.addErrLog(
-//								new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", "0", "區別碼", "解析檔案出現嚴重錯誤-區別碼錯誤"));
-//
-//					} else
-					//TODO V6 END
 					if (!"".equals(fileFmtErrMsg)) {
 						file_exe_result = "S";
 						file_exe_result_description = "解析檔案出現嚴重錯誤";
@@ -567,13 +513,11 @@ public class ETL_E_PARTY_PARTY_REL {
 					errWriter.insert_Error_Log();
 
 					// 處理後更新ETL_FILE_Log
-//					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
-//							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate, iTotalCount,
-//							successCount, failureCount, file_exe_result, file_exe_result_description);
 					ETL_P_Log.update_End_ETL_FILE_Log(pfn.getBatch_no(), pfn.getCentral_No(), exc_record_date,
 							pfn.getFile_Type(), pfn.getFile_Name(), upload_no, "E", parseEndDate,
-							(successCount + failureCount), // TODO V5
+							(successCount + failureCount),
 							successCount, failureCount, file_exe_result, file_exe_result_description);
+					
 				} catch (Exception ex) {
 					// 發生錯誤時, 資料List & 計數 reset
 					this.dataCount = 0; 

@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -15,11 +16,15 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import Bean.ETL_Bean_Response;
+
 public class ETL_C_CallWS {
 	
 	// 呼叫ETL Server getUploadFile, 並取得下載檔案資訊
-	public static boolean call_ETL_Server_getUploadFileInfo(String ip_port, String centralNo, String fileInfoAry[]) {
-		
+	public static ETL_Bean_Response call_ETL_Server_getUploadFileInfo(String ip_port, String centralNo) {
+		ETL_Bean_Response response = new ETL_Bean_Response();
+		String[] fileInfoAry = new String[3];
+	
 		try {
 //				URL url = new URL("http://localhost:8083/AML_ETL/rest/getUploadFile/WS1");
 			System.out.println("call_ETL_Server_Efunction : 開始執行");
@@ -66,7 +71,7 @@ public class ETL_C_CallWS {
 						Element fileInfo = root.element("fileInfo");
 						try {
 							String fileInfoStr = fileInfo.getTextTrim();
-							fileInfoAry = fileInfoStr.split("\\|");;
+							fileInfoAry = fileInfoStr.split("\\|");
 						} catch (Exception ex) {
 							fileInfoAry = null;
 							ex.printStackTrace();
@@ -117,20 +122,31 @@ public class ETL_C_CallWS {
 			
 			System.out.println("call_ETL_Server_Efunction : 執行成功！");
 			
-			return exeReault;
+			
+			//TODO FOR TEST
+			for(int i=0;i<fileInfoAry.length;i++) {
+				System.out.println("####call_ETL_Server_getUploadFileInfo fileInfo"+i+" = "+fileInfoAry[i]);
+			}
+			
+			//TODO FOR 依原本邏輯加工
+			if(exeReault) {
+				response.setSuccessObj(fileInfoAry);
+			}
+
+			return response;
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			System.out.println("call_ETL_Server_Efunction : 發生錯誤");
-			return false;
+			return response;
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("call_ETL_Server_Efunction : 發生錯誤");
-			return false;
+			return response;
 		} catch (DocumentException e) {
 			e.printStackTrace();
 			System.out.println("call_ETL_Server_Efunction : 發生錯誤");
-			return false;
+			return response;
 		}
 		
 	}
@@ -143,8 +159,12 @@ public class ETL_C_CallWS {
 //			URL url = new URL("http://localhost:8083/AML_ETL/rest/Efunction/WS1");
 			System.out.println("call_ETL_Server_Efunction : 開始執行");
 
-//			filePath = ""; // ETL Server下載檔案位置路徑 encode碼 (D:/ETL/DB)
-			filePath = "C%3A%2Ftest2%2F600%2F001"; // for test
+//			filePath = ""; // ETL Server下載檔案位置路徑 encode碼 (D:/ETL/DB)  TODO ?? 單位 批號 
+			//filePath = "C%3A%2Ftest2%2F600%2F001"; // for test
+
+			//TODO  upload_No???
+			filePath = ETL_C_Profile.ETL_Download_localPath + exc_central_no + "/" + record_DateStr + "/" + upload_No;
+			URLEncoder.encode(filePath, "UTF-8");
 			
 			String urlStr = "http://" + ip_port + "/AML_ETL/rest/Efunction/WS1?";
 			urlStr = urlStr + "filePath=" + filePath;
@@ -260,7 +280,10 @@ public class ETL_C_CallWS {
 			System.out.println("call_ETL_Server_Tfunction : 開始執行");
 
 //				filePath = ""; // ETL Server下載檔案位置路徑 encode碼 (D:/ETL/DB)
-			filePath = "C%3A%2Ftest2%2F600%2F001"; // for test
+			//filePath = "C%3A%2Ftest2%2F600%2F001"; // for test
+			//TODO  upload_No???
+			filePath = ETL_C_Profile.ETL_Download_localPath + exc_central_no + "/" + record_DateStr + "/" + upload_No;
+			URLEncoder.encode(filePath, "UTF-8");
 			
 			String urlStr = "http://" + ip_port + "/AML_ETL/rest/Tfunction/WS1?";
 			urlStr = urlStr + "filePath=" + filePath;

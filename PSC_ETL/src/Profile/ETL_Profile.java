@@ -36,6 +36,13 @@ public class ETL_Profile {
 	public final static String db2User = "Administrator";
 	public final static String db2Password = "9ol.)P:?";
 	
+//	public final static String db2Url = 
+//			"jdbc:db2://172.18.6.151:50000/ETLDB001:" +
+//			"currentschema=" + db2SPSchema + ";" +
+//			"currentFunctionPath=" + db2SPSchema + ";";
+//	public final static String db2User = "Administrator";
+//	public final static String db2Password = "9ol.)P:?";
+	
 	// Error Log寫入域值
 	public final static int ErrorLog_Stage = 10000;
 	
@@ -46,7 +53,10 @@ public class ETL_Profile {
 	public final static String Foreign_Currency = "FR"; // 外幣
 	
 	// 難字表excel檔存放路徑
-	public final static String DifficultWords_Lists_Path = "C:/DifficultWords/%s.xlsx";
+	public final static String DifficultWords_Lists_Path = "C:/AML_TOOL/DifficultWords/%s.xlsx";
+
+	// 特殊符號及罕見字表excel檔存放路徑
+	public final static String SpecialWords_Lists_Path = "C:/AML_TOOL/SpecialBig5Words/SpecialBig5Words.xlsx";
 	
 	// 連線GAML用URL string
 	public final static String GAML_db2User = "GAMLETL";

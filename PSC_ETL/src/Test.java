@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import Extract.ETL_E_CALENDAR;
 import Extract.ETL_E_PARTY;
 import Extract.ETL_E_PARTY_PARTY_REL;
 import Extract.ETL_E_PARTY_PHONE;
@@ -22,9 +23,10 @@ public class Test {
 
 
 	public static void main(String[] argv) throws Exception {
-//		PARTY();
+		PARTY();
 //		PARTY_PHONE();
 //		PARTY_PARTY_REL();
+//		CALENDAR();
 		
 //		List<String> lines = getProperties("C:\\ETL\\properties.txt");
 ////		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
@@ -64,6 +66,28 @@ public class Test {
 //				count++;
 //			}
 //		}
+	}
+	
+	public static void CALENDAR() throws IOException {
+		ETL_E_CALENDAR program = new ETL_E_CALENDAR();
+		List<String> lines = getProperties("C:\\ETL\\properties.txt");
+		String filePath, fileTypeName, batch_no, exc_central_no, upload_no, program_no;
+		Date exc_record_date = new Date();
+
+		try {
+			filePath = lines.get(0);
+			fileTypeName = "CALENDAR";
+			batch_no = lines.get(1);
+			exc_central_no = lines.get(2);
+			String str_exc_record_date = lines.get(3);
+			exc_record_date = new SimpleDateFormat("yyyyMMdd").parse(str_exc_record_date);
+			upload_no = lines.get(4);
+			program_no = lines.get(5);
+			program.read_CALENDAR_File(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date,
+					upload_no, program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void PARTY() throws IOException {

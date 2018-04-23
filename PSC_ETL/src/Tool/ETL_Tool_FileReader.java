@@ -55,7 +55,10 @@ public class ETL_Tool_FileReader {
 				}
 				
 				// 檔名分析後  符合檔名進入list
-				if (pfn.getFile_Name().equals(fileTypeName)) { 
+				// TODO V6 START
+//				if (pfn.getFile_Name().equals(fileTypeName)) { 
+				if (pfn.getFile_Name().equalsIgnoreCase(fileTypeName)) {
+				// TODO V6 END
 					
 					File tempFile = new File(filePath + "/" + fileNameArray[i]);
 					tartgetFileList.add(tempFile);
@@ -117,7 +120,10 @@ public class ETL_Tool_FileReader {
 				}
 				
 				// 檔名分析後  符合檔名進入list
-				if (pfn.getFile_Name().equals(fileTypeName)) { 
+				// TODO V6 START
+//				if (pfn.getFile_Name().equals(fileTypeName)) { 
+				if (pfn.getFile_Name().equalsIgnoreCase(fileTypeName)) {
+				// TODO V6 END
 					
 					File tempFile = new File(filePath + "/" + fileNameArray[i]);
 					tartgetFileList.add(tempFile);

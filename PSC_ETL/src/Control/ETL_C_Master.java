@@ -3,6 +3,7 @@ package Control;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,9 +23,11 @@ public class ETL_C_Master {
 		Calendar c1 = Calendar.getInstance();
     	final String strTime = String.format("%1$tH%1$tM", c1);
 		
-    	// ETL_C_Master 使用編號" 1"設定檔(BatchRunTimeConfig)
+    	//  使用編號" 1"設定檔(BatchRunTimeConfig)
 		boolean isRun = ETL_C_BatchTime.isExecute(strTime, " 1");
 		if (!isRun) {
+			
+			System.out.println("isRun = false");
 			return;
 		}
 		
@@ -43,6 +46,8 @@ public class ETL_C_Master {
 		}
 		
 		// 檢核ETL Server 是否正常可連線  ????
+		
+		
 		// 呼叫確認用Web Service連線
  		System.out.println("etlServerList size = " + etlServerList.size()); // for test
 		System.out.println("Usable ETL Server List :");
@@ -51,9 +56,19 @@ public class ETL_C_Master {
 		}
 		
 		// 產生資料日期(昨天)
-		Calendar cal = Calendar.getInstance(); // 今天時間
-        cal.add(Calendar.DATE, -1); // 昨天時間
-        Date record_date = cal.getTime();
+//		Calendar cal = Calendar.getInstance(); // 今天時間
+//        cal.add(Calendar.DATE, -1); // 昨天時間
+//        Date record_date = cal.getTime();
+		
+		// for test
+		Date record_date;
+		try {
+			record_date = new SimpleDateFormat("yyyyMMdd").parse("20171206");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			record_date = new Date();
+		}
+		
         System.out.println(record_date); // for test
 		
 		// 取得執行中心代號(序號表ETL_CENTRAL_INFO), 取得今天未執行中心

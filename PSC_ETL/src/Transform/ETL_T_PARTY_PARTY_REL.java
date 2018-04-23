@@ -60,8 +60,13 @@ public class ETL_T_PARTY_PARTY_REL {
 		two.setRECORD_DATE(new java.util.Date());
 		two.setBEFORE_ETL_PROCESS_DATE(new java.util.Date());
 		
+		long time1, time2;
+		time1 = System.currentTimeMillis();
+		
 		one.trans_to_PARTY_PARTY_REL_LOAD(two); // TODO
 		
+		time2 = System.currentTimeMillis();
+		System.out.println("花了：" + (time2 - time1) + "豪秒");
 	}
 	
 }

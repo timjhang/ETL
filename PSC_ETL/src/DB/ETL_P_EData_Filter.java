@@ -62,7 +62,7 @@ public class ETL_P_EData_Filter {
 	public static void main(String[] argv) {
 		
 		try {
-			E_Datas_Filter("filter_Party_Temp_Temp", 
+			E_Datas_Filter("filter_Party_Temp_Temp",
 					null, null, null, null, null);
 		} catch (Exception ex) {
 			ex.printStackTrace();
