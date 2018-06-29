@@ -17,7 +17,7 @@ public class ETL_Profile {
 	private final static String db2SPSchema = "ADMINISTRATOR";
 	public final static String db2TableSchema = "ADMINISTRATOR";
 //	public final static String db2Url = 
-//			"jdbc:db2://172.18.21.206:50000/ETLDB600:" +
+//			"jdbc:db2://172.18.21.206:50000/ETLDB001:" +
 //			"currentschema=" + db2SPSchema + ";" +
 //			"currentFunctionPath=" + db2SPSchema + ";";
 //	public final static String db2User = "Administrator";
@@ -29,19 +29,19 @@ public class ETL_Profile {
 //	public final static String db2User = "administrator";
 //	public final static String db2Password = "1qaz@WSX";
 	
-	public final static String db2Url = 
-			"jdbc:db2://172.18.6.152:50000/ETLDB002:" +
-			"currentschema=" + db2SPSchema + ";" +
-			"currentFunctionPath=" + db2SPSchema + ";";
-	public final static String db2User = "Administrator";
-	public final static String db2Password = "9ol.)P:?";
-	
 //	public final static String db2Url = 
-//			"jdbc:db2://172.18.6.151:50000/ETLDB001:" +
+//			"jdbc:db2://172.18.6.152:50000/ETLDB002:" +
 //			"currentschema=" + db2SPSchema + ";" +
 //			"currentFunctionPath=" + db2SPSchema + ";";
 //	public final static String db2User = "Administrator";
 //	public final static String db2Password = "9ol.)P:?";
+	
+	public final static String db2Url = 
+			"jdbc:db2://172.18.6.151:50000/ETLDB001:" +
+			"currentschema=" + db2SPSchema + ";" +
+			"currentFunctionPath=" + db2SPSchema + ";";
+	public final static String db2User = "Administrator";
+	public final static String db2Password = "9ol.)P:?";
 	
 	// Error Log寫入域值
 	public final static int ErrorLog_Stage = 10000;
@@ -67,6 +67,17 @@ public class ETL_Profile {
 	public final static String db2UrlGAMLafter = 
 			":currentschema=" + GAML_db2SPSchema + ";" +
 			"currentFunctionPath=" + GAML_db2SPSchema + ";";
+	
+//	public final static String GAML_db2User = "GAMLETL"; 
+//	public final static String GAML_db2Password = "1qaz@WSX"; 
+//	public final static String GAML_db2TableSchema = "SRC"; 
+//	private final static String GAML_db2SPSchema = "SRC"; 
+//	public final static String db2UrlGAMLpre = "jdbc:db2://172.18.21.207:50000/GAML"; 
+//	public final static String db2UrlGAMLafter = 
+//	":currentschema=" + GAML_db2SPSchema + ";" + 
+//	"currentFunctionPath=" + GAML_db2SPSchema + ";";
+	
+	
 
 	
 	// GAMLDB

@@ -23,8 +23,27 @@ import Tool.ETL_Tool_ParseFileName;
 import Tool.ETL_Tool_StringQueue;
 import Tool.ETL_Tool_StringX;
 
-public class ETL_E_PARTY {
+public class ETL_E_PARTY extends Extract {
 
+	public ETL_E_PARTY() {
+		
+	}
+
+	public ETL_E_PARTY(String filePath, String fileTypeName, String batch_no, String exc_central_no,
+			Date exc_record_date, String upload_no, String program_no) {
+		super(filePath, fileTypeName, batch_no, exc_central_no, exc_record_date, upload_no, program_no);
+	}
+
+	@Override
+	public void read_File() {
+		try {
+			read_Party_File(this.filePath, this.fileTypeName, this.batch_no, this.exc_central_no,
+					this.exc_record_date, this.upload_no, this.program_no);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+	}
+	
 	// 進階檢核參數
 	private boolean advancedCheck = ETL_Profile.AdvancedCheck;
 
@@ -40,7 +59,8 @@ public class ETL_E_PARTY {
 			{ "c-8", "PARTY_ENTITY_SUB_TYPE" }, // 客戶子類型
 			{ "c-13", "COMM_NATIONALITY_CODE" }, // 國籍
 			{ "c-18", "PARTY_GENDER" }, // 性別
-			{ "c-20", "COMM_OCCUPATION_CODE" }, // 職業/行業
+			{ "c-20-1", "COMM_OCCUPATION_CODE3" }, // 職業/行業
+			{ "c-20-2", "COMM_OCCUPATION_CODE6" }, // 職業/行業
 			{ "c-21", "PARTY_MARITAL_STATUS_CODE" }, // 婚姻狀況
 			{ "c-24", "PARTY_EMPLOYEE_FLAG" }, // 行內員工註記
 			{ "c-26", "PARTY_MULTIPLE_NATIONALITY_FLAG" }, // 是否具多重國籍(自然人)
@@ -547,10 +567,25 @@ public class ETL_E_PARTY {
 									data.setError_mark("Y");
 									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
 											String.valueOf(rowCount), "職業/行業", "空值"));
-								} else if (!checkMaps.get("c-20").containsKey(occupation_code.trim())) {
-									data.setError_mark("Y");
-									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-											String.valueOf(rowCount), "職業/行業", "非預期:" + occupation_code));
+								} else {
+									// 若性別GENDER是F或是M, 視為個人判斷職業別(3碼),其他視為法人判斷行業別(6碼), 若OCCUPATION_CODE=N/A，不區分個人或法人。
+									if ("N/A".equals(occupation_code.trim())) {
+										// 不進行任何處理
+									} else {
+										if (isPersonal(entity_type, gender)) {
+											if (!checkMaps.get("c-20-1").containsKey(occupation_code.trim())) {
+												data.setError_mark("Y");
+												errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+														String.valueOf(rowCount), "職業", "非預期:" + occupation_code));
+											}
+										} else {
+											if (!checkMaps.get("c-20-2").containsKey(occupation_code.trim())) {
+												data.setError_mark("Y");
+												errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+														String.valueOf(rowCount), "行業", "非預期:" + occupation_code));
+											}
+										}
+									}
 								}
 
 								// 婚姻狀況 c-21(1)
@@ -725,13 +760,33 @@ public class ETL_E_PARTY {
 								String total_asset = strQueue.popBytesString(14);
 								// System.out.println("顧客AUM餘額 c-37(14):" +
 								// total_asset.getBytes().length);
-								data.setTotal_asset(ETL_Tool_StringX.strToBigDecimal(total_asset, 2));
+								if (ETL_Tool_FormatCheck.isEmpty(total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "顧客AUM餘額", "空值")); 
+								} else if (!ETL_Tool_FormatCheck.checkNum(total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "顧客AUM餘額", "格式錯誤:" + total_asset)); 
+								} else {
+									data.setTotal_asset(ETL_Tool_StringX.strToBigDecimal(total_asset, 2));
+								}
 
 								// 信託客戶AUM餘額 c-38(14)
 								String trust_total_asset = strQueue.popBytesString(14);
 								// System.out.println("信託客戶AUM餘額 c-38(14):" +
 								// trust_total_asset.getBytes().length);
-								data.setTrust_total_asset(ETL_Tool_StringX.strToBigDecimal(trust_total_asset, 2));
+								if (ETL_Tool_FormatCheck.isEmpty(trust_total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "信託客戶AUM餘額", "空值")); 
+								} else if (!ETL_Tool_FormatCheck.checkNum(trust_total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "信託客戶AUM餘額", "格式錯誤:" + trust_total_asset)); 
+								} else {
+									data.setTrust_total_asset(ETL_Tool_StringX.strToBigDecimal(trust_total_asset, 2));
+								}
 
 							}
 
@@ -836,11 +891,25 @@ public class ETL_E_PARTY {
 								// 職業/行業 c-20(6)
 								String occupation_code = strQueue.popBytesString(6);
 								data.setOccupation_code(occupation_code);
-								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(occupation_code)
-										&& !checkMaps.get("c-20").containsKey(occupation_code.trim())) {
-									data.setError_mark("Y");
-									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
-											String.valueOf(rowCount), "職業/行業", "非預期:" + occupation_code));
+								if (advancedCheck && !ETL_Tool_FormatCheck.isEmpty(occupation_code)) {
+									// 若性別GENDER是F或是M, 視為個人判斷職業別(3碼),其他視為法人判斷行業別(6碼), 若OCCUPATION_CODE=N/A，不區分個人或法人。
+									if ("N/A".equals(occupation_code.trim())) {
+										// 不進行任何處理
+									} else {
+										if (isPersonal(entity_type, gender)) {
+											if (!checkMaps.get("c-20-1").containsKey(occupation_code.trim())) {
+												data.setError_mark("Y");
+												errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+														String.valueOf(rowCount), "職業", "非預期:" + occupation_code));
+											}
+										} else {
+											if (!checkMaps.get("c-20-2").containsKey(occupation_code.trim())) {
+												data.setError_mark("Y");
+												errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E",
+														String.valueOf(rowCount), "行業", "非預期:" + occupation_code));
+											}
+										}
+									}
 								}
 
 								// 婚姻狀況 c-21(1)
@@ -978,11 +1047,31 @@ public class ETL_E_PARTY {
 
 								// 顧客AUM餘額 c-37(14)
 								String total_asset = strQueue.popBytesString(14);
-								data.setTotal_asset(ETL_Tool_StringX.strToBigDecimal(total_asset, 2));
+								if (ETL_Tool_FormatCheck.isEmpty(total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "顧客AUM餘額", "空值")); 
+								} else if (!ETL_Tool_FormatCheck.checkNum(total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "顧客AUM餘額", "格式錯誤:" + total_asset)); 
+								} else {
+									data.setTotal_asset(ETL_Tool_StringX.strToBigDecimal(total_asset, 2));
+								}
 
 								// 信託客戶AUM餘額 c-38(14)
 								String trust_total_asset = strQueue.popBytesString(14);
-								data.setTrust_total_asset(ETL_Tool_StringX.strToBigDecimal(trust_total_asset, 2));
+								if (ETL_Tool_FormatCheck.isEmpty(trust_total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "信託客戶AUM餘額", "空值")); 
+								} else if (!ETL_Tool_FormatCheck.checkNum(trust_total_asset)) { 
+									data.setError_mark("Y"); 
+									errWriter.addErrLog(new ETL_Bean_ErrorLog_Data(pfn, upload_no, "E", 
+									String.valueOf(rowCount), "信託客戶AUM餘額", "格式錯誤:" + trust_total_asset)); 
+								} else {
+									data.setTrust_total_asset(ETL_Tool_StringX.strToBigDecimal(trust_total_asset, 2));
+								}
 
 							}
 
@@ -1376,6 +1465,17 @@ public class ETL_E_PARTY {
 		// 寫入後將計數與資料List清空
 		this.dataCount = 0;
 		this.dataList.clear();
+	}
+	
+	// 從客戶類型, 以及性別  判斷為自然人(true)/法人(false)
+	private static boolean isPersonal(String entity_type, String gender) {
+		if (("100".equals(entity_type))) {
+			return true;
+		} else if ("900".equals(entity_type) && ("F".equals(gender) || "M".equals(gender))) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public static void main(String[] argv) throws Exception {

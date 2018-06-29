@@ -9,23 +9,24 @@ public class ConnectionHelper {
 	public static void main(String[] argv) {
 		
 		try {
-			Connection con = getDB2Connection();
-			
-			java.sql.Statement stmt = con.createStatement();
-			 
-//            String query = "SELECT COUNT(*) FROM SYSCAT.TABLES";
-//            String query = "SELECT COUNT(*) FROM act";
-            String query = "SELECT * FROM act";
-            java.sql.ResultSet rs = stmt.executeQuery(query);
- 
-            while (rs.next()) {
-//              System.out.println("\n" + query + " = " + rs.getInt(1));
-//            	System.out.println(rs.getInt(1));
-                System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3));
-            }
- 
-            rs.close();
-            stmt.close();
+			Connection con = getDB2ConnGAML("DB");
+//			Connection con = getDB2Connection();
+//			
+//			java.sql.Statement stmt = con.createStatement();
+//			 
+////            String query = "SELECT COUNT(*) FROM SYSCAT.TABLES";
+////            String query = "SELECT COUNT(*) FROM act";
+//            String query = "SELECT * FROM act";
+//            java.sql.ResultSet rs = stmt.executeQuery(query);
+// 
+//            while (rs.next()) {
+////              System.out.println("\n" + query + " = " + rs.getInt(1));
+////            	System.out.println(rs.getInt(1));
+//                System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3));
+//            }
+// 
+//            rs.close();
+//            stmt.close();
             con.close();
 			
 		} catch (Exception ex) {

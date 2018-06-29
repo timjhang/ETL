@@ -37,7 +37,7 @@ public class ETL_Q_ColumnCheckCodes {
         	data.setCode(rs.getString(1));
         	data.setName(rs.getString(2));
         	
-        	System.out.println(data.getCode() + " " + data.getName()); // test
+//        	System.out.println(data.getCode() + " " + data.getName()); // test
         	resultList.add(data);
         }
         
@@ -75,7 +75,7 @@ public class ETL_Q_ColumnCheckCodes {
 		
 		java.sql.ResultSet rs = (java.sql.ResultSet)cstmt.getObject(5);
 		while (rs.next()) {
-        	System.out.println(rs.getString(1) + " " + rs.getString(2)); // test
+//        	System.out.println(rs.getString(1) + " " + rs.getString(2)); // test
         	
         	String code = rs.getString(1);
         	code = (code == null)?"":code.trim();
@@ -90,7 +90,7 @@ public class ETL_Q_ColumnCheckCodes {
         
         // 若Size為0則發出錯誤警告
         if (resultMap.size() == 0) {
-//        	System.out.println("Map " + columnName + " 不存在!!");
+        	System.out.println("Map " + columnName + " 不存在!!");
         	throw new Exception("Map " + columnName + " 不存在!!");
         }
 		
